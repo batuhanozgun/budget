@@ -35,6 +35,10 @@
         <input type="password" id="password" name="password" placeholder="Şifre" required>
         <button type="submit">Kayıt Ol</button>
     </form>
+    <div>
+        <h2>Halihazırda bir hesabınız var mı?</h2>
+        <button onclick="window.location.href='login.html'">Giriş Yap</button>
+    </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
