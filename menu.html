@@ -27,6 +27,7 @@
             window.location.href = 'index.html';
         }).catch((error) => {
             console.error('Çıkış yaparken hata:', error);
+            alert('Çıkış yaparken bir hata oluştu: ' + error.message);
         });
     }
 </script>
