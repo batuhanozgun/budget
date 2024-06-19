@@ -7,7 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
@@ -32,6 +32,16 @@
                     sendEmailVerification(user)
                         .then(() => {
                             alert('Kayıt başarılı! E-posta doğrulaması için gelen kutunuzu kontrol edin.');
+
+                            // Kullanıcı Firestore veritabanına ekle
+                            setDoc(doc(db, "users", user.uid), {
+                                email: user.email,
+                                admin: false
+                            }).then(() => {
+                                console.log("Kullanıcı Firestore veritabanına eklendi.");
+                            }).catch((error) => {
+                                console.error("Kullanıcı eklenirken hata oluştu:", error);
+                            });
                         })
                         .catch((error) => {
                             console.error('E-posta doğrulama hatası:', error);
