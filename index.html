@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gelir ve Gider Takibi</title>
+    <title>Kayıt Ol</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
@@ -20,63 +20,37 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.location.href = 'landing.html';
-            }
+        document.getElementById('signupForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    sendEmailVerification(userCredential.user)
+                        .then(() => {
+                            alert('Kayıt başarılı! Lütfen e-posta adresinizi doğrulayın.');
+                            window.location.href = 'login.html';
+                        });
+                })
+                .catch((error) => {
+                    console.error('Kayıt hatası:', error.message);
+                    alert('Kayıt hatası: ' + error.message);
+                });
         });
     </script>
 </head>
 <body>
-    <h1>Gelir ve Gider Takibi - Kayıt Ol</h1>
-    <form id="registerForm">
-        <h2>Kayıt Ol</h2>
-        <input type="email" id="email" name="email" placeholder="E-posta" required>
-        <input type="password" id="password" name="password" placeholder="Şifre" required>
+    <h1>Kayıt Ol</h1>
+    <form id="signupForm">
+        <label for="email">E-posta:</label>
+        <input type="email" id="email" required>
+        <br>
+        <label for="password">Şifre:</label>
+        <input type="password" id="password" required>
+        <br>
         <button type="submit">Kayıt Ol</button>
     </form>
-    <div>
-        <h2>Halihazırda bir hesabınız var mı?</h2>
-        <button onclick="window.location.href='login.html'">Giriş Yap</button>
-    </div>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
-            authDomain: "batusbudget.firebaseapp.com",
-            projectId: "batusbudget",
-            storageBucket: "batusbudget.appspot.com",
-            messagingSenderId: "1084998760222",
-            appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = e.target.elements.email.value;
-            const password = e.target.elements.password.value;
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                await sendEmailVerification(user);
-                alert('Kayıt başarılı! E-posta doğrulaması için gelen kutunuzu kontrol edin.');
-
-                await setDoc(doc(db, "users", user.uid), {
-                    email: user.email,
-                    admin: false
-                });
-                console.log("Kullanıcı Firestore veritabanına eklendi.");
-            } catch (error) {
-                console.error("Kayıt sırasında hata oluştu:", error);
-                alert("Kayıt sırasında hata oluştu: " + error.message);
-            }
-        });
-    </script>
+    <p>Zaten bir hesabınız var mı? <a href="login.html">Giriş Yap</a></p>
 </body>
 </html>
