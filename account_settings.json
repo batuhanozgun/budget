@@ -1,0 +1,23 @@
+{
+  "Nakit": {
+    "description": "Cebindeki (ya da cüzdanındaki) parayı takip etmek için kullanılır...",
+    "fields": [
+      {"name": "Hesap Adı", "type": "text", "required": true},
+      {"name": "Başlangıç Bakiyesi", "type": "number", "required": true},
+      {"name": "Hesap Oluşturma Tarihi", "type": "date", "required": true}
+    ]
+  },
+  "Banka Hesabı": {
+    "description": "Bankalarındaki hesapları buradan yaratabilirsin...",
+    "fields": [
+      {"name": "Hesap Adı", "type": "text", "required": true},
+      {"name": "Başlangıç Bakiyesi", "type": "number", "required": true},
+      {"name": "Hesap Oluşturma Tarihi", "type": "date", "required": true},
+      {"name": "KMH", "type": "checkbox", "required": false},
+      {"name": "Faiz Oranı", "type": "number", "required": false},
+      {"name": "Hesap Kesim Tarihi", "type": "date", "required": false}
+    ]
+  },
+  ...
+  // Diğer hesap türleri için benzer yapı
+}
