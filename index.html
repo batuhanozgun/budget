@@ -6,7 +6,7 @@
     <title>Gelir ve Gider Takibi</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -29,10 +29,17 @@
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    alert('Kayıt başarılı!');
-                    window.location.href = 'index.html';
+                    sendEmailVerification(user)
+                        .then(() => {
+                            alert('Kayıt başarılı! E-posta doğrulaması için gelen kutunuzu kontrol edin.');
+                        })
+                        .catch((error) => {
+                            console.error('E-posta doğrulama hatası:', error);
+                            alert('E-posta doğrulama hatası: ' + error.message);
+                        });
                 })
                 .catch((error) => {
+                    console.error('Kayıt hatası:', error);
                     alert('Kayıt hatası: ' + error.message);
                 });
         });
@@ -44,25 +51,34 @@
             signInWithEmailAndPassword(auth, email, password)
                 .then(async (userCredential) => {
                     const user = userCredential.user;
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists() && userDoc.data().admin) {
-                        window.location.href = 'admin.html';
+                    if (user.emailVerified) {
+                        const userDoc = await getDoc(doc(db, "users", user.uid));
+                        if (userDoc.exists() && userDoc.data().admin) {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.href = 'kayit_gir.html';
+                        }
                     } else {
-                        window.location.href = 'kayit_gir.html';
+                        alert('E-posta adresinizi doğrulamadınız. Lütfen gelen kutunuzu kontrol edin.');
                     }
                 })
                 .catch((error) => {
+                    console.error('Giriş hatası:', error);
                     alert('Giriş hatası: ' + error.message);
                 });
         });
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists() && userDoc.data().admin) {
-                    window.location.href = 'admin.html';
+                if (user.emailVerified) {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists() && userDoc.data().admin) {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'kayit_gir.html';
+                    }
                 } else {
-                    window.location.href = 'kayit_gir.html';
+                    alert('E-posta adresinizi doğrulamadınız. Lütfen gelen kutunuzu kontrol edin.');
                 }
             }
         });
