@@ -1,36 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu</title>
-    <style>
-        .menu {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .menu a {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .menu a:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>Gelir ve Gider Takibi - Giriş Yap</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
+	@@ -20,49 +19,38 @@
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = e.target.elements.email.value;
+            const password = e.target.elements.password.value;
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                if (user.emailVerified) {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists() && userDoc.data().admin) {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'landing.html';
+                    }
+                } else {
+                    alert('E-posta adresinizi doğrulamadınız. Lütfen gelen kutunuzu kontrol edin.');
+                }
+            } catch (error) {
+                console.error("Giriş sırasında hata oluştu:", error);
+                alert("Giriş sırasında hata oluştu: " + error.message);
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                if (user.emailVerified) {
+                    window.location.href = 'landing.html';
+                } else {
+                    alert('Lütfen giriş yapın ve e-posta adresinizi doğrulayın.');
+                    auth.signOut();
+                }
+            }
+        });
+    </script>
 </head>
 <body>
-    <div class="menu">
-        <a href="landing.html">Ana Sayfa</a>
-        <a href="kayit_gir.html">Kayıt Gir</a>
-        <a href="kayitlari_goruntule.html">Kayıtları Gör</a>
-        <a href="profil_duzenle.html">Profilim</a>
-        <a href="hesap_olustur.html">Hesap Oluştur</a>
-        <a href="#" onclick="logout()">Çıkış Yap</a>
-    </div>
+    <h1>Giriş Yap</h1>
+    <form id="loginForm">
+        <input type="email" id="email" name="email" placeholder="E-posta" required>
+        <input type="password" id="password" name="password" placeholder="Şifre" required>
+        <button type="submit">Giriş Yap</button>
+    </form>
 </body>
 </html>
