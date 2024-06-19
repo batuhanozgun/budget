@@ -6,7 +6,8 @@
     <title>Landing Page</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { loadMenu } from "./menu.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
@@ -21,43 +22,17 @@
         const auth = getAuth(app);
 
         onAuthStateChanged(auth, (user) => {
-            if (!user || !user.emailVerified) {
-                alert('Lütfen giriş yapın ve e-posta adresinizi doğrulayın.');
-                window.location.href = 'index.html';
+            if (!user) {
+                window.location.href = 'login.html';
             }
         });
 
-        window.logout = function() {
-            signOut(auth).then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error('Çıkış yaparken hata:', error);
-                alert('Çıkış yaparken bir hata oluştu: ' + error.message);
-            });
-        }
-
-        async function loadMenu() {
-            const response = await fetch('menu.html');
-            const menuHtml = await response.text();
-            document.getElementById('menuContainer').innerHTML = menuHtml;
-            eval(document.querySelector('#menuContainer script').textContent);
-        }
-
         window.onload = loadMenu;
     </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        h1 {
-            color: #333;
-        }
-    </style>
 </head>
 <body>
     <div id="menuContainer"></div>
-    <h1>Hoş Geldiniz</h1>
+    <h1>Landing Page</h1>
+    <p>Hoşgeldiniz!</p>
 </body>
 </html>
