@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hesap Oluştur</title>
     <script type="module">
-        // Firebase modüler SDK'yı içe aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { loadMenu } from './menu.js';
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
@@ -22,21 +22,24 @@
 
         // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Menü yüklensin
+        window.onload = function() {
+            loadMenu();
+        }
 
         // Hesap oluşturma işlevi
-        async function createAccount(event) {
-            event.preventDefault();
-
+        window.createAccount = async function() {
             const accountName = document.getElementById('accountName').value;
-            const accountType = document.querySelector('input[name="accountType"]:checked').value;
+            const accountType = document.getElementById('accountType').value;
             const initialBalance = document.getElementById('initialBalance').value;
 
             const user = auth.currentUser;
             if (user) {
                 try {
-                    await addDoc(collection(db, "accounts"), {
+                    await addDoc(collection(db, 'accounts'), {
                         userId: user.uid,
                         accountName: accountName,
                         accountType: accountType,
@@ -44,71 +47,37 @@
                         createdAt: new Date()
                     });
                     alert('Hesap başarıyla oluşturuldu!');
-                    document.getElementById('accountForm').reset();
+                    window.location.href = 'landing.html';
                 } catch (error) {
-                    console.error('Hesap oluşturma hatası:', error);
+                    console.error('Hesap oluşturma hatası: ', error);
                     alert('Hesap oluşturma hatası: ' + error.message);
                 }
             } else {
-                alert('Lütfen önce giriş yapın.');
+                alert('Lütfen giriş yapın.');
                 window.location.href = 'login.html';
             }
         }
-
-        window.onload = function() {
-            onAuthStateChanged(auth, (user) => {
-                if (!user) {
-                    alert('Lütfen önce giriş yapın.');
-                    window.location.href = 'login.html';
-                }
-            });
-        }
     </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        h1 {
-            color: #333;
-        }
-        form {
-            display: inline-block;
-            text-align: left;
-            margin-top: 20px;
-        }
-        label, input, select {
-            display: block;
-            margin-bottom: 10px;
-            width: 100%;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
 </head>
 <body>
+    <div id="menuContainer"></div>
     <h1>Hesap Oluştur</h1>
-    <form id="accountForm" onsubmit="createAccount(event)">
+    <form onsubmit="createAccount(); return false;">
         <label for="accountName">Hesap Adı:</label>
         <input type="text" id="accountName" required>
-
-        <label>Hesap Türü:</label>
-        <label><input type="radio" name="accountType" value="Gelir" required> Gelir</label>
-        <label><input type="radio" name="accountType" value="Gider" required> Gider</label>
-
+        <br>
+        <label for="accountType">Hesap Türü:</label>
+        <select id="accountType" required>
+            <option value="banka">Banka</option>
+            <option value="nakit">Nakit</option>
+            <option value="kredi">Kredi</option>
+            <option value="borç">Borç</option>
+        </select>
+        <br>
         <label for="initialBalance">Başlangıç Bakiyesi:</label>
-        <input type="number" id="initialBalance" step="0.01" required>
-
-        <button type="submit">Hesap Oluştur</button>
+        <input type="number" id="initialBalance" required>
+        <br>
+        <button type="submit">Oluştur</button>
     </form>
 </body>
 </html>
