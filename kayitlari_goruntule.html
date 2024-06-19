@@ -39,15 +39,15 @@
             });
         }
 
-        window.onload = fetchRecords;
-    </script>
-    <script>
         async function loadMenu() {
             const response = await fetch('menu.html');
             const menuHtml = await response.text();
             document.getElementById('menuContainer').innerHTML = menuHtml;
         }
-        window.onload = loadMenu;
+
+        window.onload = function() {
+            loadMenu().then(fetchRecords);
+        }
     </script>
     <style>
         body {
