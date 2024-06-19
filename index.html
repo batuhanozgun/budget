@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gelir ve Gider Takibi</title>
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
+        // Firebase konfigürasyonu
         const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
             authDomain: "batusbudget.firebaseapp.com",
@@ -20,7 +19,7 @@
             appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
         };
 
-        // Initialize Firebase
+        // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -59,25 +58,56 @@
         window.addData = function() {
             const user = auth.currentUser;
             if (user) {
-                const data = {
-                    kayitTuru: document.getElementById('kayitTuru').value,
-                    kayitTipi: document.getElementById('kayitTipi').value,
-                    kategori: document.getElementById('kategori').value,
-                    altKategori: document.getElementById('altKategori').value,
-                    tutar: document.getElementById('tutar').value,
-                    aciklama: document.getElementById('aciklama').value,
-                    userId: user.uid,
-                    date: new Date()
-                };
-                addDoc(collection(db, 'transactions'), data)
-                    .then(docRef => {
-                        console.log('Veri eklendi:', docRef.id);
-                        alert('Veri eklendi!');
-                    })
-                    .catch(error => {
-                        console.error('Veri ekleme hatası:', error.message);
-                        alert('Veri ekleme hatası: ' + error.message);
-                    });
+                const kayitTuru = document.getElementById('kayitTuru').value;
+                const kayitTipi = document.getElementById('kayitTipi').value;
+                const kategori = document.getElementById('kategori').value;
+                const altKategori = document.getElementById('altKategori').value;
+                const tutar = parseFloat(document.getElementById('tutar').value);
+                const aciklama = document.getElementById('aciklama').value;
+                const taksitSayisi = parseInt(document.getElementById('taksitSayisi').value);
+
+                if (taksitSayisi > 1) {
+                    for (let i = 0; i < taksitSayisi; i++) {
+                        const data = {
+                            kayitTuru,
+                            kayitTipi,
+                            kategori,
+                            altKategori,
+                            tutar: (tutar / taksitSayisi).toFixed(2),
+                            aciklama: aciklama + ' - Taksit ' + (i + 1),
+                            userId: user.uid,
+                            date: new Date(new Date().setMonth(new Date().getMonth() + i))
+                        };
+                        addDoc(collection(db, 'transactions'), data)
+                            .then(docRef => {
+                                console.log('Veri eklendi:', docRef.id);
+                            })
+                            .catch(error => {
+                                console.error('Veri ekleme hatası:', error.message);
+                            });
+                    }
+                    alert('Veriler eklendi!');
+                } else {
+                    const data = {
+                        kayitTuru,
+                        kayitTipi,
+                        kategori,
+                        altKategori,
+                        tutar: tutar.toFixed(2),
+                        aciklama,
+                        userId: user.uid,
+                        date: new Date()
+                    };
+                    addDoc(collection(db, 'transactions'), data)
+                        .then(docRef => {
+                            console.log('Veri eklendi:', docRef.id);
+                            alert('Veri eklendi!');
+                        })
+                        .catch(error => {
+                            console.error('Veri ekleme hatası:', error.message);
+                            alert('Veri ekleme hatası: ' + error.message);
+                        });
+                }
             } else {
                 console.error('Kullanıcı giriş yapmamış');
                 alert('Kullanıcı giriş yapmamış');
@@ -139,6 +169,9 @@
             <br>
             <label for="tutar">Tutar:</label>
             <input type="number" id="tutar" required>
+            <br>
+            <label for="taksitSayisi">Taksit Sayısı:</label>
+            <input type="number" id="taksitSayisi" value="1" required>
             <br>
             <label for="aciklama">Açıklama:</label>
             <textarea id="aciklama" required></textarea>
