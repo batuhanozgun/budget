@@ -29,18 +29,21 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userId = user.uid;
+                loadMenu();
+            } else {
+                alert('Lütfen giriş yapın.');
+                window.location.href = "login.html";
             }
         });
 
-        // Form gönderildiğinde verileri Firestore'a ekle
-        async function submitForm(event) {
-            event.preventDefault();
+        async function loadMenu() {
+            const response = await fetch('menu.html');
+            const menuHtml = await response.text();
+            document.getElementById('menuContainer').innerHTML = menuHtml;
+            eval(document.getElementById('menuContainer script').textContent);
+        }
 
-            if (!userId) {
-                alert('Lütfen giriş yapın.');
-                return;
-            }
-
+        window.addRecord = async function () {
             const kayitTuru = document.getElementById('kayitTuru').value;
             const kayitTipi = document.getElementById('kayitTipi').value;
             const kategori = document.getElementById('kategori').value;
@@ -60,13 +63,12 @@
                     date: new Date()
                 });
                 alert('Kayıt başarıyla eklendi!');
+                document.getElementById('kayitForm').reset();
             } catch (error) {
-                console.error('Hata:', error);
-                alert('Kayıt eklenirken bir hata oluştu.');
+                console.error('Kayıt ekleme hatası: ', error);
+                alert('Kayıt ekleme hatası: ' + error.message);
             }
         }
-
-        document.getElementById('kayitForm').addEventListener('submit', submitForm);
     </script>
     <style>
         body {
@@ -83,8 +85,8 @@
         }
         label, input, select, textarea {
             display: block;
-            margin-bottom: 10px;
             width: 100%;
+            margin-bottom: 10px;
         }
         input[type="submit"] {
             width: auto;
@@ -100,23 +102,17 @@
             <option value="Gelir">Gelir</option>
             <option value="Gider">Gider</option>
         </select>
-
         <label for="kayitTipi">Kayıt Tipi:</label>
         <input type="text" id="kayitTipi" required>
-
         <label for="kategori">Kategori:</label>
         <input type="text" id="kategori" required>
-
         <label for="altKategori">Alt Kategori:</label>
         <input type="text" id="altKategori" required>
-
         <label for="tutar">Tutar:</label>
         <input type="number" id="tutar" required>
-
         <label for="aciklama">Açıklama:</label>
-        <textarea id="aciklama"></textarea>
-
-        <input type="submit" value="Kaydet">
+        <textarea id="aciklama" required></textarea>
+        <input type="button" value="Kaydet" onclick="addRecord()">
     </form>
     <script src="menu.js"></script>
 </body>
