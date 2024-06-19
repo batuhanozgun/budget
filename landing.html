@@ -4,29 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Landing Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        .menu {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .menu a {
-            text-decoration: none;
-            color: white;
-            background-color: #007BFF;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 5px;
-        }
-        .menu a:hover {
-            background-color: #0056b3;
-        }
-    </style>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
@@ -55,17 +32,38 @@
                 window.location.href = 'index.html';
             }).catch((error) => {
                 console.error('Çıkış yaparken hata:', error);
+                alert('Çıkış yaparken bir hata oluştu: ' + error.message);
             });
         }
+
+        async function loadMenu() {
+            const response = await fetch('menu.html');
+            const menuHtml = await response.text();
+            document.getElementById('menuContainer').innerHTML = menuHtml;
+        }
+        window.onload = loadMenu;
     </script>
+    <style>
+        .menu {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .menu a {
+            text-decoration: none;
+            color: white;
+            background-color: #007BFF;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+        }
+        .menu a:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
+    <div id="menuContainer"></div>
     <h1>Hoş Geldiniz</h1>
-    <div class="menu">
-        <a href="kayit_gir.html">Kayıt Gir</a>
-        <a href="kayitlari_goruntule.html">Kayıtları Gör</a>
-        <a href="profil_duzenle.html">Profilim</a>
-        <a href="#" onclick="logout()">Çıkış Yap</a>
-    </div>
 </body>
 </html>
