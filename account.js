@@ -17,100 +17,79 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Menü yüklensin
-loadMenu();
-
-async function loadAccountSettings() {
+async function fetchAccountSettings() {
     const response = await fetch('account_settings.json');
-    const accountSettings = await response.json();
-    return accountSettings;
-}
-
-function createFormFields(fields) {
-    const formContainer = document.getElementById('formContainer');
-    formContainer.innerHTML = ''; // Mevcut form alanlarını temizle
-    fields.forEach(field => {
-        const fieldElement = document.createElement('div');
-        fieldElement.classList.add('form-group');
-        let inputElement;
-        if (field.type === 'checkbox') {
-            inputElement = document.createElement('input');
-            inputElement.type = 'checkbox';
-        } else {
-            inputElement = document.createElement('input');
-            inputElement.type = field.type;
-        }
-        inputElement.id = field.name.replace(/ /g, '_');
-        inputElement.name = field.name;
-        inputElement.required = field.required;
-        fieldElement.innerHTML = `<label for="${inputElement.id}">${field.name}</label>`;
-        fieldElement.appendChild(inputElement);
-        formContainer.appendChild(fieldElement);
-    });
+    return await response.json();
 }
 
 async function onAccountTypeChange(event) {
-    const accountSettings = await loadAccountSettings();
+    const accountSettings = await fetchAccountSettings();
     const selectedAccountType = event.target.value;
     const accountTypeInfo = accountSettings[selectedAccountType];
     document.getElementById('accountDescription').innerText = accountTypeInfo.description;
     createFormFields(accountTypeInfo.fields);
 }
 
+function createFormFields(fields) {
+    const formContainer = document.getElementById('formFields');
+    formContainer.innerHTML = '';
+    fields.forEach(field => {
+        const label = document.createElement('label');
+        label.innerText = field.label;
+        const input = document.createElement('input');
+        input.type = field.type;
+        input.name = field.name;
+        formContainer.appendChild(label);
+        formContainer.appendChild(input);
+    });
+}
+
 document.getElementById('accountType').addEventListener('change', onAccountTypeChange);
 
-document.getElementById('createAccountForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const accountType = document.getElementById('accountType').value;
-    const formData = new FormData(event.target);
-    const accountData = {};
-    formData.forEach((value, key) => {
-        accountData[key] = value;
-    });
-    accountData['type'] = accountType;
-    const userId = getAuth().currentUser.uid;
-    accountData['userId'] = userId;
-
-    await addDoc(collection(db, 'accounts'), accountData);
-    alert('Hesap başarıyla oluşturuldu!');
-    window.location.reload();
-});
-
-async function loadAccounts() {
-    const userId = getAuth().currentUser.uid;
-    const accountsSnapshot = await getDocs(collection(db, 'accounts'));
-    const accountList = document.getElementById('accountList');
-    accountList.innerHTML = '';
-    accountsSnapshot.forEach((doc) => {
-        const accountData = doc.data();
-        if (accountData.userId === userId) {
-            const accountItem = document.createElement('div');
-            accountItem.classList.add('account-item');
-            accountItem.innerHTML = `
-                <strong>Hesap Adı:</strong> ${accountData['Hesap Adı']} - ${accountData.type}
-                <div class="account-details">
-                    <strong>Hesap Türü:</strong> ${accountData.type}<br>
-                    <strong>Başlangıç Bakiyesi:</strong> ${accountData['Başlangıç Bakiyesi']}
-                </div>
-            `;
-            accountItem.addEventListener('click', () => {
-                const details = accountItem.querySelector('.account-details');
-                details.style.display = details.style.display === 'none' ? 'block' : 'none';
+async function fetchAccounts() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const querySnapshot = await getDocs(collection(db, 'accounts'));
+            const accountsContainer = document.getElementById('accountsContainer');
+            accountsContainer.innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                const accountData = doc.data();
+                const accountDiv = document.createElement('div');
+                accountDiv.className = 'account';
+                accountDiv.innerHTML = `
+                    <p><strong>Hesap Adı:</strong> ${accountData['Hesap Adı']}</p>
+                    <p><strong>Hesap Türü:</strong> ${accountData['Hesap Türü']}</p>
+                    <p><strong>Başlangıç Bakiyesi:</strong> ${accountData['Başlangıç Bakiyesi']}</p>
+                `;
+                accountsContainer.appendChild(accountDiv);
             });
-            accountList.appendChild(accountItem);
         }
     });
 }
 
-onAuthStateChanged(getAuth(), (user) => {
-    if (user) {
-        loadAccounts();
-    } else {
-        // Kullanıcı giriş yapmamışsa giriş sayfasına yönlendirin
-        window.location.href = 'login.html';
-    }
+window.addEventListener('load', () => {
+    loadMenu();
+    fetchAccounts();
 });
 
-window.onload = function() {
-    loadMenu();
-};
+document.getElementById('createAccountForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const accountType = document.getElementById('accountType').value;
+    const formFields = document.getElementById('formFields').querySelectorAll('input');
+    const accountData = {};
+    formFields.forEach(field => {
+        accountData[field.name] = field.value;
+    });
+    accountData['Hesap Türü'] = accountType;
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            await addDoc(collection(db, 'accounts'), accountData);
+            alert('Hesap başarıyla oluşturuldu!');
+            fetchAccounts();
+        } else {
+            alert('Kullanıcı oturumu açılmadı.');
+        }
+    });
+});
