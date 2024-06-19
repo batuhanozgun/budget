@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hesap Oluştur ve Yönet</title>
     <script type="module">
-        // Firebase modüler SDK'yı içe aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-        import { loadMenu } from "./menu.js";
+        import { loadMenu } from './menu.js';
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
@@ -23,114 +21,126 @@
 
         // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Kullanıcı oturumu kontrol et
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loadAccounts(user.uid);
-            } else {
-                window.location.href = 'login.html';
-            }
-        });
-
         // Hesapları yükle
-        async function loadAccounts(userId) {
+        async function loadAccounts() {
             const accountsList = document.getElementById('accountsList');
-            accountsList.innerHTML = ''; // Mevcut listeyi temizle
-            const querySnapshot = await getDocs(collection(db, `accounts`));
+            accountsList.innerHTML = ''; // Önceki içerikleri temizle
+            const querySnapshot = await getDocs(collection(db, "accounts"));
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 const listItem = document.createElement('li');
-                listItem.textContent = `${data.hesapAdi} - ${data.hesapTuru}`;
+                listItem.textContent = `Hesap Adı: ${data.hesapAdi} - ${data.hesapTuru}`;
                 accountsList.appendChild(listItem);
             });
         }
 
-        // Yeni hesap ekle
-        window.addAccount = async function() {
+        // Yeni hesap ekleme
+        window.createAccount = async function () {
             const hesapAdi = document.getElementById('hesapAdi').value;
             const hesapTuru = document.getElementById('hesapTuru').value;
-            const userId = auth.currentUser.uid;
+            const tutar = document.getElementById('tutar').value;
 
-            await addDoc(collection(db, 'accounts'), {
-                hesapAdi,
-                hesapTuru,
-                userId
-            });
-
-            alert('Hesap başarıyla eklendi!');
-            document.getElementById('hesapForm').reset();
-            loadAccounts(userId);
+            try {
+                const docRef = await addDoc(collection(db, "accounts"), {
+                    hesapAdi,
+                    hesapTuru,
+                    tutar
+                });
+                alert("Hesap başarıyla oluşturuldu!");
+                loadAccounts(); // Hesapları yeniden yükle
+            } catch (e) {
+                console.error("Hesap oluşturma hatası: ", e);
+                alert("Hesap oluşturma hatası: " + e.message);
+            }
         }
 
         window.onload = function() {
             loadMenu();
-        };
+            loadAccounts();
+        }
     </script>
     <style>
         body {
-            display: flex;
             font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
         }
-        .sidebar {
-            width: 25%;
-            background-color: #f2f2f2;
+        #menuContainer {
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .accounts {
+            width: 45%;
             padding: 20px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
         }
-        .main-content {
-            width: 75%;
+        .form {
+            width: 45%;
             padding: 20px;
-        }
-        h1 {
-            color: #333;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
         }
         ul {
             list-style-type: none;
             padding: 0;
         }
         li {
-            background: #fff;
             margin: 10px 0;
             padding: 10px;
-            border: 1px solid #ddd;
+            background-color: #f2f2f2;
+            border-radius: 5px;
         }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        input, select, button {
+        input, select {
             margin-bottom: 10px;
             padding: 10px;
-            font-size: 16px;
+            width: calc(100% - 20px);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2>Kayıtlı Hesaplar</h2>
-        <ul id="accountsList"></ul>
-    </div>
-    <div class="main-content">
-        <h1>Hesap Oluştur</h1>
-        <form id="hesapForm">
-            <label for="hesapAdi">Hesap Adı:</label>
-            <input type="text" id="hesapAdi" required>
-
-            <label for="hesapTuru">Hesap Türü:</label>
+    <div id="menuContainer"></div>
+    <div class="container">
+        <div class="accounts">
+            <h2>Kayıtlı Hesaplar</h2>
+            <ul id="accountsList">
+                <!-- Hesaplar burada listelenecek -->
+            </ul>
+        </div>
+        <div class="form">
+            <h2>Yeni Hesap Oluştur</h2>
+            <input type="text" id="hesapAdi" placeholder="Hesap Adı" required>
             <select id="hesapTuru" required>
+                <option value="" disabled selected>Hesap Türü Seçin</option>
                 <option value="Banka Hesabı">Banka Hesabı</option>
                 <option value="Nakit">Nakit</option>
                 <option value="Banka Kasası">Banka Kasası</option>
                 <option value="Kumbara">Kumbara</option>
             </select>
-
-            <button type="button" onclick="addAccount()">Hesap Ekle</button>
-        </form>
+            <input type="number" id="tutar" placeholder="Tutar" required>
+            <button onclick="createAccount()">Hesap Oluştur</button>
+        </div>
     </div>
-    <div id="menuContainer"></div>
-    <script type="module" src="menu.js"></script>
 </body>
 </html>
