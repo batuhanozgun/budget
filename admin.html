@@ -8,7 +8,7 @@
         // Firebase modüler SDK'yı içe aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
@@ -64,20 +64,15 @@
         }
 
         // Admin giriş kontrolü ve kullanıcıları listeleme
-        onAuthStateChanged(auth, user => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDoc = doc(db, "users", user.uid);
-                getDoc(userDoc).then(docSnapshot => {
-                    if (docSnapshot.exists() && docSnapshot.data().admin === true) {
-                        listUsers();
-                    } else {
-                        alert("Yönetici değilsiniz.");
-                        window.location.href = "index.html";
-                    }
-                }).catch(error => {
-                    console.error("Kullanıcı kontrol hatası:", error.message);
-                    alert("Kullanıcı kontrol hatası: " + error.message);
-                });
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists() && userDoc.data().admin) {
+                    listUsers();
+                } else {
+                    alert("Yönetici değilsiniz.");
+                    window.location.href = "index.html";
+                }
             } else {
                 alert("Lütfen giriş yapın.");
                 window.location.href = "index.html";
