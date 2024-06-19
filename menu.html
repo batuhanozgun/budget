@@ -1,7 +1,20 @@
-<div id="menuContainer">
+<!-- menu.html -->
+<div id="menu">
     <button onclick="window.location.href='landing.html'">Ana Sayfa</button>
     <button onclick="window.location.href='kayit_gir.html'">Kayıt Gir</button>
     <button onclick="window.location.href='kayitlari_goruntule.html'">Kayıtları Gör</button>
     <button onclick="window.location.href='profil_duzenle.html'">Profilim</button>
-    <button onclick="logout()">Çıkış Yap</button>
+    <button id="logoutButton">Çıkış Yap</button>
 </div>
+<script>
+    // Logout fonksiyonunu ekliyoruz
+    document.getElementById('logoutButton').addEventListener('click', (event) => {
+        event.preventDefault();
+        const auth = getAuth();
+        signOut(auth).then(() => {
+            window.location.href = 'index.html';
+        }).catch((error) => {
+            console.error('Çıkış yapılamadı:', error);
+        });
+    });
+</script>
