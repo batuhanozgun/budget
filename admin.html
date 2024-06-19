@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAuth, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+        // Firebase konfigürasyonu
+        const firebaseConfig = {
+            apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
+            authDomain: "batusbudget.firebaseapp.com",
+            projectId: "batusbudget",
+            storageBucket: "batusbudget.appspot.com",
+            messagingSenderId: "1084998760222",
+            appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
+        };
+
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Kullanıcıları listeleme
+        async function listUsers() {
+            const userCollection = collection(db, "users");
+            const userSnapshot = await getDocs(userCollection);
+            const userList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const userTable = document.getElementById("userTable");
+
+            userTable.innerHTML = "";
+            userList.forEach(user => {
+                const row = userTable.insertRow();
+                const emailCell = row.insertCell(0);
+                const actionCell = row.insertCell(1);
+                emailCell.textContent = user.email;
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Sil";
+                deleteButton.onclick = () => deleteUserById(user.id);
+                actionCell.appendChild(deleteButton);
+            });
+        }
+
+        // Kullanıcı silme
+        async function deleteUserById(userId) {
+            try {
+                const userDoc = doc(db, "users", userId);
+                await deleteDoc(userDoc);
+                alert("Kullanıcı silindi.");
+                listUsers();
+            } catch (error) {
+                console.error("Kullanıcı silme hatası:", error.message);
+                alert("Kullanıcı silme hatası: " + error.message);
+            }
+        }
+
+        // Admin giriş kontrolü ve kullanıcıları listeleme
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                user.getIdTokenResult().then(idTokenResult => {
+                    if (!!idTokenResult.claims.admin) {
+                        listUsers();
+                    } else {
+                        alert("Yönetici değilsiniz.");
+                        window.location.href = "index.html";
+                    }
+                });
+            } else {
+                alert("Lütfen giriş yapın.");
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Paneli</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>E-posta</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody id="userTable">
+            <!-- Kullanıcılar burada listelenecek -->
+        </tbody>
+    </table>
+</body>
+</html>
