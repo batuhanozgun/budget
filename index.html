@@ -31,8 +31,7 @@
                     console.log('Kullanıcı kaydedildi:', userCredential.user);
                     sendEmailVerification(userCredential.user)
                         .then(() => {
-                            alert('E-posta doğrulama linki gönderildi!');
-                            window.location.href = "kayit_gir.html";
+                            alert('E-posta doğrulama linki gönderildi! Lütfen e-postanızı kontrol edin.');
                         });
                 })
                 .catch(error => {
