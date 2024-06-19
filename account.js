@@ -17,6 +17,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Menü yüklensin
+loadMenu();
+
 async function fetchAccountSettings() {
     const response = await fetch('account_settings.json');
     return await response.json();
@@ -58,10 +61,18 @@ async function fetchAccounts() {
                 const accountDiv = document.createElement('div');
                 accountDiv.className = 'account';
                 accountDiv.innerHTML = `
-                    <p><strong>Hesap Adı:</strong> ${accountData['Hesap Adı']}</p>
-                    <p><strong>Hesap Türü:</strong> ${accountData['Hesap Türü']}</p>
-                    <p><strong>Başlangıç Bakiyesi:</strong> ${accountData['Başlangıç Bakiyesi']}</p>
+                    <div class="account-header">
+                        <p><strong>Hesap Adı:</strong> ${accountData['Hesap Adı']}</p>
+                        <p><strong>Hesap Türü:</strong> ${accountData['type']}</p>
+                    </div>
+                    <div class="account-details">
+                        <p><strong>Başlangıç Bakiyesi:</strong> ${accountData['Başlangıç Bakiyesi']}</p>
+                    </div>
                 `;
+                accountDiv.querySelector('.account-header').addEventListener('click', () => {
+                    const details = accountDiv.querySelector('.account-details');
+                    details.style.display = details.style.display === 'none' ? 'block' : 'none';
+                });
                 accountsContainer.appendChild(accountDiv);
             });
         }
@@ -81,7 +92,7 @@ document.getElementById('createAccountForm').addEventListener('submit', async (e
     formFields.forEach(field => {
         accountData[field.name] = field.value;
     });
-    accountData['Hesap Türü'] = accountType;
+    accountData['type'] = accountType;
     const auth = getAuth();
     onAuthStateChanged(auth, async (user) => {
         if (user) {
