@@ -32,6 +32,7 @@
                     sendEmailVerification(userCredential.user)
                         .then(() => {
                             alert('E-posta doğrulama linki gönderildi! Lütfen e-postanızı kontrol edin.');
+                            window.location.href = "verify_email.html";
                         });
                 })
                 .catch(error => {
@@ -52,6 +53,7 @@
                         window.location.href = "kayit_gir.html";
                     } else {
                         alert('Lütfen e-posta adresinizi doğrulayın.');
+                        window.location.href = "verify_email.html";
                     }
                 })
                 .catch(error => {
