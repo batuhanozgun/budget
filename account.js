@@ -1,21 +1,23 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { loadMenu } from './menu.js';
 
 // Firebase konfigürasyonu
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
+    authDomain: "batusbudget.firebaseapp.com",
+    projectId: "batusbudget",
+    storageBucket: "batusbudget.appspot.com",
+    messagingSenderId: "1084998760222",
+    appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
 };
 
 // Firebase'i başlat
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
+
+// Menü yüklensin
+loadMenu();
 
 async function loadAccountSettings() {
     const response = await fetch('account_settings.json');
@@ -55,3 +57,51 @@ async function onAccountTypeChange(event) {
 }
 
 document.getElementById('accountType').addEventListener('change', onAccountTypeChange);
+
+document.getElementById('createAccountForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const accountType = document.getElementById('accountType').value;
+    const formData = new FormData(event.target);
+    const accountData = {};
+    formData.forEach((value, key) => {
+        accountData[key] = value;
+    });
+    accountData['type'] = accountType;
+    const userId = getAuth().currentUser.uid;
+    accountData['userId'] = userId;
+
+    await addDoc(collection(db, 'accounts'), accountData);
+    alert('Hesap başarıyla oluşturuldu!');
+    window.location.reload();
+});
+
+async function loadAccounts() {
+    const userId = getAuth().currentUser.uid;
+    const accountsSnapshot = await getDocs(collection(db, 'accounts'));
+    const accountList = document.getElementById('accountList');
+    accountList.innerHTML = '';
+    accountsSnapshot.forEach((doc) => {
+        const accountData = doc.data();
+        if (accountData.userId === userId) {
+            const accountItem = document.createElement('div');
+            accountItem.classList.add('account-item');
+            accountItem.innerHTML = `
+                <strong>Hesap Adı:</strong> ${accountData['Hesap Adı']} - ${accountData.type}
+                <div class="account-details">
+                    <strong>Hesap Türü:</strong> ${accountData.type}<br>
+                    <strong>Başlangıç Bakiyesi:</strong> ${accountData['Başlangıç Bakiyesi']}
+                </div>
+            `;
+            accountItem.addEventListener('click', () => {
+                const details = accountItem.querySelector('.account-details');
+                details.style.display = details.style.display === 'none' ? 'block' : 'none';
+            });
+            accountList.appendChild(accountItem);
+        }
+    });
+}
+
+window.onload = function() {
+    loadMenu();
+    loadAccounts();
+};
