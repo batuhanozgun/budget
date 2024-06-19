@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .menu {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .menu a {
+            text-decoration: none;
+            color: white;
+            background-color: #007BFF;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+        }
+        .menu a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
+            authDomain: "batusbudget.firebaseapp.com",
+            projectId: "batusbudget",
+            storageBucket: "batusbudget.appspot.com",
+            messagingSenderId: "1084998760222",
+            appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error('Çıkış yaparken hata oluştu:', error);
+            });
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user || !user.emailVerified) {
+                alert('Lütfen giriş yapın ve e-posta adresinizi doğrulayın.');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Hoşgeldiniz!</h1>
+    <div class="menu">
+        <a href="kayit_gir.html">Kayıt Gir</a>
+        <a href="kayitlari_gor.html">Kayıtları Gör</a>
+        <a href="profilim.html">Profilim</a>
+        <a href="#" id="logoutBtn">Çıkış Yap</a>
+    </div>
+</body>
+</html>
