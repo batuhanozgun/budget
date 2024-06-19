@@ -4,6 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gelir ve Gider Takibi</title>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        // Firebase konfigürasyonu
+        var firebaseConfig = {
+            apiKey: "AIzaSyDjdwWqhTkzohT-YoQBp7z9w5AFjHn",
+            authDomain: "batusbudget.firebaseapp.com",
+            projectId: "batusbudget",
+            storageBucket: "batusbudget.appspot.com",
+            messagingSenderId: "1084998760222",
+            appId: "1:1084998760222:web:024892f108cfeaf2fbb8f"
+        };
+        // Firebase'i başlat
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Kullanıcı kaydı
+        function signUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(userCredential => {
+                    console.log('Kullanıcı kaydedildi:', userCredential.user);
+                })
+                .catch(error => {
+                    console.error('Kayıt hatası:', error.message);
+                });
+        }
+
+        // Kullanıcı girişi
+        function signIn() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            auth.signInWithEmailAndPassword(email, password)
+                .then(userCredential => {
+                    console.log('Giriş yapıldı:', userCredential.user);
+                })
+                .catch(error => {
+                    console.error('Giriş hatası:', error.message);
+                });
+        }
+
+        // Veri ekleme
+        function addData() {
+            const user = auth.currentUser;
+            if (user) {
+                const data = {
+                    kayitTuru: document.getElementById('kayitTuru').value,
+                    kayitTipi: document.getElementById('kayitTipi').value,
+                    kategori: document.getElementById('kategori').value,
+                    altKategori: document.getElementById('altKategori').value,
+                    tutar: document.getElementById('tutar').value,
+                    aciklama: document.getElementById('aciklama').value,
+                    userId: user.uid,
+                    date: new Date()
+                };
+                db.collection('transactions').add(data)
+                    .then(docRef => {
+                        console.log('Veri eklendi:', docRef.id);
+                    })
+                    .catch(error => {
+                        console.error('Veri ekleme hatası:', error.message);
+                    });
+            } else {
+                console.error('Kullanıcı giriş yapmamış');
+            }
+        }
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,9 +101,40 @@
     </style>
 </head>
 <body>
-    <h1>Welcome to My GitHub Page</h1>
-    <p>This is a simple webpage hosted on GitHub Pages.</p>
-    <a href="#" class="button">Kayıt Gir</a>
-    <a href="#" class="button">Kayıtları Görüntüle</a>
+    <h1>Gelir ve Gider Takibi</h1>
+    <div>
+        <h2>Kullanıcı Girişi</h2>
+        <input type="email" id="email" placeholder="E-posta" required>
+        <input type="password" id="password" placeholder="Şifre" required>
+        <button onclick="signUp()">Kaydol</button>
+        <button onclick="signIn()">Giriş Yap</button>
+    </div>
+    <div>
+        <h2>Kayıt Gir</h2>
+        <form onsubmit="addData(); return false;">
+            <label for="kayitTuru">Kayıt Türü:</label>
+            <select id="kayitTuru" required>
+                <option value="income">Gelir</option>
+                <option value="expense">Gider</option>
+            </select>
+            <br>
+            <label for="kayitTipi">Kayıt Tipi:</label>
+            <input type="text" id="kayitTipi" required>
+            <br>
+            <label for="kategori">Kategori:</label>
+            <input type="text" id="kategori" required>
+            <br>
+            <label for="altKategori">Alt Kategori:</label>
+            <input type="text" id="altKategori" required>
+            <br>
+            <label for="tutar">Tutar:</label>
+            <input type="number" id="tutar" required>
+            <br>
+            <label for="aciklama">Açıklama:</label>
+            <textarea id="aciklama" required></textarea>
+            <br>
+            <button type="submit">Kaydet</button>
+        </form>
+    </div>
 </body>
 </html>
