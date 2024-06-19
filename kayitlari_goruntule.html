@@ -6,8 +6,8 @@
     <title>Kayıtları Görüntüle</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
@@ -21,8 +21,8 @@
 
         // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
         let userId = null;
 
@@ -41,26 +41,30 @@
             const response = await fetch('menu.html');
             const menuHtml = await response.text();
             document.getElementById('menuContainer').innerHTML = menuHtml;
-            eval(document.getElementById('menuContainer script').textContent);
+            eval(document.getElementById('menuContainer').querySelector('script').textContent);
         }
 
-        // Verileri Firestore'dan çekme ve tabloya ekleme
         async function fetchRecords() {
-            const recordsQuery = query(collection(db, "transactions"), where("userId", "==", userId));
-            const querySnapshot = await getDocs(recordsQuery);
+            const querySnapshot = await getDocs(collection(db, "transactions"));
             const table = document.getElementById("recordsTable");
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                const row = table.insertRow();
-                row.insertCell(0).innerText = data.kayitTuru;
-                row.insertCell(1).innerText = data.kayitTipi;
-                row.insertCell(2).innerText = data.kategori;
-                row.insertCell(3).innerText = data.altKategori;
-                row.insertCell(4).innerText = data.tutar;
-                row.insertCell(5).innerText = data.aciklama;
-                row.insertCell(6).innerText = new Date(data.date.seconds * 1000).toLocaleDateString();
+                if (data.userId === userId) {
+                    const row = table.insertRow();
+                    row.insertCell(0).innerText = data.kayitTuru;
+                    row.insertCell(1).innerText = data.kayitTipi;
+                    row.insertCell(2).innerText = data.kategori;
+                    row.insertCell(3).innerText = data.altKategori;
+                    row.insertCell(4).innerText = data.tutar;
+                    row.insertCell(5).innerText = data.aciklama;
+                    row.insertCell(6).innerText = new Date(data.date.seconds * 1000).toLocaleDateString();
+                }
             });
         }
+
+        window.onload = function() {
+            loadMenu();
+        };
     </script>
     <style>
         body {
@@ -100,6 +104,5 @@
             <th>Tarih</th>
         </tr>
     </table>
-    <script src="menu.js"></script>
 </body>
 </html>
