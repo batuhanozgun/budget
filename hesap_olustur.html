@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hesap Oluştur</title>
+    <title>Hesap Oluştur ve Yönet</title>
     <script type="module">
+        // Firebase modüler SDK'yı içe aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { loadMenu } from './menu.js';
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
@@ -22,65 +22,109 @@
 
         // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        window.onload = function() {
-            loadMenu();
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    document.getElementById('userEmail').textContent = user.email;
-                } else {
-                    window.location.href = 'login.html';
-                }
-            });
-        };
-
-        window.createAccount = async function() {
-            const accountName = document.getElementById('accountName').value;
-            const accountType = document.getElementById('accountType').value;
-            const initialBalance = parseFloat(document.getElementById('initialBalance').value);
-
-            try {
-                const user = auth.currentUser;
-                if (user) {
-                    await addDoc(collection(db, 'accounts'), {
-                        userId: user.uid,
-                        accountName: accountName,
-                        accountType: accountType,
-                        initialBalance: initialBalance,
-                        createdAt: new Date()
-                    });
-                    alert('Hesap başarıyla oluşturuldu!');
-                } else {
-                    alert('Kullanıcı oturumu açık değil.');
-                }
-            } catch (error) {
-                console.error('Hesap oluşturma hatası: ', error);
-                alert('Hesap oluşturma hatası: ' + error.message);
+        // Kullanıcı oturumu kontrol et
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadAccounts(user.uid);
+            } else {
+                window.location.href = 'login.html';
             }
-        };
+        });
+
+        // Hesapları yükle
+        async function loadAccounts(userId) {
+            const accountsList = document.getElementById('accountsList');
+            const querySnapshot = await getDocs(collection(db, `accounts`));
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const listItem = document.createElement('li');
+                listItem.textContent = `${data.hesapAdi} - ${data.hesapTuru}`;
+                accountsList.appendChild(listItem);
+            });
+        }
+
+        // Yeni hesap ekle
+        window.addAccount = async function() {
+            const hesapAdi = document.getElementById('hesapAdi').value;
+            const hesapTuru = document.getElementById('hesapTuru').value;
+            const userId = auth.currentUser.uid;
+
+            await addDoc(collection(db, 'accounts'), {
+                hesapAdi,
+                hesapTuru,
+                userId
+            });
+
+            alert('Hesap başarıyla eklendi!');
+            document.getElementById('hesapForm').reset();
+            loadAccounts(userId);
+        }
     </script>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            width: 25%;
+            background-color: #f2f2f2;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .main-content {
+            width: 75%;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #fff;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input, select, button {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
+    <div class="sidebar">
+        <h2>Kayıtlı Hesaplar</h2>
+        <ul id="accountsList"></ul>
+    </div>
+    <div class="main-content">
+        <h1>Hesap Oluştur</h1>
+        <form id="hesapForm">
+            <label for="hesapAdi">Hesap Adı:</label>
+            <input type="text" id="hesapAdi" required>
+
+            <label for="hesapTuru">Hesap Türü:</label>
+            <select id="hesapTuru" required>
+                <option value="Banka Hesabı">Banka Hesabı</option>
+                <option value="Nakit">Nakit</option>
+                <option value="Banka Kasası">Banka Kasası</option>
+                <option value="Kumbara">Kumbara</option>
+            </select>
+
+            <button type="button" onclick="addAccount()">Hesap Ekle</button>
+        </form>
+    </div>
     <div id="menuContainer"></div>
-    <h1>Hesap Oluştur</h1>
-    <div>
-        <label for="accountName">Hesap Adı:</label>
-        <input type="text" id="accountName" required>
-    </div>
-    <div>
-        <label for="accountType">Hesap Türü:</label>
-        <select id="accountType" required>
-            <option value="Banka">Banka</option>
-            <option value="Nakit">Nakit</option>
-            <option value="Kumbara">Kumbara</option>
-        </select>
-    </div>
-    <div>
-        <label for="initialBalance">Başlangıç Bakiyesi:</label>
-        <input type="number" id="initialBalance" required>
-    </div>
-    <button onclick="createAccount()">Hesap Oluştur</button>
+    <script type="module" src="menu.js"></script>
 </body>
 </html>
