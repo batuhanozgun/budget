@@ -8,6 +8,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { loadMenu } from "./menu.js";
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
@@ -36,13 +37,6 @@
                 window.location.href = "login.html";
             }
         });
-
-        async function loadMenu() {
-            const response = await fetch('menu.html');
-            const menuHtml = await response.text();
-            document.getElementById('menuContainer').innerHTML = menuHtml;
-            eval(document.getElementById('menuContainer').querySelector('script').textContent);
-        }
 
         async function fetchRecords() {
             const querySnapshot = await getDocs(collection(db, "transactions"));
