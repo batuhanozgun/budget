@@ -7,7 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { loadMenu } from './menu.js';
 
         // Firebase konfigürasyonu
@@ -25,59 +25,62 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Menü yüklensin
         window.onload = function() {
             loadMenu();
-        }
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    document.getElementById('userEmail').textContent = user.email;
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+        };
 
-        // Hesap oluşturma işlevi
         window.createAccount = async function() {
             const accountName = document.getElementById('accountName').value;
             const accountType = document.getElementById('accountType').value;
-            const initialBalance = document.getElementById('initialBalance').value;
+            const initialBalance = parseFloat(document.getElementById('initialBalance').value);
 
-            const user = auth.currentUser;
-            if (user) {
-                try {
+            try {
+                const user = auth.currentUser;
+                if (user) {
                     await addDoc(collection(db, 'accounts'), {
                         userId: user.uid,
                         accountName: accountName,
                         accountType: accountType,
-                        initialBalance: parseFloat(initialBalance),
+                        initialBalance: initialBalance,
                         createdAt: new Date()
                     });
                     alert('Hesap başarıyla oluşturuldu!');
-                    window.location.href = 'landing.html';
-                } catch (error) {
-                    console.error('Hesap oluşturma hatası: ', error);
-                    alert('Hesap oluşturma hatası: ' + error.message);
+                } else {
+                    alert('Kullanıcı oturumu açık değil.');
                 }
-            } else {
-                alert('Lütfen giriş yapın.');
-                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Hesap oluşturma hatası: ', error);
+                alert('Hesap oluşturma hatası: ' + error.message);
             }
-        }
+        };
     </script>
 </head>
 <body>
     <div id="menuContainer"></div>
     <h1>Hesap Oluştur</h1>
-    <form onsubmit="createAccount(); return false;">
+    <div>
         <label for="accountName">Hesap Adı:</label>
         <input type="text" id="accountName" required>
-        <br>
+    </div>
+    <div>
         <label for="accountType">Hesap Türü:</label>
         <select id="accountType" required>
-            <option value="banka">Banka</option>
-            <option value="nakit">Nakit</option>
-            <option value="kredi">Kredi</option>
-            <option value="borç">Borç</option>
+            <option value="Banka">Banka</option>
+            <option value="Nakit">Nakit</option>
+            <option value="Kumbara">Kumbara</option>
         </select>
-        <br>
+    </div>
+    <div>
         <label for="initialBalance">Başlangıç Bakiyesi:</label>
         <input type="number" id="initialBalance" required>
-        <br>
-        <button type="submit">Oluştur</button>
-    </form>
+    </div>
+    <button onclick="createAccount()">Hesap Oluştur</button>
 </body>
 </html>
