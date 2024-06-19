@@ -6,10 +6,11 @@
     <title>Kayıt Gir</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-        import { loadMenu } from "./menu.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { loadMenu } from './menu.js';
 
+        // Firebase konfigürasyonu
         const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
             authDomain: "batusbudget.firebaseapp.com",
@@ -19,19 +20,36 @@
             appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
         };
 
+        // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-            }
-        });
+        // Menü yüklensin
+        window.onload = function() {
+            loadMenu().then(loadAccounts);
+        }
 
-        document.getElementById('recordForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // Hesapları yükleme işlevi
+        async function loadAccounts() {
             const user = auth.currentUser;
+            if (user) {
+                const accountsSelect = document.getElementById('account');
+                const q = query(collection(db, 'accounts'), where('userId', '==', user.uid));
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach((doc) => {
+                    const account = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.text = account.accountName;
+                    accountsSelect.add(option);
+                });
+            }
+        }
+
+        // Kayıt oluşturma işlevi
+        window.createRecord = async function() {
+            const account = document.getElementById('account').value;
             const kayitTuru = document.getElementById('kayitTuru').value;
             const kayitTipi = document.getElementById('kayitTipi').value;
             const kategori = document.getElementById('kategori').value;
@@ -39,38 +57,40 @@
             const tutar = document.getElementById('tutar').value;
             const aciklama = document.getElementById('aciklama').value;
 
-            if (!user.emailVerified) {
-                alert('Lütfen giriş yapın ve e-posta adresinizi doğrulayın.');
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    await addDoc(collection(db, 'transactions'), {
+                        userId: user.uid,
+                        account: account,
+                        kayitTuru: kayitTuru,
+                        kayitTipi: kayitTipi,
+                        kategori: kategori,
+                        altKategori: altKategori,
+                        tutar: parseFloat(tutar),
+                        aciklama: aciklama,
+                        date: new Date()
+                    });
+                    alert('Kayıt başarıyla oluşturuldu!');
+                    window.location.href = 'landing.html';
+                } catch (error) {
+                    console.error('Kayıt oluşturma hatası: ', error);
+                    alert('Kayıt oluşturma hatası: ' + error.message);
+                }
+            } else {
+                alert('Lütfen giriş yapın.');
                 window.location.href = 'login.html';
-                return;
             }
-
-            try {
-                await addDoc(collection(db, 'transactions'), {
-                    userId: user.uid,
-                    kayitTuru,
-                    kayitTipi,
-                    kategori,
-                    altKategori,
-                    tutar,
-                    aciklama,
-                    date: new Date()
-                });
-                alert('Kayıt başarıyla eklendi!');
-                document.getElementById('recordForm').reset();
-            } catch (error) {
-                console.error('Kayıt ekleme hatası:', error.message);
-                alert('Kayıt ekleme hatası: ' + error.message);
-            }
-        });
-
-        window.onload = loadMenu;
+        }
     </script>
 </head>
 <body>
     <div id="menuContainer"></div>
     <h1>Kayıt Gir</h1>
-    <form id="recordForm">
+    <form onsubmit="createRecord(); return false;">
+        <label for="account">Hesap:</label>
+        <select id="account" required></select>
+        <br>
         <label for="kayitTuru">Kayıt Türü:</label>
         <select id="kayitTuru" required>
             <option value="Gelir">Gelir</option>
@@ -90,7 +110,7 @@
         <input type="number" id="tutar" required>
         <br>
         <label for="aciklama">Açıklama:</label>
-        <textarea id="aciklama" required></textarea>
+        <input type="text" id="aciklama" required>
         <br>
         <button type="submit">Kaydet</button>
     </form>
