@@ -32,6 +32,7 @@
                 .then(userCredential => {
                     console.log('Kullanıcı kaydedildi:', userCredential.user);
                     alert('Kullanıcı kaydedildi!');
+                    window.location.href = "kayit_gir.html";
                 })
                 .catch(error => {
                     console.error('Kayıt hatası:', error.message);
@@ -47,71 +48,12 @@
                 .then(userCredential => {
                     console.log('Giriş yapıldı:', userCredential.user);
                     alert('Giriş yapıldı!');
+                    window.location.href = "kayit_gir.html";
                 })
                 .catch(error => {
                     console.error('Giriş hatası:', error.message);
                     alert('Giriş hatası: ' + error.message);
                 });
-        }
-
-        // Veri ekleme
-        window.addData = function() {
-            const user = auth.currentUser;
-            if (user) {
-                const kayitTuru = document.getElementById('kayitTuru').value;
-                const kayitTipi = document.getElementById('kayitTipi').value;
-                const kategori = document.getElementById('kategori').value;
-                const altKategori = document.getElementById('altKategori').value;
-                const tutar = parseFloat(document.getElementById('tutar').value);
-                const aciklama = document.getElementById('aciklama').value;
-                const taksitSayisi = parseInt(document.getElementById('taksitSayisi').value);
-
-                if (taksitSayisi > 1) {
-                    for (let i = 0; i < taksitSayisi; i++) {
-                        const data = {
-                            kayitTuru,
-                            kayitTipi,
-                            kategori,
-                            altKategori,
-                            tutar: (tutar / taksitSayisi).toFixed(2),
-                            aciklama: aciklama + ' - Taksit ' + (i + 1),
-                            userId: user.uid,
-                            date: new Date(new Date().setMonth(new Date().getMonth() + i))
-                        };
-                        addDoc(collection(db, 'transactions'), data)
-                            .then(docRef => {
-                                console.log('Veri eklendi:', docRef.id);
-                            })
-                            .catch(error => {
-                                console.error('Veri ekleme hatası:', error.message);
-                            });
-                    }
-                    alert('Veriler eklendi!');
-                } else {
-                    const data = {
-                        kayitTuru,
-                        kayitTipi,
-                        kategori,
-                        altKategori,
-                        tutar: tutar.toFixed(2),
-                        aciklama,
-                        userId: user.uid,
-                        date: new Date()
-                    };
-                    addDoc(collection(db, 'transactions'), data)
-                        .then(docRef => {
-                            console.log('Veri eklendi:', docRef.id);
-                            alert('Veri eklendi!');
-                        })
-                        .catch(error => {
-                            console.error('Veri ekleme hatası:', error.message);
-                            alert('Veri ekleme hatası: ' + error.message);
-                        });
-                }
-            } else {
-                console.error('Kullanıcı giriş yapmamış');
-                alert('Kullanıcı giriş yapmamış');
-            }
         }
     </script>
     <style>
@@ -142,42 +84,12 @@
 </head>
 <body>
     <h1>Gelir ve Gider Takibi</h1>
-    <div>
+    <div id="authSection">
         <h2>Kullanıcı Girişi</h2>
         <input type="email" id="email" placeholder="E-posta" required>
         <input type="password" id="password" placeholder="Şifre" required>
         <button onclick="signUp()">Kaydol</button>
         <button onclick="signIn()">Giriş Yap</button>
-    </div>
-    <div>
-        <h2>Kayıt Gir</h2>
-        <form onsubmit="addData(); return false;">
-            <label for="kayitTuru">Kayıt Türü:</label>
-            <select id="kayitTuru" required>
-                <option value="income">Gelir</option>
-                <option value="expense">Gider</option>
-            </select>
-            <br>
-            <label for="kayitTipi">Kayıt Tipi:</label>
-            <input type="text" id="kayitTipi" required>
-            <br>
-            <label for="kategori">Kategori:</label>
-            <input type="text" id="kategori" required>
-            <br>
-            <label for="altKategori">Alt Kategori:</label>
-            <input type="text" id="altKategori" required>
-            <br>
-            <label for="tutar">Tutar:</label>
-            <input type="number" id="tutar" required>
-            <br>
-            <label for="taksitSayisi">Taksit Sayısı:</label>
-            <input type="number" id="taksitSayisi" value="1" required>
-            <br>
-            <label for="aciklama">Açıklama:</label>
-            <textarea id="aciklama" required></textarea>
-            <br>
-            <button type="submit">Kaydet</button>
-        </form>
     </div>
 </body>
 </html>
