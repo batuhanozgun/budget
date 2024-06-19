@@ -154,7 +154,6 @@
         </div>
         <div class="form">
             <h2>Yeni Hesap Oluştur</h2>
-            <input type="text" id="hesapAdi" placeholder="Hesap Adı" required>
             <select id="hesapTuru" required>
                 <option value="" disabled selected>Hesap Türü Seçin</option>
                 <option value="Nakit (Cüzdan)">Nakit (Cüzdan)</option>
@@ -167,6 +166,7 @@
                 <option value="Borç Alınanlar Hesabı">Borç Alınanlar Hesabı</option>
                 <option value="Harçlık Verilen Hesap (Çocuk)">Harçlık Verilen Hesap (Çocuk)</option>
             </select>
+            <input type="text" id="hesapAdi" placeholder="Hesap Adı" required>
             <input type="number" id="tutar" placeholder="Başlangıç Bakiyesi" required>
             <button onclick="createAccount()">Hesap Oluştur</button>
         </div>
