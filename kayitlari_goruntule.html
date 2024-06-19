@@ -29,12 +29,20 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userId = user.uid;
+                loadMenu();
                 fetchRecords();
             } else {
                 alert('Lütfen giriş yapın.');
                 window.location.href = "login.html";
             }
         });
+
+        async function loadMenu() {
+            const response = await fetch('menu.html');
+            const menuHtml = await response.text();
+            document.getElementById('menuContainer').innerHTML = menuHtml;
+            eval(document.getElementById('menuContainer script').textContent);
+        }
 
         // Verileri Firestore'dan çekme ve tabloya ekleme
         async function fetchRecords() {
