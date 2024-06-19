@@ -73,6 +73,46 @@
             }
         }
 
+        // Hesap türü seçildiğinde açıklama göster
+        window.showExplanation = function () {
+            const hesapTuru = document.getElementById('hesapTuru').value;
+            const explanation = document.getElementById('explanation');
+
+            let text = '';
+            switch (hesapTuru) {
+                case 'Nakit (Cüzdan)':
+                    text = 'Cebindeki (ya da cüzdanındaki) parayı takip etmek için kullanılır...';
+                    break;
+                case 'Banka Hesabı':
+                    text = 'Banka(ları)ndaki hesapları buradan yaratabilirsin...';
+                    break;
+                case 'Kredi Hesabı':
+                    text = 'Kullandığın kredileri bu hesap türü ile kayı altına alıp...';
+                    break;
+                case 'Kredi Kartı':
+                    text = 'Kredi kartlarını en doğru şekilde takip edebilmek için...';
+                    break;
+                case 'Birikim Hesabı':
+                    text = 'Birikim hesabı belirli aralıklarla para transferi yaptığın bir hesaptır...';
+                    break;
+                case 'Yatırım Hesabı':
+                    text = 'Yatırım hesabı yatırımın çeşidine göre hareket eder...';
+                    break;
+                case 'Borç Verilenler Hesabı':
+                    text = 'Bu hesap aslında bir ara hesaptır, borç vermek için mevcut hesaplarından birini kullanmış olmanı bekler...';
+                    break;
+                case 'Borç Alınanlar Hesabı':
+                    text = 'Bu hesap aslında bir ara hesaptır, alınan borcun kayıt edileceği mevcut hesaplarından birini seçmeni bekler...';
+                    break;
+                case 'Harçlık Verilen Hesap (Çocuk)':
+                    text = 'Ufaklığa verdiğin harçlıkların durumunu takip etmeni sağlar...';
+                    break;
+                default:
+                    text = '';
+            }
+            explanation.textContent = text;
+        }
+
         window.onload = function() {
             loadMenu();
             loadAccounts();
@@ -141,6 +181,12 @@
         button:hover {
             background-color: #45a049;
         }
+        .explanation {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 3px solid #4CAF50;
+        }
     </style>
 </head>
 <body>
@@ -154,7 +200,7 @@
         </div>
         <div class="form">
             <h2>Yeni Hesap Oluştur</h2>
-            <select id="hesapTuru" required>
+            <select id="hesapTuru" onchange="showExplanation()" required>
                 <option value="" disabled selected>Hesap Türü Seçin</option>
                 <option value="Nakit (Cüzdan)">Nakit (Cüzdan)</option>
                 <option value="Banka Hesabı">Banka Hesabı</option>
@@ -166,6 +212,7 @@
                 <option value="Borç Alınanlar Hesabı">Borç Alınanlar Hesabı</option>
                 <option value="Harçlık Verilen Hesap (Çocuk)">Harçlık Verilen Hesap (Çocuk)</option>
             </select>
+            <div id="explanation" class="explanation"></div>
             <input type="text" id="hesapAdi" placeholder="Hesap Adı" required>
             <input type="number" id="tutar" placeholder="Başlangıç Bakiyesi" required>
             <button onclick="createAccount()">Hesap Oluştur</button>
