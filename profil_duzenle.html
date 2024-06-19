@@ -63,4 +63,41 @@
         }
 
         window.logout = function() {
-            s
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error('Çıkış yaparken hata:', error);
+                alert('Çıkış yaparken bir hata oluştu: ' + error.message);
+            });
+        }
+
+        async function loadMenu() {
+            const response = await fetch('menu.html');
+            const menuHtml = await response.text();
+            document.getElementById('menuContainer').innerHTML = menuHtml;
+            eval(document.querySelector('#menuContainer script').textContent);
+        }
+
+        window.onload = loadMenu;
+    </script>
+</head>
+<body>
+    <div id="menuContainer"></div>
+    <h1>Profil Düzenle</h1>
+    <div>
+        <label for="displayName">Ad:</label>
+        <input type="text" id="displayName" name="displayName"><br><br>
+        <label for="photoURL">Profil Resmi URL:</label>
+        <input type="text" id="photoURL" name="photoURL"><br><br>
+        <button onclick="updateProfileInfo()">Profil Bilgilerini Güncelle</button>
+    </div>
+    <div>
+        <h2>Şifre Değiştir</h2>
+        <label for="currentPassword">Mevcut Şifre:</label>
+        <input type="password" id="currentPassword" name="currentPassword"><br><br>
+        <label for="newPassword">Yeni Şifre:</label>
+        <input type="password" id="newPassword" name="newPassword"><br><br>
+        <button onclick="changePassword()">Şifreyi Güncelle</button>
+    </div>
+</body>
+</html>
