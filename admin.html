@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Paneli</title>
     <script type="module">
-        // Firebase modüler SDK'yı içe aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, collection, getDocs, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-        // Firebase konfigürasyonu
         const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
             authDomain: "batusbudget.firebaseapp.com",
@@ -20,16 +18,14 @@
             appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
         };
 
-        // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Kullanıcıları listeleme
         async function listUsers() {
             const usersCollection = collection(db, "users");
             const userSnapshot = await getDocs(usersCollection);
-            const userList = userSnapshot.docs.map(doc => doc.data());
+            const userList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
             const userTable = document.getElementById('userTable');
             userTable.innerHTML = '';
@@ -42,7 +38,7 @@
 
                 emailCell.textContent = user.email;
                 deleteButton.textContent = 'Sil';
-                deleteButton.onclick = () => deleteUser(user.uid);
+                deleteButton.onclick = () => deleteUser(user.id);
 
                 actionCell.appendChild(deleteButton);
                 row.appendChild(emailCell);
@@ -51,19 +47,17 @@
             });
         }
 
-        // Kullanıcıyı silme
         async function deleteUser(uid) {
             try {
                 await deleteDoc(doc(db, "users", uid));
                 alert('Kullanıcı silindi');
-                listUsers(); // Listeyi güncelle
+                listUsers();
             } catch (error) {
                 console.error('Kullanıcı silme hatası:', error);
                 alert('Kullanıcı silme hatası: ' + error.message);
             }
         }
 
-        // Admin giriş kontrolü ve kullanıcıları listeleme
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -79,7 +73,6 @@
             }
         });
 
-        // Çıkış yapma
         window.logout = function() {
             signOut(auth).then(() => {
                 alert('Çıkış yapıldı.');
@@ -141,7 +134,6 @@
             </tr>
         </thead>
         <tbody id="userTable">
-            <!-- Kullanıcılar burada listelenecek -->
         </tbody>
     </table>
     <button class="button" onclick="logout()">Çıkış Yap</button>
