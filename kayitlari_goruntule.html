@@ -30,19 +30,24 @@
         });
 
         async function fetchRecords() {
-            const querySnapshot = await getDocs(collection(db, "transactions"));
-            const table = document.getElementById("recordsTable");
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const row = table.insertRow();
-                row.insertCell(0).innerText = data.kayitTuru;
-                row.insertCell(1).innerText = data.kayitTipi;
-                row.insertCell(2).innerText = data.kategori;
-                row.insertCell(3).innerText = data.altKategori;
-                row.insertCell(4).innerText = data.tutar;
-                row.insertCell(5).innerText = data.aciklama;
-                row.insertCell(6).innerText = new Date(data.date.seconds * 1000).toLocaleDateString();
-            });
+            try {
+                const querySnapshot = await getDocs(collection(db, "transactions"));
+                const table = document.getElementById("recordsTable");
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const row = table.insertRow();
+                    row.insertCell(0).innerText = data.kayitTuru;
+                    row.insertCell(1).innerText = data.kayitTipi;
+                    row.insertCell(2).innerText = data.kategori;
+                    row.insertCell(3).innerText = data.altKategori;
+                    row.insertCell(4).innerText = data.tutar;
+                    row.insertCell(5).innerText = data.aciklama;
+                    row.insertCell(6).innerText = new Date(data.date.seconds * 1000).toLocaleDateString();
+                });
+            } catch (error) {
+                console.error("Veriler getirilirken hata oluştu:", error);
+                alert("Veriler getirilirken hata oluştu: " + error.message);
+            }
         }
 
         window.logout = function() {
