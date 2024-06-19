@@ -6,7 +6,7 @@
     <title>Gelir ve Gider Takibi</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
@@ -29,8 +29,11 @@
             createUserWithEmailAndPassword(auth, email, password)
                 .then(userCredential => {
                     console.log('Kullanıcı kaydedildi:', userCredential.user);
-                    alert('Kullanıcı kaydedildi!');
-                    window.location.href = "kayit_gir.html";
+                    sendEmailVerification(userCredential.user)
+                        .then(() => {
+                            alert('E-posta doğrulama linki gönderildi!');
+                            window.location.href = "kayit_gir.html";
+                        });
                 })
                 .catch(error => {
                     console.error('Kayıt hatası:', error.message);
@@ -44,9 +47,13 @@
             const password = document.getElementById('password').value;
             signInWithEmailAndPassword(auth, email, password)
                 .then(userCredential => {
-                    console.log('Giriş yapıldı:', userCredential.user);
-                    alert('Giriş yapıldı!');
-                    window.location.href = "kayit_gir.html";
+                    if (userCredential.user.emailVerified) {
+                        console.log('Giriş yapıldı:', userCredential.user);
+                        alert('Giriş yapıldı!');
+                        window.location.href = "kayit_gir.html";
+                    } else {
+                        alert('Lütfen e-posta adresinizi doğrulayın.');
+                    }
                 })
                 .catch(error => {
                     console.error('Giriş hatası:', error.message);
