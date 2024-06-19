@@ -6,8 +6,8 @@
     <title>Admin Paneli</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { getFirestore, collection, getDocs, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
@@ -22,120 +22,46 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        async function listUsers() {
-            const usersCollection = collection(db, "users");
-            const userSnapshot = await getDocs(usersCollection);
-            const userList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-            const userTable = document.getElementById('userTable');
-            userTable.innerHTML = '';
-
-            userList.forEach(user => {
-                const row = document.createElement('tr');
-                const emailCell = document.createElement('td');
-                const actionCell = document.createElement('td');
-                const deleteButton = document.createElement('button');
-
-                emailCell.textContent = user.email;
-                deleteButton.textContent = 'Sil';
-                deleteButton.onclick = () => deleteUser(user.id);
-
-                actionCell.appendChild(deleteButton);
-                row.appendChild(emailCell);
-                row.appendChild(actionCell);
-                userTable.appendChild(row);
-            });
-        }
-
-        async function deleteUser(uid) {
-            try {
-                await deleteDoc(doc(db, "users", uid));
-                alert('Kullanıcı silindi');
-                listUsers();
-            } catch (error) {
-                console.error('Kullanıcı silme hatası:', error);
-                alert('Kullanıcı silme hatası: ' + error.message);
-            }
-        }
-
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists() && userDoc.data().admin) {
-                    listUsers();
+                    loadUsers();
                 } else {
-                    alert("Yönetici değilsiniz.");
-                    window.location.href = "index.html";
+                    alert('Yönetici değilsiniz.');
+                    window.location.href = 'index.html';
                 }
             } else {
-                alert("Lütfen giriş yapın.");
-                window.location.href = "index.html";
+                alert('Lütfen giriş yapın ve e-posta adresinizi doğrulayın.');
+                window.location.href = 'index.html';
             }
         });
 
-        window.logout = function() {
-            signOut(auth).then(() => {
-                alert('Çıkış yapıldı.');
-                window.location.href = "index.html";
-            }).catch(error => {
-                console.error('Çıkış yapma hatası:', error);
-                alert('Çıkış yapma hatası: ' + error.message);
+        async function loadUsers() {
+            const usersSnapshot = await getDocs(collection(db, "users"));
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+            usersSnapshot.forEach((doc) => {
+                const userData = doc.data();
+                const listItem = document.createElement('li');
+                listItem.textContent = `Email: ${userData.email}`;
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Sil';
+                deleteButton.onclick = async () => {
+                    if (confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
+                        await deleteDoc(doc(db, "users", doc.id));
+                        alert('Kullanıcı silindi.');
+                        loadUsers();
+                    }
+                };
+                listItem.appendChild(deleteButton);
+                usersList.appendChild(listItem);
             });
         }
     </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        h1 {
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 16px;
-            color: white;
-            background-color: #007BFF;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-    </style>
 </head>
 <body>
     <h1>Admin Paneli</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>E-posta</th>
-                <th>İşlem</th>
-            </tr>
-        </thead>
-        <tbody id="userTable">
-        </tbody>
-    </table>
-    <button class="button" onclick="logout()">Çıkış Yap</button>
+    <ul id="usersList"></ul>
 </body>
 </html>
