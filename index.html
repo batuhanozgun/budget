@@ -29,9 +29,11 @@
             auth.createUserWithEmailAndPassword(email, password)
                 .then(userCredential => {
                     console.log('Kullanıcı kaydedildi:', userCredential.user);
+                    alert('Kullanıcı kaydedildi!');
                 })
                 .catch(error => {
                     console.error('Kayıt hatası:', error.message);
+                    alert('Kayıt hatası: ' + error.message);
                 });
         }
 
@@ -42,9 +44,11 @@
             auth.signInWithEmailAndPassword(email, password)
                 .then(userCredential => {
                     console.log('Giriş yapıldı:', userCredential.user);
+                    alert('Giriş yapıldı!');
                 })
                 .catch(error => {
                     console.error('Giriş hatası:', error.message);
+                    alert('Giriş hatası: ' + error.message);
                 });
         }
 
@@ -65,12 +69,15 @@
                 db.collection('transactions').add(data)
                     .then(docRef => {
                         console.log('Veri eklendi:', docRef.id);
+                        alert('Veri eklendi!');
                     })
                     .catch(error => {
                         console.error('Veri ekleme hatası:', error.message);
+                        alert('Veri ekleme hatası: ' + error.message);
                     });
             } else {
                 console.error('Kullanıcı giriş yapmamış');
+                alert('Kullanıcı giriş yapmamış');
             }
         }
     </script>
