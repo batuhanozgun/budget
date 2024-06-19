@@ -6,7 +6,7 @@
     <title>Kayıt Gir</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         // Firebase konfigürasyonu
@@ -23,6 +23,14 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        // Kullanıcı giriş kontrolü
+        onAuthStateChanged(auth, user => {
+            if (!user || !user.emailVerified) {
+                alert("Lütfen giriş yapın ve e-posta adresinizi doğrulayın.");
+                window.location.href = "index.html";
+            }
+        });
 
         // Veri ekleme
         window.addData = function() {
