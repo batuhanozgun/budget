@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { loadMenu } from './menu.js';
 
 // Firebase konfigürasyonu
@@ -101,7 +102,15 @@ async function loadAccounts() {
     });
 }
 
+onAuthStateChanged(getAuth(), (user) => {
+    if (user) {
+        loadAccounts();
+    } else {
+        // Kullanıcı giriş yapmamışsa giriş sayfasına yönlendirin
+        window.location.href = 'login.html';
+    }
+});
+
 window.onload = function() {
     loadMenu();
-    loadAccounts();
 };
