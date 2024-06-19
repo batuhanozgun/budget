@@ -1,97 +1,95 @@
 {
-  "Nakit": {
-    "description": "Cebindeki (ya da cüzdanındaki) parayı takip etmek için kullanılır...",
-    "fields": [
-      {"name": "Hesap Adı", "type": "text", "required": true},
-      {"name": "Başlangıç Bakiyesi", "type": "number", "required": true},
-      {"name": "Hesap Oluşturma Tarihi", "type": "date", "required": true}
-    ]
-  },
-  "Banka Hesabı": {
-    "description": "Bankalarındaki hesapları buradan yaratabilirsin...",
-    "fields": [
-      {"name": "Hesap Adı", "type": "text", "required": true},
-      {"name": "Başlangıç Bakiyesi", "type": "number", "required": true},
-      {"name": "Hesap Oluşturma Tarihi", "type": "date", "required": true},
-      {"name": "KMH", "type": "checkbox", "required": false},
-      {"name": "Faiz Oranı", "type": "number", "required": false},
-      {"name": "Hesap Kesim Tarihi", "type": "date", "required": false}
-    ]
-  },
-  "Kredi Hesabı": {
-    "description": "Kullandığın kredileri bu hesap türü ile kayıt altına alıp...",
-    "fields": [
-      {"name": "Hesap Adı", "type": "text", "required": true},
-      {"name": "Toplam Tutar", "type": "number", "required": true},
-      {"name": "Masraf Tutarı", "type": "number", "required": true},
-      {"name": "Vade Sayısı", "type": "number", "required": true},
-      {"name": "İlk Taksit Tutarı", "type": "number", "required": true},
-      {"name": "İlk Taksit Tarihi", "type": "date", "required": true},
-      {"name": "İkinci Taksit Tutarı", "type": "number", "required": true},
-      {"name": "İkinci Taksit Tarihi", "type": "date", "required": true},
-      {"name": "Son Taksit Tutarı", "type": "number", "required": true},
-      {"name": "Son Taksit Tarihi", "type": "date", "required": true}
-    ]
-  },
-  "Kredi Kartı": {
-    "description": "Kredi kartlarını en doğru şekilde takip edebilmek için...",
-    "fields": [
-      {"name": "Hesap Adı", "type": "text", "required": true},
-      {"name": "Başlangıç Bakiyesi", "type": "number", "required": true},
-      {"name": "Hesap Oluşturma Tarihi", "type": "date", "required": true},
-      {"name": "Dönem Açılış Tarihi", "type": "date", "required": true},
-      {"name": "Dönem Kapanış Tarihi", "type": "date", "required": true},
-      {"name": "Son Ödeme Tarihi Kuralı", "type": "text", "required": true},
-      {"name": "Minimum Ödeme Oranı", "type": "number", "required": true},
-      {"name": "Alışveriş Faizi", "type": "number", "required": true},
-      {"name": "Gecikme Faizi", "type": "number", "required": true}
-    ]
-  },
-  "Birikim Hesabı": {
-    "description": "Birikim hesabı belirli aralıklarla para transferi yaptığın bir hesaptır...",
-    "fields": [
-      {"name": "Hesap Adı", "type": "text", "required": true},
-      {"name": "Başlangıç Bakiyesi", "type": "number", "required": true},
-      {"name": "Hesap Oluşturma Tarihi", "type": "date", "required": true},
-      {"name": "Hedef", "type": "text", "required": true},
-      {"name": "Dönem", "type": "text", "required": true}
-    ]
-  },
-  "Yatırım Hesabı": {
-    "description": "Yatırım hesabı yatırımın çeşidine göre hareket eder...",
-    "fields": [
-      {"name": "Hesap Adı", "type": "text", "required": true},
-      {"name": "Başlangıç Bakiyesi", "type": "number", "required": true},
-      {"name": "Hesap Oluşturma Tarihi", "type": "date", "required": true},
-      {"name": "Faiz Oranı", "type": "number", "required": true},
-      {"name": "Değerli Maden Türü", "type": "text", "required": true},
-      {"name": "Adet", "type": "number", "required": true},
-      {"name": "Birim Satın Alma Fiyatı", "type": "number", "required": true}
-    ]
-  },
-  "Borç Verilenler Hesabı": {
-    "description": "Bu hesap aslında bir ara hesaptır, borç vermek için mevcut hesaplarından birini kullanmış olmanı bekler...",
-    "fields": [
-      {"name": "Hesap Adı", "type": "text", "required": true},
-      {"name": "Borç Tutarı", "type": "number", "required": true},
-      {"name": "Vade Tarihi", "type": "date", "required": true}
-    ]
-  },
-  "Borç Alınanlar Hesabı": {
-    "description": "Bu hesap aslında bir ara hesaptır, alınan borcun kayıt edileceği mevcut hesaplarından birini seçmeni bekler...",
-    "fields": [
-      {"name": "Hesap Adı", "type": "text", "required": true},
-      {"name": "Borç Tutarı", "type": "number", "required": true},
-      {"name": "Vade Tarihi", "type": "date", "required": true}
-    ]
-  },
-  "Harçlık Verilen Hesap (Çocuk)": {
-    "description": "Ufaklığa verdiğin harçlıkların durumunu takip etmeni sağlar...",
-    "fields": [
-      {"name": "Hesap Adı", "type": "text", "required": true},
-      {"name": "Başlangıç Bakiyesi", "type": "number", "required": true},
-      {"name": "Hesap Oluşturma Tarihi", "type": "date", "required": true},
-      {"name": "Güncelleme Aralığı", "type": "text", "required": true}
-    ]
-  }
+    "Nakit": {
+        "description": "Cebindeki (ya da cüzdanındaki) parayı takip etmek için kullanılır...",
+        "fields": [
+            { "name": "Hesap Adı", "type": "text", "required": true },
+            { "name": "Başlangıç Bakiyesi", "type": "number", "required": true },
+            { "name": "Hesap Oluşturma Tarihi", "type": "date", "required": true }
+        ]
+    },
+    "Banka": {
+        "description": "Banka(ları)ndaki hesapları buradan yaratabilirsin...",
+        "fields": [
+            { "name": "Hesap Adı", "type": "text", "required": true },
+            { "name": "Başlangıç Bakiyesi", "type": "number", "required": true },
+            { "name": "Hesap Oluşturma Tarihi", "type": "date", "required": true },
+            { "name": "KMH Var/Yok", "type": "checkbox", "required": false },
+            { "name": "Faiz Oranı", "type": "number", "required": false },
+            { "name": "Hesap Kesim Tarihi", "type": "date", "required": false }
+        ]
+    },
+    "Kredi": {
+        "description": "Kullandığın kredileri bu hesap türü ile kayı altına alabilirsin...",
+        "fields": [
+            { "name": "Hesap Adı", "type": "text", "required": true },
+            { "name": "Toplam Tutar", "type": "number", "required": true },
+            { "name": "Hesap Oluşturma Tarihi", "type": "date", "required": true },
+            { "name": "Vade Sayısı", "type": "number", "required": true },
+            { "name": "İlk Taksit Tutarı", "type": "number", "required": true },
+            { "name": "İlk Taksit Tarihi", "type": "date", "required": true },
+            { "name": "İkinci Taksit Tutarı", "type": "number", "required": false },
+            { "name": "İkinci Taksit Tarihi", "type": "date", "required": false },
+            { "name": "Son Taksit Tutarı", "type": "number", "required": true },
+            { "name": "Son Taksit Tarihi", "type": "date", "required": true }
+        ]
+    },
+    "Kredi Kartı": {
+        "description": "Kredi kartlarını en doğru şekilde takip edebilmek için...",
+        "fields": [
+            { "name": "Hesap Adı", "type": "text", "required": true },
+            { "name": "Hesap Oluşturma Tarihi", "type": "date", "required": true },
+            { "name": "Dönem Açılış Tarihi", "type": "date", "required": true },
+            { "name": "Dönem Kapanış Tarihi", "type": "date", "required": true },
+            { "name": "Son Ödeme Tarihi Kuralı", "type": "text", "required": true },
+            { "name": "Minimum Ödeme Oranı", "type": "number", "required": true },
+            { "name": "Alışveriş Faiz Oranı", "type": "number", "required": true },
+            { "name": "Gecikme Faiz Oranı", "type": "number", "required": true }
+        ]
+    },
+    "Birikim": {
+        "description": "Birikim hesabı belirli aralıklarla para transferi yaptığın bir hesaptır...",
+        "fields": [
+            { "name": "Hesap Adı", "type": "text", "required": true },
+            { "name": "Başlangıç Bakiyesi", "type": "number", "required": true },
+            { "name": "Hedef Tutar", "type": "number", "required": true },
+            { "name": "Dönem", "type": "text", "required": true }
+        ]
+    },
+    "Yatırım": {
+        "description": "Yatırım hesabı yatırımın çeşidine göre hareket eder...",
+        "fields": [
+            { "name": "Hesap Adı", "type": "text", "required": true },
+            { "name": "Başlangıç Bakiyesi", "type": "number", "required": true },
+            { "name": "Yatırım Türü", "type": "text", "required": true },
+            { "name": "Yatırım Adedi", "type": "number", "required": false },
+            { "name": "Birim Satın Alma Fiyatı", "type": "number", "required": false },
+            { "name": "Toplam Değer", "type": "number", "required": false }
+        ]
+    },
+    "Borç Verilen": {
+        "description": "Bu hesap aslında bir ara hesaptır, borç vermek için mevcut hesaplarından birini kullanmış olmanı bekler...",
+        "fields": [
+            { "name": "Hesap Adı", "type": "text", "required": true },
+            { "name": "Borç Tutarı", "type": "number", "required": true },
+            { "name": "Vade Tarihi", "type": "date", "required": true },
+            { "name": "Mevcut Hesap", "type": "text", "required": true }
+        ]
+    },
+    "Borç Alınan": {
+        "description": "Bu hesap aslında bir ara hesaptır, alınan borcun kayıt edileceği mevcut hesaplarından birini seçmeni bekler...",
+        "fields": [
+            { "name": "Hesap Adı", "type": "text", "required": true },
+            { "name": "Borç Tutarı", "type": "number", "required": true },
+            { "name": "Vade Tarihi", "type": "date", "required": true },
+            { "name": "Mevcut Hesap", "type": "text", "required": true }
+        ]
+    },
+    "Harçlık": {
+        "description": "Ufaklığa verdiğin harçlıkların durumunu takip etmeni sağlar...",
+        "fields": [
+            { "name": "Hesap Adı", "type": "text", "required": true },
+            { "name": "Başlangıç Bakiyesi", "type": "number", "required": true },
+            { "name": "Belirli Dönemler", "type": "text", "required": true }
+        ]
+    }
 }
