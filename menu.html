@@ -1,26 +1,7 @@
-<div class="menu">
-    <a href="landing.html">Ana Sayfa</a>
-    <a href="kayit_gir.html">Kayıt Gir</a>
-    <a href="kayitlari_goruntule.html">Kayıtları Gör</a>
-    <a href="profil_duzenle.html">Profilim</a>
-    <a href="#" onclick="logout()">Çıkış Yap</a>
+<div id="menuContainer">
+    <button onclick="window.location.href='landing.html'">Ana Sayfa</button>
+    <button onclick="window.location.href='kayit_gir.html'">Kayıt Gir</button>
+    <button onclick="window.location.href='kayitlari_goruntule.html'">Kayıtları Gör</button>
+    <button onclick="window.location.href='profil_duzenle.html'">Profilim</button>
+    <button onclick="logout()">Çıkış Yap</button>
 </div>
-
-<style>
-    .menu {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-    .menu a {
-        text-decoration: none;
-        color: white;
-        background-color: #007BFF;
-        padding: 10px 20px;
-        margin: 0 10px;
-        border-radius: 5px;
-    }
-    .menu a:hover {
-        background-color: #0056b3;
-    }
-</style>
