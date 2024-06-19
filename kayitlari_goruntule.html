@@ -7,8 +7,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
-        // Firebase konfigürasyonu
         const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
             authDomain: "batusbudget.firebaseapp.com",
@@ -18,11 +18,17 @@
             appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
         };
 
-        // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        // Verileri Firestore'dan çekme ve tabloya ekleme
+        onAuthStateChanged(auth, (user) => {
+            if (!user || !user.emailVerified) {
+                alert('Lütfen giriş yapın ve e-posta adresinizi doğrulayın.');
+                window.location.href = 'index.html';
+            }
+        });
+
         async function fetchRecords() {
             const querySnapshot = await getDocs(collection(db, "transactions"));
             const table = document.getElementById("recordsTable");
@@ -39,10 +45,20 @@
             });
         }
 
+        window.logout = function() {
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error('Çıkış yaparken hata:', error);
+                alert('Çıkış yaparken bir hata oluştu: ' + error.message);
+            });
+        }
+
         async function loadMenu() {
             const response = await fetch('menu.html');
             const menuHtml = await response.text();
             document.getElementById('menuContainer').innerHTML = menuHtml;
+            eval(document.querySelector('#menuContainer script').textContent);
         }
 
         window.onload = function() {
