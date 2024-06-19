@@ -7,6 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
@@ -21,14 +22,19 @@
         // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         // Kullanıcı kaydı
         window.signUp = function() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             createUserWithEmailAndPassword(auth, email, password)
-                .then(userCredential => {
+                .then(async (userCredential) => {
                     console.log('Kullanıcı kaydedildi:', userCredential.user);
+                    await setDoc(doc(db, "users", userCredential.user.uid), {
+                        email: email,
+                        uid: userCredential.user.uid
+                    });
                     sendEmailVerification(userCredential.user)
                         .then(() => {
                             alert('E-posta doğrulama linki gönderildi! Lütfen e-postanızı kontrol edin.');
