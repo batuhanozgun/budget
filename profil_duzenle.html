@@ -5,17 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Düzenle</title>
     <script type="module">
+        // Firebase modüler SDK'yı içe aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, updatePassword, updateProfile, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
+            authDomain: "batusbudget.firebaseapp.com",
+            projectId: "batusbudget",
+            storageBucket: "batusbudget.appspot.com",
+            messagingSenderId: "1084998760222",
+            appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
         };
 
         // Firebase'i başlat
