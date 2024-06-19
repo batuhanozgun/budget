@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Paneli</title>
     <script type="module">
+        // Firebase modüler SDK'yı içe aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         // Firebase konfigürasyonu
@@ -26,53 +27,73 @@
 
         // Kullanıcıları listeleme
         async function listUsers() {
-            const userCollection = collection(db, "users");
-            const userSnapshot = await getDocs(userCollection);
-            const userList = userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            const userTable = document.getElementById("userTable");
+            const usersCollection = collection(db, "users");
+            const userSnapshot = await getDocs(usersCollection);
+            const userList = userSnapshot.docs.map(doc => doc.data());
 
-            userTable.innerHTML = "";
+            const userTable = document.getElementById('userTable');
+            userTable.innerHTML = '';
+
             userList.forEach(user => {
-                const row = userTable.insertRow();
-                const emailCell = row.insertCell(0);
-                const actionCell = row.insertCell(1);
+                const row = document.createElement('tr');
+                const emailCell = document.createElement('td');
+                const actionCell = document.createElement('td');
+                const deleteButton = document.createElement('button');
+
                 emailCell.textContent = user.email;
-                const deleteButton = document.createElement("button");
-                deleteButton.textContent = "Sil";
-                deleteButton.onclick = () => deleteUserById(user.id);
+                deleteButton.textContent = 'Sil';
+                deleteButton.onclick = () => deleteUser(user.uid);
+
                 actionCell.appendChild(deleteButton);
+                row.appendChild(emailCell);
+                row.appendChild(actionCell);
+                userTable.appendChild(row);
             });
         }
 
-        // Kullanıcı silme
-        async function deleteUserById(userId) {
+        // Kullanıcıyı silme
+        async function deleteUser(uid) {
             try {
-                const userDoc = doc(db, "users", userId);
-                await deleteDoc(userDoc);
-                alert("Kullanıcı silindi.");
-                listUsers();
+                await deleteDoc(doc(db, "users", uid));
+                alert('Kullanıcı silindi');
+                listUsers(); // Listeyi güncelle
             } catch (error) {
-                console.error("Kullanıcı silme hatası:", error.message);
-                alert("Kullanıcı silme hatası: " + error.message);
+                console.error('Kullanıcı silme hatası:', error);
+                alert('Kullanıcı silme hatası: ' + error.message);
             }
         }
 
         // Admin giriş kontrolü ve kullanıcıları listeleme
         onAuthStateChanged(auth, user => {
             if (user) {
-                user.getIdTokenResult().then(idTokenResult => {
-                    if (!!idTokenResult.claims.admin) {
+                const userDoc = doc(db, "users", user.uid);
+                getDoc(userDoc).then(docSnapshot => {
+                    if (docSnapshot.exists() && docSnapshot.data().admin === true) {
                         listUsers();
                     } else {
                         alert("Yönetici değilsiniz.");
                         window.location.href = "index.html";
                     }
+                }).catch(error => {
+                    console.error("Kullanıcı kontrol hatası:", error.message);
+                    alert("Kullanıcı kontrol hatası: " + error.message);
                 });
             } else {
                 alert("Lütfen giriş yapın.");
                 window.location.href = "index.html";
             }
         });
+
+        // Çıkış yapma
+        window.logout = function() {
+            signOut(auth).then(() => {
+                alert('Çıkış yapıldı.');
+                window.location.href = "index.html";
+            }).catch(error => {
+                console.error('Çıkış yapma hatası:', error);
+                alert('Çıkış yapma hatası: ' + error.message);
+            });
+        }
     </script>
     <style>
         body {
@@ -89,11 +110,14 @@
             margin: 20px 0;
         }
         table, th, td {
-            border: 1px solid black;
+            border: 1px solid #ddd;
         }
         th, td {
-            padding: 15px;
+            padding: 8px;
             text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
         }
         .button {
             display: inline-block;
@@ -125,5 +149,6 @@
             <!-- Kullanıcılar burada listelenecek -->
         </tbody>
     </table>
+    <button class="button" onclick="logout()">Çıkış Yap</button>
 </body>
 </html>
