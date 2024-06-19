@@ -6,8 +6,7 @@
     <title>Gelir ve Gider Takibi</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
@@ -22,7 +21,6 @@
         // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
         // Kullanıcı kaydı
         window.signUp = function() {
@@ -53,6 +51,19 @@
                 .catch(error => {
                     console.error('Giriş hatası:', error.message);
                     alert('Giriş hatası: ' + error.message);
+                });
+        }
+
+        // Şifre sıfırlama
+        window.resetPassword = function() {
+            const email = document.getElementById('email').value;
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    alert('Şifre sıfırlama e-postası gönderildi!');
+                })
+                .catch(error => {
+                    console.error('Şifre sıfırlama hatası:', error.message);
+                    alert('Şifre sıfırlama hatası: ' + error.message);
                 });
         }
     </script>
@@ -90,6 +101,7 @@
         <input type="password" id="password" placeholder="Şifre" required>
         <button onclick="signUp()">Kaydol</button>
         <button onclick="signIn()">Giriş Yap</button>
+        <button onclick="resetPassword()">Şifremi Unuttum</button>
     </div>
 </body>
 </html>
