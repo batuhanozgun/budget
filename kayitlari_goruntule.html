@@ -41,6 +41,14 @@
 
         window.onload = fetchRecords;
     </script>
+    <script>
+        async function loadMenu() {
+            const response = await fetch('menu.html');
+            const menuHtml = await response.text();
+            document.getElementById('menuContainer').innerHTML = menuHtml;
+        }
+        window.onload = loadMenu;
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -66,8 +74,8 @@
     </style>
 </head>
 <body>
+    <div id="menuContainer"></div>
     <h1>Kayıtları Görüntüle</h1>
-    <button onclick="window.location.href='landing.html'">Ana Sayfa</button>
     <table id="recordsTable">
         <tr>
             <th>Kayıt Türü</th>
