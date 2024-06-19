@@ -6,7 +6,7 @@
     <title>Kayıt Gir</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -21,15 +21,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-
-        document.getElementById('logoutBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            signOut(auth).then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error('Çıkış yaparken hata oluştu:', error);
-            });
-        });
 
         onAuthStateChanged(auth, (user) => {
             if (!user || !user.emailVerified) {
@@ -66,11 +57,18 @@
             }
         });
     </script>
+    <script>
+        async function loadMenu() {
+            const response = await fetch('menu.html');
+            const menuHtml = await response.text();
+            document.getElementById('menuContainer').innerHTML = menuHtml;
+        }
+        window.onload = loadMenu;
+    </script>
 </head>
 <body>
+    <div id="menuContainer"></div>
     <h1>Kayıt Gir</h1>
-    <button id="logoutBtn">Çıkış Yap</button>
-    <button onclick="window.location.href='landing.html'">Ana Sayfa</button>
     <form id="recordForm">
         <div>
             <label for="kayitTuru">Kayıt Türü:</label>
