@@ -9,6 +9,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { loadMenu } from "./menu.js";
 
         // Firebase konfigürasyonu
         const firebaseConfig = {
@@ -37,6 +38,7 @@
         // Hesapları yükle
         async function loadAccounts(userId) {
             const accountsList = document.getElementById('accountsList');
+            accountsList.innerHTML = ''; // Mevcut listeyi temizle
             const querySnapshot = await getDocs(collection(db, `accounts`));
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
@@ -62,6 +64,10 @@
             document.getElementById('hesapForm').reset();
             loadAccounts(userId);
         }
+
+        window.onload = function() {
+            loadMenu();
+        };
     </script>
     <style>
         body {
