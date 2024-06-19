@@ -56,8 +56,7 @@
                 alert('Kayıt eklerken hata oluştu: ' + error.message);
             }
         });
-    </script>
-    <script>
+
         async function loadMenu() {
             const response = await fetch('menu.html');
             const menuHtml = await response.text();
