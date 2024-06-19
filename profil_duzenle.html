@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Düzenle</title>
     <script type="module">
-        // Firebase modüler SDK'yı içe aktar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getAuth, updatePassword, updateProfile, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, updateProfile, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
-        // Firebase konfigürasyonu
         const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
             authDomain: "batusbudget.firebaseapp.com",
@@ -19,11 +17,19 @@
             appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
         };
 
-        // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Profil bilgilerini güncelleme
+        onAuthStateChanged(auth, (user) => {
+            if (!user || !user.emailVerified) {
+                alert('Lütfen giriş yapın ve e-posta adresinizi doğrulayın.');
+                window.location.href = 'index.html';
+            } else {
+                document.getElementById('displayName').value = user.displayName || '';
+                document.getElementById('photoURL').value = user.photoURL || '';
+            }
+        });
+
         window.updateProfileInfo = function() {
             const user = auth.currentUser;
             const displayName = document.getElementById('displayName').value;
@@ -40,66 +46,39 @@
             });
         }
 
-        // Şifre değiştirme
         window.changePassword = function() {
             const user = auth.currentUser;
-            const newPassword = document.getElementById('newPassword').value;
             const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
 
             const credential = EmailAuthProvider.credential(user.email, currentPassword);
-
             reauthenticateWithCredential(user, credential).then(() => {
-                updatePassword(user, newPassword).then(() => {
-                    alert('Şifre başarıyla değiştirildi!');
-                }).catch(error => {
-                    console.error('Şifre değiştirme hatası:', error.message);
-                    alert('Şifre değiştirme hatası: ' + error.message);
-                });
+                return updatePassword(user, newPassword);
+            }).then(() => {
+                alert('Şifre başarıyla güncellendi!');
             }).catch(error => {
-                console.error('Yeniden kimlik doğrulama hatası:', error.message);
-                alert('Yeniden kimlik doğrulama hatası: ' + error.message);
+                console.error('Şifre güncelleme hatası:', error.message);
+                alert('Şifre güncelleme hatası: ' + error.message);
             });
         }
     </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        h1 {
-            color: #333;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 16px;
-            color: white;
-            background-color: #007BFF;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-    </style>
 </head>
 <body>
     <h1>Profil Düzenle</h1>
     <div>
-        <h2>Profil Bilgilerini Güncelle</h2>
-        <input type="text" id="displayName" placeholder="İsim" required>
-        <input type="text" id="photoURL" placeholder="Fotoğraf URL" required>
-        <button onclick="updateProfileInfo()">Güncelle</button>
+        <label for="displayName">Ad:</label>
+        <input type="text" id="displayName" name="displayName"><br><br>
+        <label for="photoURL">Profil Resmi URL:</label>
+        <input type="text" id="photoURL" name="photoURL"><br><br>
+        <button onclick="updateProfileInfo()">Profil Bilgilerini Güncelle</button>
     </div>
     <div>
         <h2>Şifre Değiştir</h2>
-        <input type="password" id="currentPassword" placeholder="Mevcut Şifre" required>
-        <input type="password" id="newPassword" placeholder="Yeni Şifre" required>
-        <button onclick="changePassword()">Değiştir</button>
+        <label for="currentPassword">Mevcut Şifre:</label>
+        <input type="password" id="currentPassword" name="currentPassword"><br><br>
+        <label for="newPassword">Yeni Şifre:</label>
+        <input type="password" id="newPassword" name="newPassword"><br><br>
+        <button onclick="changePassword()">Şifreyi Güncelle</button>
     </div>
 </body>
 </html>
