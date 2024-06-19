@@ -8,8 +8,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { loadMenu } from "./menu.js";
 
-        // Firebase konfigürasyonu
         const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
             authDomain: "batusbudget.firebaseapp.com",
@@ -19,31 +19,19 @@
             appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
         };
 
-        // Firebase'i başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let userId = null;
-
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userId = user.uid;
-                loadMenu();
-            } else {
-                alert('Lütfen giriş yapın.');
-                window.location.href = "login.html";
+            if (!user) {
+                window.location.href = 'login.html';
             }
         });
 
-        async function loadMenu() {
-            const response = await fetch('menu.html');
-            const menuHtml = await response.text();
-            document.getElementById('menuContainer').innerHTML = menuHtml;
-            eval(document.getElementById('menuContainer script').textContent);
-        }
-
-        window.addRecord = async function () {
+        document.getElementById('recordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
             const kayitTuru = document.getElementById('kayitTuru').value;
             const kayitTipi = document.getElementById('kayitTipi').value;
             const kategori = document.getElementById('kategori').value;
@@ -51,69 +39,60 @@
             const tutar = document.getElementById('tutar').value;
             const aciklama = document.getElementById('aciklama').value;
 
+            if (!user.emailVerified) {
+                alert('Lütfen giriş yapın ve e-posta adresinizi doğrulayın.');
+                window.location.href = 'login.html';
+                return;
+            }
+
             try {
-                await addDoc(collection(db, "transactions"), {
-                    userId: userId,
-                    kayitTuru: kayitTuru,
-                    kayitTipi: kayitTipi,
-                    kategori: kategori,
-                    altKategori: altKategori,
-                    tutar: tutar,
-                    aciklama: aciklama,
+                await addDoc(collection(db, 'transactions'), {
+                    userId: user.uid,
+                    kayitTuru,
+                    kayitTipi,
+                    kategori,
+                    altKategori,
+                    tutar,
+                    aciklama,
                     date: new Date()
                 });
                 alert('Kayıt başarıyla eklendi!');
-                document.getElementById('kayitForm').reset();
+                document.getElementById('recordForm').reset();
             } catch (error) {
-                console.error('Kayıt ekleme hatası: ', error);
+                console.error('Kayıt ekleme hatası:', error.message);
                 alert('Kayıt ekleme hatası: ' + error.message);
             }
-        }
+        });
+
+        window.onload = loadMenu;
     </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        h1 {
-            color: #333;
-        }
-        form {
-            display: inline-block;
-            text-align: left;
-        }
-        label, input, select, textarea {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        input[type="submit"] {
-            width: auto;
-        }
-    </style>
 </head>
 <body>
     <div id="menuContainer"></div>
     <h1>Kayıt Gir</h1>
-    <form id="kayitForm">
+    <form id="recordForm">
         <label for="kayitTuru">Kayıt Türü:</label>
         <select id="kayitTuru" required>
             <option value="Gelir">Gelir</option>
             <option value="Gider">Gider</option>
         </select>
+        <br>
         <label for="kayitTipi">Kayıt Tipi:</label>
         <input type="text" id="kayitTipi" required>
+        <br>
         <label for="kategori">Kategori:</label>
         <input type="text" id="kategori" required>
+        <br>
         <label for="altKategori">Alt Kategori:</label>
         <input type="text" id="altKategori" required>
+        <br>
         <label for="tutar">Tutar:</label>
         <input type="number" id="tutar" required>
+        <br>
         <label for="aciklama">Açıklama:</label>
         <textarea id="aciklama" required></textarea>
-        <input type="button" value="Kaydet" onclick="addRecord()">
+        <br>
+        <button type="submit">Kaydet</button>
     </form>
-    <script src="menu.js"></script>
 </body>
 </html>
