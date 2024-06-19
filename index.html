@@ -22,60 +22,49 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        document.getElementById('registerForm').addEventListener('submit', (e) => {
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = e.target.elements.email.value;
             const password = e.target.elements.password.value;
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    sendEmailVerification(user)
-                        .then(() => {
-                            alert('Kayıt başarılı! E-posta doğrulaması için gelen kutunuzu kontrol edin.');
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                await sendEmailVerification(user);
+                alert('Kayıt başarılı! E-posta doğrulaması için gelen kutunuzu kontrol edin.');
 
-                            // Kullanıcı Firestore veritabanına ekle
-                            setDoc(doc(db, "users", user.uid), {
-                                email: user.email,
-                                admin: false
-                            }).then(() => {
-                                console.log("Kullanıcı Firestore veritabanına eklendi.");
-                            }).catch((error) => {
-                                console.error("Kullanıcı eklenirken hata oluştu:", error);
-                            });
-                        })
-                        .catch((error) => {
-                            console.error('E-posta doğrulama hatası:', error);
-                            alert('E-posta doğrulama hatası: ' + error.message);
-                        });
-                })
-                .catch((error) => {
-                    console.error('Kayıt hatası:', error);
-                    alert('Kayıt hatası: ' + error.message);
+                // Kullanıcı Firestore veritabanına ekle
+                await setDoc(doc(db, "users", user.uid), {
+                    email: user.email,
+                    admin: false
                 });
+                console.log("Kullanıcı Firestore veritabanına eklendi.");
+            } catch (error) {
+                console.error("Kayıt sırasında hata oluştu:", error);
+                alert("Kayıt sırasında hata oluştu: " + error.message);
+            }
         });
 
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = e.target.elements.email.value;
             const password = e.target.elements.password.value;
-            signInWithEmailAndPassword(auth, email, password)
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-                    if (user.emailVerified) {
-                        const userDoc = await getDoc(doc(db, "users", user.uid));
-                        if (userDoc.exists() && userDoc.data().admin) {
-                            window.location.href = 'admin.html';
-                        } else {
-                            window.location.href = 'kayit_gir.html';
-                        }
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                if (user.emailVerified) {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists() && userDoc.data().admin) {
+                        window.location.href = 'admin.html';
                     } else {
-                        alert('E-posta adresinizi doğrulamadınız. Lütfen gelen kutunuzu kontrol edin.');
+                        window.location.href = 'kayit_gir.html';
                     }
-                })
-                .catch((error) => {
-                    console.error('Giriş hatası:', error);
-                    alert('Giriş hatası: ' + error.message);
-                });
+                } else {
+                    alert('E-posta adresinizi doğrulamadınız. Lütfen gelen kutunuzu kontrol edin.');
+                }
+            } catch (error) {
+                console.error("Giriş sırasında hata oluştu:", error);
+                alert("Giriş sırasında hata oluştu: " + error.message);
+            }
         });
 
         onAuthStateChanged(auth, async (user) => {
