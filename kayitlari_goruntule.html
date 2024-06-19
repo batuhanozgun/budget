@@ -60,10 +60,17 @@
         }
 
         async function loadMenu() {
-            const response = await fetch('menu.html');
-            const menuHtml = await response.text();
-            document.getElementById('menuContainer').innerHTML = menuHtml;
-            eval(document.querySelector('#menuContainer script').textContent);
+            try {
+                const response = await fetch('menu.html');
+                const menuHtml = await response.text();
+                document.getElementById('menuContainer').innerHTML = menuHtml;
+                const script = document.createElement('script');
+                script.textContent = document.querySelector('#menuContainer script').textContent;
+                document.head.appendChild(script);
+            } catch (error) {
+                console.error('Menü yüklenirken hata oluştu:', error);
+                alert('Menü yüklenirken bir hata oluştu: ' + error.message);
+            }
         }
 
         window.onload = function() {
