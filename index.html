@@ -4,29 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gelir ve Gider Takibi</title>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
-    <script>
-        // Firebase konfigürasyonu
-        var firebaseConfig = {
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
             apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
             authDomain: "batusbudget.firebaseapp.com",
             projectId: "batusbudget",
             storageBucket: "batusbudget.appspot.com",
             messagingSenderId: "1084998760222",
-            appId: "1:1084998760222:web:024892f108cfeaf2fbb8f"
+            appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
         };
-        // Firebase'i başlat
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         // Kullanıcı kaydı
-        function signUp() {
+        window.signUp = function() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            auth.createUserWithEmailAndPassword(email, password)
+            createUserWithEmailAndPassword(auth, email, password)
                 .then(userCredential => {
                     console.log('Kullanıcı kaydedildi:', userCredential.user);
                     alert('Kullanıcı kaydedildi!');
@@ -38,10 +41,10 @@
         }
 
         // Kullanıcı girişi
-        function signIn() {
+        window.signIn = function() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(email, password)
+            signInWithEmailAndPassword(auth, email, password)
                 .then(userCredential => {
                     console.log('Giriş yapıldı:', userCredential.user);
                     alert('Giriş yapıldı!');
@@ -53,7 +56,7 @@
         }
 
         // Veri ekleme
-        function addData() {
+        window.addData = function() {
             const user = auth.currentUser;
             if (user) {
                 const data = {
@@ -66,7 +69,7 @@
                     userId: user.uid,
                     date: new Date()
                 };
-                db.collection('transactions').add(data)
+                addDoc(collection(db, 'transactions'), data)
                     .then(docRef => {
                         console.log('Veri eklendi:', docRef.id);
                         alert('Veri eklendi!');
