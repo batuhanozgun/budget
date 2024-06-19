@@ -34,7 +34,7 @@
                     if (userDoc.exists() && userDoc.data().admin) {
                         window.location.href = 'admin.html';
                     } else {
-                        window.location.href = 'kayit_gir.html';
+                        window.location.href = 'landing.html';
                     }
                 } else {
                     alert('E-posta adresinizi doğrulamadınız. Lütfen gelen kutunuzu kontrol edin.');
@@ -46,14 +46,19 @@
         });
 
         onAuthStateChanged(auth, (user) => {
-            if (user && user.emailVerified) {
-                window.location.href = 'kayit_gir.html';
+            if (user) {
+                if (user.emailVerified) {
+                    window.location.href = 'landing.html';
+                } else {
+                    alert('Lütfen giriş yapın ve e-posta adresinizi doğrulayın.');
+                    auth.signOut();
+                }
             }
         });
     </script>
 </head>
 <body>
-    <h1>Gelir ve Gider Takibi - Giriş Yap</h1>
+    <h1>Giriş Yap</h1>
     <form id="loginForm">
         <input type="email" id="email" name="email" placeholder="E-posta" required>
         <input type="password" id="password" name="password" placeholder="Şifre" required>
