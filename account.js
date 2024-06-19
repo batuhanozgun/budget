@@ -66,7 +66,7 @@ async function fetchAccounts() {
                         <p><strong>Hesap Türü:</strong> ${accountData['type']}</p>
                     </div>
                     <div class="account-details">
-                        <p><strong>Başlangıç Bakiyesi:</strong> ${accountData['Başlangıç Bakiyesi']}</p>
+                        ${Object.keys(accountData).map(key => `<p><strong>${key}:</strong> ${accountData[key]}</p>`).join('')}
                     </div>
                 `;
                 accountDiv.querySelector('.account-header').addEventListener('click', () => {
