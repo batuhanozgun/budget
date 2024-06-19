@@ -33,7 +33,8 @@
                     console.log('Kullanıcı kaydedildi:', userCredential.user);
                     await setDoc(doc(db, "users", userCredential.user.uid), {
                         email: email,
-                        uid: userCredential.user.uid
+                        uid: userCredential.user.uid,
+                        admin: false // Varsayılan olarak admin değil
                     });
                     sendEmailVerification(userCredential.user)
                         .then(() => {
