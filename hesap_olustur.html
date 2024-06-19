@@ -32,8 +32,25 @@
                 const data = doc.data();
                 const listItem = document.createElement('li');
                 listItem.textContent = `Hesap Adı: ${data.hesapAdi} - ${data.hesapTuru}`;
+                listItem.addEventListener('click', () => toggleDetails(data, listItem));
                 accountsList.appendChild(listItem);
             });
+        }
+
+        // Hesap detaylarını göster/gizle
+        function toggleDetails(data, listItem) {
+            const existingDetails = listItem.querySelector('.details');
+            if (existingDetails) {
+                existingDetails.remove();
+            } else {
+                const details = document.createElement('div');
+                details.classList.add('details');
+                details.innerHTML = `
+                    <p>Hesap Türü: ${data.hesapTuru}</p>
+                    <p>Başlangıç Bakiyesi: ${data.tutar}</p>
+                `;
+                listItem.appendChild(details);
+            }
         }
 
         // Yeni hesap ekleme
@@ -97,6 +114,13 @@
             padding: 10px;
             background-color: #f2f2f2;
             border-radius: 5px;
+            cursor: pointer;
+        }
+        .details {
+            margin-top: 10px;
+            background-color: #e9e9e9;
+            padding: 10px;
+            border-radius: 5px;
         }
         input, select {
             margin-bottom: 10px;
@@ -133,12 +157,17 @@
             <input type="text" id="hesapAdi" placeholder="Hesap Adı" required>
             <select id="hesapTuru" required>
                 <option value="" disabled selected>Hesap Türü Seçin</option>
+                <option value="Nakit (Cüzdan)">Nakit (Cüzdan)</option>
                 <option value="Banka Hesabı">Banka Hesabı</option>
-                <option value="Nakit">Nakit</option>
-                <option value="Banka Kasası">Banka Kasası</option>
-                <option value="Kumbara">Kumbara</option>
+                <option value="Kredi Hesabı">Kredi Hesabı</option>
+                <option value="Kredi Kartı">Kredi Kartı</option>
+                <option value="Birikim Hesabı">Birikim Hesabı</option>
+                <option value="Yatırım Hesabı">Yatırım Hesabı</option>
+                <option value="Borç Verilenler Hesabı">Borç Verilenler Hesabı</option>
+                <option value="Borç Alınanlar Hesabı">Borç Alınanlar Hesabı</option>
+                <option value="Harçlık Verilen Hesap (Çocuk)">Harçlık Verilen Hesap (Çocuk)</option>
             </select>
-            <input type="number" id="tutar" placeholder="Tutar" required>
+            <input type="number" id="tutar" placeholder="Başlangıç Bakiyesi" required>
             <button onclick="createAccount()">Hesap Oluştur</button>
         </div>
     </div>
