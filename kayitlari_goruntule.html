@@ -64,9 +64,12 @@
                 const response = await fetch('menu.html');
                 const menuHtml = await response.text();
                 document.getElementById('menuContainer').innerHTML = menuHtml;
-                const script = document.createElement('script');
-                script.textContent = document.querySelector('#menuContainer script').textContent;
-                document.head.appendChild(script);
+                const scriptContent = document.querySelector('#menuContainer script');
+                if (scriptContent) {
+                    const script = document.createElement('script');
+                    script.textContent = scriptContent.textContent;
+                    document.head.appendChild(script);
+                }
             } catch (error) {
                 console.error('Menü yüklenirken hata oluştu:', error);
                 alert('Menü yüklenirken bir hata oluştu: ' + error.message);
