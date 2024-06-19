@@ -6,14 +6,50 @@
     <title>Hesap Oluştur ve Yönet</title>
     <script type="module" src="account.js"></script>
     <style>
-        /* CSS stilleri burada */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        #menuContainer {
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .account-item {
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .account-details {
+            display: none;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
 <body>
     <div id="menuContainer"></div>
-
     <h1>Hesap Oluştur ve Yönet</h1>
-    <div>
+    <div class="container">
         <div>
             <h2>Kayıtlı Hesaplar</h2>
             <div id="accountList"></div>
@@ -22,13 +58,21 @@
             <h2>Yeni Hesap Oluştur</h2>
             <div id="accountDescription"></div>
             <form id="createAccountForm">
-                <div>
+                <div class="form-group">
                     <label for="accountType">Hesap Türü Seçin</label>
-                    <select id="accountType">
+                    <select id="accountType" required>
                         <option value="">Hesap Türü Seçin</option>
-                        <!-- Hesap türleri buraya dinamik olarak yüklenecek -->
-                    </select
-                    </div>
+                        <option value="Nakit">Nakit (Cüzdan)</option>
+                        <option value="Banka Hesabı">Banka Hesabı</option>
+                        <option value="Kredi Hesabı">Kredi Hesabı</option>
+                        <option value="Kredi Kartı">Kredi Kartı</option>
+                        <option value="Birikim Hesabı">Birikim Hesabı</option>
+                        <option value="Yatırım Hesabı">Yatırım Hesabı</option>
+                        <option value="Borç Verilenler Hesabı">Borç Verilenler Hesabı</option>
+                        <option value="Borç Alınanlar Hesabı">Borç Alınanlar Hesabı</option>
+                        <option value="Harçlık Verilen Hesap (Çocuk)">Harçlık Verilen Hesap (Çocuk)</option>
+                    </select>
+                </div>
                 <div id="formContainer">
                     <!-- Dinamik form alanları buraya eklenecek -->
                 </div>
@@ -36,5 +80,6 @@
             </form>
         </div>
     </div>
+    <script type="module" src="menu.js"></script>
 </body>
 </html>
