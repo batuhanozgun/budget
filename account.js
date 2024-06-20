@@ -33,21 +33,6 @@ async function onAccountTypeChange(event) {
     createFormFields(accountTypeInfo.fields);
 }
 
-function formatNumber(input) {
-    // Binlik ayıracı ve küsurat ayıracı ile formatlama
-    let value = input.value.replace(/\./g, '').replace(/,/g, '.');
-    let number = parseFloat(value);
-    if (!isNaN(number)) {
-        // Sayıyı uygun formata çevir
-        value = number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        value = value.replace(/,/g, '.'); // Virgülleri noktalarla değiştir
-        input.value = value;
-    } else {
-        input.value = '';
-        alert('Lütfen geçerli bir sayı girin.');
-    }
-}
-
 function createFormFields(fields) {
     const formContainer = document.getElementById('formFields');
     formContainer.innerHTML = '';
@@ -73,11 +58,7 @@ function createFormFields(fields) {
             input.type = field.type;
             input.name = field.name;
             if (field.type === 'number') {
-                input.step = 'any';
-                input.addEventListener('blur', () => formatNumber(input));
-                input.addEventListener('focus', () => {
-                    input.value = input.value.replace(/\./g, '').replace(/,/g, '.');
-                });
+                input.step = 'any'; // Küsuratlı değerler için step özelliği eklendi
             }
         }
         formContainer.appendChild(label);
@@ -132,7 +113,7 @@ document.getElementById('createAccountForm').addEventListener('submit', async (e
     const formFields = document.getElementById('formFields').querySelectorAll('input');
     const accountData = {};
     formFields.forEach(field => {
-        accountData[field.name] = field.value.replace(/\./g, '').replace(/,/g, '.'); // Veritabanına kaydedilmeden önce sayısal veriyi normalize etme
+        accountData[field.name] = field.value;
     });
     accountData['type'] = accountType;
     const auth = getAuth();
