@@ -20,7 +20,7 @@ body {
 
 /* Sol Bölüm */
 .left {
-    background-color: #104e8b; /* Daha soft turuncu arka plan */
+    background-color: #ee7942; /* Daha soft turuncu arka plan */
     color: #FFF;
     padding: 20px;
     z-index: 1; /* Üstte görünmesini sağlar */
@@ -92,7 +92,7 @@ input[type="password"] {
 
 /* Butonlar */
 button {
-    background-color: #FF4500;
+    background-color: #ee7942;
     color: #FFF;
     padding: 10px 15px;
     border: none;
@@ -115,7 +115,7 @@ button:hover {
 }
 
 .login-link a {
-    color: #FF4500;
+    color: #ee7942;
     text-decoration: none;
 }
 
