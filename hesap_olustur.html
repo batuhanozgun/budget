@@ -3,90 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hesap Oluştur ve Yönet</title>
-    <script type="module" src="./account.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .container {
-            display: flex;
-            justify-content: space-between;
-        }
-        .accounts-list, .account-form {
-            width: 45%;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .accounts-list .account {
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .account-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .account-details {
-            display: none;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
-        }
-        .account-form label {
-            display: block;
-            margin-top: 10px;
-        }
-        .account-form input, .account-form select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .account-form button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: green;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
+    <title>Hesap Oluştur</title>
+    <script type="module" src="main.js"></script>
 </head>
 <body>
     <div id="menuContainer"></div>
-    <div class="container">
-        <div class="accounts-list">
-            <h2>Kayıtlı Hesaplar</h2>
-            <div id="accountsContainer"></div>
-        </div>
-        <div class="account-form">
-            <h2>Yeni Hesap Oluştur</h2>
-            <form id="createAccountForm">
-                <label for="accountType">Hesap Türü</label>
-                <select id="accountType" name="accountType">
-                    <option value="">Hesap Türü Seçin</option>
-                    <option value="Nakit">Nakit (Cüzdan)</option>
-                    <option value="Banka Hesabı">Banka Hesabı</option>
-                    <option value="Kredi Hesabı">Kredi Hesabı</option>
-                    <option value="Kredi Kartı">Kredi Kartı</option>
-                    <option value="Birikim Hesabı">Birikim Hesabı</option>
-                    <option value="Yatırım Hesabı">Yatırım Hesabı</option>
-                    <option value="Borç Verilenler Hesabı">Borç Verilenler Hesabı</option>
-                    <option value="Borç Alınanlar Hesabı">Borç Alınanlar Hesabı</option>
-                    <option value="Harçlık Verilen Hesap (Çocuk)">Harçlık Verilen Hesap (Çocuk)</option>
-                </select>
-                <div id="accountDescription"></div>
-                <div id="formFields"></div>
-                <button type="submit">Hesap Oluştur</button>
-            </form>
-        </div>
-    </div>
+    <!-- Hesap oluşturma ve yönetme bölümü burada olacak -->
 </body>
 </html>
