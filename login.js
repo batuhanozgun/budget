@@ -14,6 +14,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         window.location.href = 'landing.html';
     } catch (error) {
         console.error('Giriş hatası: ', error);
-        messageDiv.textContent = 'Giriş hatası: ' + error.message;
+        messageDiv.textContent = 'E-Posta ya da şifre hatalı';
     }
 });
