@@ -39,11 +39,30 @@ function createFormFields(fields) {
     fields.forEach(field => {
         const label = document.createElement('label');
         label.innerText = field.label;
-        const input = document.createElement('input');
-        input.type = field.type;
-        input.name = field.name;
+        let input;
+        if (field.type === 'checkbox') {
+            input = document.createElement('input');
+            input.type = field.type;
+            input.name = field.name;
+            input.id = field.name;
+            input.addEventListener('change', (e) => {
+                const toggleField = formContainer.querySelector(`[name="${field.name.replace('Limiti', 'Tutarı')}"]`);
+                if (e.target.checked) {
+                    toggleField.style.display = 'block';
+                } else {
+                    toggleField.style.display = 'none';
+                }
+            });
+        } else {
+            input = document.createElement('input');
+            input.type = field.type;
+            input.name = field.name;
+        }
         formContainer.appendChild(label);
         formContainer.appendChild(input);
+        if (field.type === 'number' && field.name.includes('Tutarı')) {
+            input.style.display = 'none';
+        }
     });
 }
 
