@@ -6,7 +6,6 @@ export function loadMenu() {
         .then(response => response.text())
         .then(html => {
             document.getElementById('menuContainer').innerHTML = html;
-            // Menüyü yükledikten sonra sayfa içeriğini de yükleyelim
             loadPageContent();
         })
         .catch(error => console.error('Menü yükleme hatası: ', error));
