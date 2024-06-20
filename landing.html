@@ -28,5 +28,10 @@
     <div class="right">
         <iframe id="contentFrame" src="" frameborder="0" style="width: 100%; height: 100%;"></iframe>
     </div>
+    <script>
+        function loadPage(page) {
+            document.getElementById('contentFrame').src = page;
+        }
+    </script>
 </body>
 </html>
