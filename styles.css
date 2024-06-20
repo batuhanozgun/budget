@@ -15,83 +15,125 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
+    position: relative; /* Gölge için gerekli */
     flex-direction: column;
 }
 
 /* Sol Bölüm */
 .left {
-    background-color: #ee7942;
+    background-color: #ee7942; /* Daha soft turuncu arka plan */
     color: #FFF;
     padding: 20px;
-    z-index: 1;
-    box-shadow: 10px 0 15px rgba(0, 0, 0, 0.3);
+    z-index: 1; /* Üstte görünmesini sağlar */
+    box-shadow: 10px 0 15px rgba(0, 0, 0, 0.3); /* Sağ tarafa gölge efekti */
 }
 
 /* Sağ Bölüm */
 .right {
-    background-color: #E0E0E0;
+    background-color: #E0E0E0; /* Gri arka plan */
     padding: 20px;
-    z-index: 0;
+    z-index: 0; /* Altta görünmesini sağlar */
+}
+
+/* Bilgi Alanı */
+.info {
+    max-width: 400px;
+    background-color: #FFF; /* Beyaz dikdörtgen */
+    color: #333;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: justify;
 }
 
 /* Header */
 header {
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    text-align: center;
     margin-bottom: 20px;
 }
 
 header h1 {
     margin: 0;
+    color: #FFF;
 }
 
-#logoutButton {
-    background-color: #ff6a6a;
+/* Başlık */
+h2 {
+    color: #FFF;
+    background-color: #002147;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    width: 100%;
+}
+
+/* Form ve Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+form {
+    background-color: #FFF;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
+}
+
+/* Form Etiketler */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+/* Form Girdileri */
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #CCC;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Butonlar */
+button {
+    background-color: #ee7942;
     color: #FFF;
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width: 100%;
     font-size: 16px;
     font-weight: bold;
 }
 
-#logoutButton:hover {
+button:hover {
     background-color: #E04000;
 }
 
-/* İçerik */
-.content {
-    text-align: center;
+/* Giriş Yap Linki */
+.login-link {
     margin-top: 20px;
+    font-size: 14px;
+    color: #002147;
 }
 
-.content h2 {
-    margin-top: 0;
-}
-
-.navigation {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.navigation a {
-    background-color: #002147;
-    color: #FFF;
-    padding: 10px;
+.login-link a {
+    color: #ee7942;
     text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
 }
 
-.navigation a:hover {
-    background-color: #00172e;
+.login-link a:hover {
+    text-decoration: underline;
 }
 
 /* Mesaj Alanı */
