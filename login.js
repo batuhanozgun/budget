@@ -15,5 +15,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     } catch (error) {
         console.error('Giriş hatası: ', error);
         messageDiv.textContent = 'E-Posta ya da şifre hatalı';
+        messageDiv.style.display = 'block';
     }
 });
