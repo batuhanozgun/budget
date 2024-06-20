@@ -32,11 +32,11 @@ h2 {
 /* Form */
 form {
     background-color: #FFF;
-    padding: 20px 40px; /* Sol ve sağ taraftan boşluk ekledik */
+    padding: 20px 40px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 500px;  /* Genişliği artırdık */
+    max-width: 500px;
     margin-top: 20px;
 }
 
@@ -55,7 +55,7 @@ input[type="password"] {
     margin-bottom: 10px;
     border: 1px solid #CCC;
     border-radius: 5px;
-    box-sizing: border-box; /* Padding ile birlikte tam genişliği hesaba katmak için */
+    box-sizing: border-box;
 }
 
 /* Butonlar */
