@@ -20,7 +20,7 @@ body {
 
 /* Sol Bölüm */
 .left {
-    background-color: #FFA07A; /* Daha soft turuncu arka plan */
+    background-color: # ff7f00; /* Daha soft turuncu arka plan */
     color: #FFF;
     padding: 20px;
     z-index: 1; /* Üstte görünmesini sağlar */
