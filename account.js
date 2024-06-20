@@ -34,9 +34,9 @@ async function onAccountTypeChange(event) {
 }
 
 function formatNumber(input) {
-    const value = parseFloat(input.value.replace(/,/g, '.'));
+    const value = parseFloat(input.value.replace(/\./g, '').replace(/,/g, '.'));
     if (!isNaN(value)) {
-        input.value = value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        input.value = value.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 }
 
@@ -66,7 +66,6 @@ function createFormFields(fields) {
             input.name = field.name;
             if (field.type === 'number') {
                 input.step = 'any';
-                input.pattern = "\\d+(\\.\\d{0,2})?";
                 input.addEventListener('blur', () => formatNumber(input));
                 input.addEventListener('focus', () => {
                     input.value = input.value.replace(/\./g, '').replace(/,/g, '.');
