@@ -38,7 +38,10 @@ function formatNumber(input) {
     let value = input.value.replace(/\./g, '').replace(/,/g, '.');
     let number = parseFloat(value);
     if (!isNaN(number)) {
-        input.value = number.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/\./g, ',').replace(/,/g, '.');
+        // Sayıyı uygun formata çevir
+        value = number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        value = value.replace(/,/g, '.'); // Virgülleri noktalarla değiştir
+        input.value = value;
     } else {
         input.value = '';
         alert('Lütfen geçerli bir sayı girin.');
