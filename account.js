@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { loadMenu } from './menu.js';
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
 // Firebase konfigürasyonu
 const firebaseConfig = {
@@ -15,6 +16,7 @@ const firebaseConfig = {
 // Firebase'i başlat
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 // Hesap türlerine göre form alanlarını dinamik olarak oluşturmak için account_settings.json dosyasını yükle
 let accountSettings = {};
