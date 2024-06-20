@@ -13,8 +13,8 @@
             {"label": "Hesap Adı", "type": "text", "name": "Hesap Adı"},
             {"label": "Başlangıç Bakiyesi", "type": "number", "name": "Başlangıç Bakiyesi"},
             {"label": "Hesap Oluşturma Tarihi", "type": "date", "name": "Hesap Oluşturma Tarihi"},
-            {"label": "KMH Var/Yok", "type": "checkbox", "name": "KMH"},
-            {"label": "Faiz Oranı", "type": "number", "name": "Faiz Oranı"},
+            {"label": "KMH Limiti", "type": "number", "name": "KMH Limiti", "checkbox": true},
+            {"label": "Günlük Faiz Oranı", "type": "number", "name": "Günlük Faiz Oranı"},
             {"label": "Hesap Kesim Tarihi", "type": "date", "name": "Hesap Kesim Tarihi"}
         ]
     },
