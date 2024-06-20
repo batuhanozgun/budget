@@ -1,19 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-
-// Firebase konfigürasyonu
-const firebaseConfig = {
-    apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
-    authDomain: "batusbudget.firebaseapp.com",
-    projectId: "batusbudget",
-    storageBucket: "batusbudget.appspot.com",
-    messagingSenderId: "1084998760222",
-    appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
-};
-
-// Firebase'i başlat
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+// menu.js
+import { signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
 export function loadMenu() {
     fetch('menu.html')
@@ -25,7 +11,7 @@ export function loadMenu() {
         .catch(error => console.error('Menü yükleme hatası: ', error));
 }
 
-window.logout = function() {
+export function logout(auth) {
     signOut(auth).then(() => {
         alert('Başarıyla çıkış yaptınız.');
         window.location.href = 'login.html';
