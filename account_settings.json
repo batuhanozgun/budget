@@ -15,7 +15,7 @@
             {"label": "Hesap Oluşturma Tarihi", "type": "date", "name": "Hesap Oluşturma Tarihi"},
             {"label": "KMH Limiti", "type": "checkbox", "name": "KMH Limiti", "toggleField": true},
             {"label": "KMH Tutarı", "type": "number", "name": "KMH Tutarı"},
-            {"label": "Günlük Faiz Oranı", "type": "number", "name": "Günlük Faiz Oranı"},
+            {"label": "Günlük Faiz Oranı", "type": "number", "name": "Günlük Faiz Oranı", "step": "0.01"},
             {"label": "Hesap Kesim Tarihi", "type": "date", "name": "Hesap Kesim Tarihi"}
         ]
     },
