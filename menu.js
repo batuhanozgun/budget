@@ -6,9 +6,22 @@ export function loadMenu() {
         .then(response => response.text())
         .then(html => {
             document.getElementById('menuContainer').innerHTML = html;
-            eval(document.getElementById('menuContainer').querySelector('script').textContent);
+            // Menüyü yükledikten sonra sayfa içeriğini de yükleyelim
+            loadPageContent();
         })
         .catch(error => console.error('Menü yükleme hatası: ', error));
+}
+
+function loadPageContent() {
+    const page = document.body.getAttribute('data-page');
+    if (page) {
+        fetch(`${page}.html`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('contentContainer').innerHTML = html;
+            })
+            .catch(error => console.error('Sayfa içeriği yükleme hatası: ', error));
+    }
 }
 
 export function logout(auth) {
