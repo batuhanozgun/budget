@@ -6,33 +6,38 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
     height: 100vh;
-    flex-direction: row; /* Yatay hizalama için */
 }
 
-/* Container */
-.container {
+/* Sol ve Sağ Bölüm */
+.left, .right {
+    flex: 1;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
+}
+
+/* Sol Bölüm */
+.left {
+    background-color: #FF4500; /* Turuncu arka plan */
+    color: #FFF;
+    padding: 20px;
+}
+
+/* Sağ Bölüm */
+.right {
     background-color: #E0E0E0; /* Gri arka plan */
     padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-left: 20px; /* Bilgi bölümünden ayrım için */
 }
 
 /* Bilgi Alanı */
 .info {
     max-width: 400px;
-    background-color: #FF4500; /* Turuncu arka plan */
-    color: #FFF;
+    background-color: #FFF; /* Beyaz dikdörtgen */
+    color: #333;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Gölge efekti */
-    margin-right: 20px; /* Form bölümünden ayrım için */
     text-align: justify;
 }
 
@@ -53,7 +58,7 @@ form {
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    margin-top: 20px;
+    max-width: 400px;
 }
 
 /* Form Etiketler */
@@ -105,11 +110,4 @@ button:hover {
 
 .login-link a:hover {
     text-decoration: underline;
-}
-
-/* Ayraç */
-hr {
-    border: none;
-    border-top: 1px solid #CCC;
-    margin: 20px 0;
 }
