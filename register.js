@@ -14,10 +14,11 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         window.location.href = 'verify_email.html';
     } catch (error) {
         console.error('Kayıt hatası: ', error);
-        if (error.code === 'Firebase: Error (auth/email-already-in-use).') {
+        if (error.message.includes('auth/email-already-in-use')) {
             messageDiv.textContent = 'Zaten kayıtlısın, giriş yap';
         } else {
-            alert('Kayıt hatası: ' + error.message);
+            messageDiv.textContent = 'Kayıt hatası: ' + error.message;
         }
+        messageDiv.style.display = 'block';
     }
 });
