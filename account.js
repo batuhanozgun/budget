@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { loadMenu } from './menu.js';
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
 // Firebase konfigürasyonu
 const firebaseConfig = {
@@ -16,121 +16,114 @@ const firebaseConfig = {
 // Firebase'i başlat
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
-// Hesap türlerine göre form alanlarını dinamik olarak oluşturmak için account_settings.json dosyasını yükle
-let accountSettings = {};
+// Menü yüklensin
+loadMenu();
 
-fetch('account_settings.json')
-    .then(response => response.json())
-    .then(data => {
-        accountSettings = data;
-        setupAccountForm();
-    })
-    .catch(error => console.error('Account settings yükleme hatası: ', error));
-
-function setupAccountForm() {
-    const accountTypeSelect = document.getElementById('accountType');
-    accountTypeSelect.addEventListener('change', handleAccountTypeChange);
+async function fetchAccountSettings() {
+    const response = await fetch('account_settings.json');
+    return await response.json();
 }
 
-function handleAccountTypeChange() {
-    const accountType = document.getElementById('accountType').value;
-    const formContainer = document.getElementById('dynamicFormFields');
-    formContainer.innerHTML = ''; // Mevcut form alanlarını temizle
-
-    if (accountSettings[accountType]) {
-        accountSettings[accountType].forEach(fieldConfig => {
-            const formField = createFormField(fieldConfig);
-            formContainer.appendChild(formField);
-        });
-    }
+async function onAccountTypeChange(event) {
+    const accountSettings = await fetchAccountSettings();
+    const selectedAccountType = event.target.value;
+    const accountTypeInfo = accountSettings[selectedAccountType];
+    document.getElementById('accountDescription').innerText = accountTypeInfo.description;
+    createFormFields(accountTypeInfo.fields);
 }
 
-function createFormField(fieldConfig) {
-    const fieldWrapper = document.createElement('div');
-    fieldWrapper.classList.add('form-group');
-
-    const label = document.createElement('label');
-    label.textContent = fieldConfig.label;
-    fieldWrapper.appendChild(label);
-
-    const input = document.createElement('input');
-    input.setAttribute('type', fieldConfig.type);
-    input.setAttribute('name', fieldConfig.name);
-    input.classList.add('form-control');
-
-    // Eğer step değeri varsa, input elementine ekleyelim
-    if (fieldConfig.step) {
-        input.setAttribute('step', fieldConfig.step);
-    }
-
-    fieldWrapper.appendChild(input);
-
-    return fieldWrapper;
+function createFormFields(fields) {
+    const formContainer = document.getElementById('formFields');
+    formContainer.innerHTML = '';
+    fields.forEach(field => {
+        const label = document.createElement('label');
+        label.innerText = field.label;
+        let input;
+        if (field.type === 'checkbox') {
+            input = document.createElement('input');
+            input.type = field.type;
+            input.name = field.name;
+            input.id = field.name;
+            input.addEventListener('change', (e) => {
+                const toggleField = formContainer.querySelector(`[name="${field.name.replace('Limiti', 'Tutarı')}"]`);
+                if (e.target.checked) {
+                    toggleField.style.display = 'block';
+                } else {
+                    toggleField.style.display = 'none';
+                }
+            });
+        } else {
+            input = document.createElement('input');
+            input.type = field.type;
+            input.name = field.name;
+            if (field.type === 'number') {
+                input.step = 'any'; // Küsuratlı değerler için step özelliği eklendi
+            }
+        }
+        formContainer.appendChild(label);
+        formContainer.appendChild(input);
+        if (field.type === 'number' && field.name.includes('Tutarı')) {
+            input.style.display = 'none';
+        }
+    });
 }
 
-document.getElementById('accountForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+document.getElementById('accountType').addEventListener('change', onAccountTypeChange);
 
-    const accountType = document.getElementById('accountType').value;
-    const formData = new FormData(e.target);
-    const accountData = Object.fromEntries(formData.entries());
+async function fetchAccounts() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const querySnapshot = await getDocs(collection(db, 'accounts'));
+            const accountsContainer = document.getElementById('accountsContainer');
+            accountsContainer.innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                const accountData = doc.data();
+                const accountDiv = document.createElement('div');
+                accountDiv.className = 'account';
+                accountDiv.innerHTML = `
+                    <div class="account-header">
+                        <p><strong>Hesap Adı:</strong> ${accountData['Hesap Adı']}</p>
+                        <p><strong>Hesap Türü:</strong> ${accountData['type']}</p>
+                    </div>
+                    <div class="account-details">
+                        ${Object.keys(accountData).map(key => `
+                            <p><strong>${key}:</strong> ${accountData[key]}</p>`).join('')}
+                    </div>
+                `;
+                accountDiv.querySelector('.account-header').addEventListener('click', () => {
+                    const details = accountDiv.querySelector('.account-details');
+                    details.style.display = details.style.display === 'none' ? 'block' : 'none';
+                });
+                accountsContainer.appendChild(accountDiv);
+            });
+        }
+    });
+}
 
-    try {
-        await addDoc(collection(db, 'accounts'), {
-            ...accountData,
-            accountType: accountType,
-            userId: auth.currentUser.uid
-        });
-        alert('Hesap başarıyla oluşturuldu!');
-        loadAccounts();
-    } catch (error) {
-        console.error('Hesap oluşturma hatası: ', error);
-        alert('Hesap oluşturulurken bir hata oluştu: ' + error.message);
-    }
+window.addEventListener('load', () => {
+    loadMenu();
+    fetchAccounts();
 });
 
-async function loadAccounts() {
-    const accountsList = document.getElementById('accountsList');
-    accountsList.innerHTML = ''; // Mevcut hesapları temizle
-
-    const querySnapshot = await getDocs(collection(db, 'accounts'));
-    querySnapshot.forEach(doc => {
-        const account = doc.data();
-        const accountItem = document.createElement('div');
-        accountItem.classList.add('account-item');
-        accountItem.innerHTML = `
-            <button class="accordion">${account.accountName}</button>
-            <div class="panel">
-                <p>Hesap Türü: ${account.accountType}</p>
-                <p>Başlangıç Bakiyesi: ${account.initialBalance}</p>
-                <p>Mevcut Bakiye: ${account.currentBalance}</p>
-            </div>
-        `;
-        accountsList.appendChild(accountItem);
+document.getElementById('createAccountForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const accountType = document.getElementById('accountType').value;
+    const formFields = document.getElementById('formFields').querySelectorAll('input');
+    const accountData = {};
+    formFields.forEach(field => {
+        accountData[field.name] = field.value;
     });
-
-    setupAccordion();
-}
-
-function setupAccordion() {
-    const accordions = document.getElementsByClassName("accordion");
-    for (let i = 0; i < accordions.length; i++) {
-        accordions[i].addEventListener("click", function () {
-            this.classList.toggle("active");
-            const panel = this.nextElementSibling;
-            if (panel.style.display === "block") {
-                panel.style.display = "none";
-            } else {
-                panel.style.display = "block";
-            }
-        });
-    }
-}
-
-// Menü yükleme
-window.onload = function () {
-    loadMenu();
-    loadAccounts();
-};
+    accountData['type'] = accountType;
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            await addDoc(collection(db, 'accounts'), accountData);
+            alert('Hesap başarıyla oluşturuldu!');
+            fetchAccounts();
+        } else {
+            alert('Kullanıcı oturumu açılmadı.');
+        }
+    });
+});
