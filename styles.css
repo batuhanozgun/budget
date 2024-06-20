@@ -1,0 +1,75 @@
+/* Genel Ayarlar */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F0F0F0;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Başlık */
+h2 {
+    color: #FFF;
+    background-color: #002147;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Form */
+form {
+    background-color: #FFF;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
+}
+
+/* Form Etiketler */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+/* Form Girdileri */
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #CCC;
+    border-radius: 5px;
+}
+
+/* Butonlar */
+button {
+    background-color: #FF4500;
+    color: #FFF;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #E04000;
+}
+
+/* Ayraç */
+hr {
+    border: none;
+    border-top: 1px solid #CCC;
+    margin: 20px 0;
+}
