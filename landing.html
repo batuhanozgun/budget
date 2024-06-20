@@ -1,16 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" data-page="landing">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing</title>
-    <script type="module" src="main.js"></script>
+    <title>Ana Sayfa</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="landing.js"></script>
 </head>
 <body>
-    <div id="menuContainer"></div>
-    <div id="contentContainer">
-        <h1>Hoş geldiniz!</h1>
+    <header>
+        <h1>BudgetIN</h1>
         <button id="logoutButton">Çıkış Yap</button>
+    </header>
+    <div class="content">
+        <h2>Hoş Geldiniz!</h2>
+        <p>Gelir ve gider takibi yapmak için aşağıdaki seçeneklerden birini seçin:</p>
+        <div class="navigation">
+            <a href="kayit_gir.html">Kayıt Gir</a>
+            <a href="kayitlari_gor.html">Kayıtları Gör</a>
+            <a href="profil_duzenle.html">Profilim</a>
+        </div>
+        <div id="message" class="message" style="display: none;"></div>
     </div>
 </body>
 </html>
