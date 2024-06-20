@@ -80,17 +80,18 @@ header h1 {
     margin-top: 20px;
 }
 
-.navigation a {
+.navigation button {
     background-color: #002147;
     color: #FFF;
     padding: 10px;
-    text-decoration: none;
+    border: none;
     border-radius: 5px;
     font-size: 16px;
     font-weight: bold;
+    cursor: pointer;
 }
 
-.navigation a:hover {
+.navigation button:hover {
     background-color: #00172e;
 }
 
