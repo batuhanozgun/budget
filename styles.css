@@ -9,80 +9,20 @@ body {
     height: 100vh;
 }
 
-/* Sol ve Sağ Bölüm */
-.left, .right {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative; /* Gölge için gerekli */
-    flex-direction: column;
-}
-
-/* Sol Bölüm */
-.left {
-    background-color: #ee7942; /* Daha soft turuncu arka plan */
-    color: #FFF;
-    padding: 20px;
-    z-index: 1; /* Üstte görünmesini sağlar */
-    box-shadow: 10px 0 15px rgba(0, 0, 0, 0.3); /* Sağ tarafa gölge efekti */
-}
-
-/* Sağ Bölüm */
-.right {
-    background-color: #E0E0E0; /* Gri arka plan */
-    padding: 20px;
-    z-index: 0; /* Altta görünmesini sağlar */
-}
-
-/* Bilgi Alanı */
-.info {
-    max-width: 400px;
-    background-color: #FFF; /* Beyaz dikdörtgen */
-    color: #333;
-    padding: 20px;
-    border-radius: 5px;
-    text-align: justify;
-}
-
-/* Header */
-header {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-header h1 {
-    margin: 0;
-    color: #FFF;
-}
-
-/* Başlık */
-h2 {
-    color: #FFF;
-    background-color: #002147;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    width: 100%;
-}
-
-/* Form ve Container */
+/* Konteyner */
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background-color: #FFF;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
 }
 
-form {
-    background-color: #FFF;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    margin-top: 20px;
+/* Başlıklar */
+h2 {
+    color: #002147;
+    text-align: center;
 }
 
 /* Form Etiketler */
@@ -93,8 +33,10 @@ label {
 }
 
 /* Form Girdileri */
-input[type="email"],
-input[type="password"] {
+input[type="text"],
+input[type="date"],
+input[type="number"],
+select {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
@@ -105,7 +47,7 @@ input[type="password"] {
 
 /* Butonlar */
 button {
-    background-color: #ee7942;
+    background-color: #002147;
     color: #FFF;
     padding: 10px 15px;
     border: none;
@@ -117,33 +59,25 @@ button {
 }
 
 button:hover {
-    background-color: #E04000;
+    background-color: #00172e;
 }
 
-/* Giriş Yap Linki */
-.login-link {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #002147;
+/* Hesap Listesi */
+#accountList {
+    list-style: none;
+    padding: 0;
 }
 
-.login-link a {
-    color: #ee7942;
-    text-decoration: none;
-}
-
-.login-link a:hover {
-    text-decoration: underline;
-}
-
-/* Mesaj Alanı */
-.message {
-    margin-top: 20px;
-    font-size: 14px;
+#accountList li {
+    background-color: #ee7942;
     color: #FFF;
-    text-align: center;
-    background-color: #ff6a6a; /* Kırmızı arka plan */
     padding: 10px;
+    margin-bottom: 5px;
     border-radius: 5px;
-    display: none; /* Hata olmadığında görünmez */
+    cursor: pointer;
+    text-align: center;
+}
+
+#accountList li:hover {
+    background-color: #E04000;
 }
