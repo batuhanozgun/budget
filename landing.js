@@ -4,7 +4,7 @@ import { signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth
 
 document.getElementById('logoutButton').addEventListener('click', async () => {
     const messageDiv = document.getElementById('message');
-    
+
     try {
         await signOut(auth);
         window.location.href = 'login.html';
@@ -14,3 +14,7 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
         messageDiv.style.display = 'block';
     }
 });
+
+function loadPage(page) {
+    document.getElementById('contentFrame').src = page;
+}
