@@ -75,6 +75,22 @@ button:hover {
     background-color: #E04000;
 }
 
+/* Giriş Yap Linki */
+.login-link {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #002147;
+}
+
+.login-link a {
+    color: #FF4500;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
 /* Ayraç */
 hr {
     border: none;
