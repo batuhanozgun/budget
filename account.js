@@ -34,10 +34,9 @@ async function onAccountTypeChange(event) {
 }
 
 function formatNumber(input) {
-    const value = parseFloat(input.value.replace(/\./g, '').replace(/,/g, '.'));
-    if (!isNaN(value)) {
-        input.value = value.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
+    let value = input.value.replace(/\./g, '').replace(/,/g, '.');
+    value = parseFloat(value).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    input.value = value;
 }
 
 function createFormFields(fields) {
