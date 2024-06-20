@@ -14,7 +14,3 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
         messageDiv.style.display = 'block';
     }
 });
-
-function loadPage(page) {
-    document.getElementById('contentFrame').src = page;
-}
