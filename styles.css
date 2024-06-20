@@ -142,4 +142,7 @@ button:hover {
     font-size: 14px;
     color: red;
     text-align: center;
+    background-color: #FFF; /* Beyaz arka plan */
+    padding: 10px;
+    border-radius: 5px;
 }
