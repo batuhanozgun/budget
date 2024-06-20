@@ -15,6 +15,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative; /* Gölge için gerekli */
 }
 
 /* Sol Bölüm */
@@ -22,12 +23,15 @@ body {
     background-color: #FF4500; /* Turuncu arka plan */
     color: #FFF;
     padding: 20px;
+    z-index: 1; /* Üstte görünmesini sağlar */
+    box-shadow: 10px 0 15px rgba(0, 0, 0, 0.3); /* Sağ tarafa gölge efekti */
 }
 
 /* Sağ Bölüm */
 .right {
     background-color: #E0E0E0; /* Gri arka plan */
     padding: 20px;
+    z-index: 0; /* Altta görünmesini sağlar */
 }
 
 /* Bilgi Alanı */
@@ -37,7 +41,6 @@ body {
     color: #333;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Gölge efekti */
     text-align: justify;
 }
 
@@ -51,7 +54,14 @@ h2 {
     width: 100%;
 }
 
-/* Form */
+/* Form ve Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 form {
     background-color: #FFF;
     padding: 20px;
@@ -59,6 +69,7 @@ form {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
+    margin-top: 20px;
 }
 
 /* Form Etiketler */
