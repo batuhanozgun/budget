@@ -5,10 +5,9 @@ import { auth } from './firebaseConfig.js';
 document.addEventListener('DOMContentLoaded', () => {
     loadMenu();
 
-    const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', () => {
+    document.addEventListener('click', (event) => {
+        if (event.target && event.target.id === 'logoutButton') {
             logout(auth);
-        });
-    }
+        }
+    });
 });
