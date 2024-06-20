@@ -34,9 +34,26 @@ async function onAccountTypeChange(event) {
 }
 
 function formatNumber(input) {
-    let value = input.value.replace(/\./g, '').replace(/,/g, '.');
-    value = parseFloat(value).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    input.value = value;
+    // 1. Remove thousands separators (periods in this case)
+    let value = input.value.replace(/\./g, ''); 
+
+    // 2. Replace comma (decimal separator) with a period
+    value = value.replace(/,/g, '.'); 
+
+    // 3. Parse the number
+    let number = parseFloat(value);
+
+    // 4. Format the number for display (using Turkish locale)
+    if (!isNaN(number)) {
+        input.value = number.toLocaleString('tr-TR', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        });
+    } else {
+        // Handle invalid input (optional)
+        input.value = ''; 
+        alert('Please enter a valid number.');
+    }
 }
 
 function createFormFields(fields) {
