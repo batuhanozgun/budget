@@ -43,12 +43,12 @@ function formatNumber(input) {
     // 3. Parse the number
     let number = parseFloat(value);
 
-    // 4. Format the number for display (using Turkish locale)
+    // 4. Format the number for display (using custom locale settings)
     if (!isNaN(number)) {
-        input.value = number.toLocaleString('tr-TR', { 
+        input.value = number.toLocaleString('en-US', { 
             minimumFractionDigits: 2, 
             maximumFractionDigits: 2 
-        });
+        }).replace(/,/g, '#').replace(/\./g, ',').replace(/#/g, '.');
     } else {
         // Handle invalid input (optional)
         input.value = ''; 
