@@ -5,7 +5,10 @@ import { auth } from './firebaseConfig.js';
 document.addEventListener('DOMContentLoaded', () => {
     loadMenu();
 
-    document.getElementById('logoutButton').addEventListener('click', () => {
-        logout(auth);
-    });
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            logout(auth);
+        });
+    }
 });
