@@ -11,6 +11,13 @@ body {
     height: 100vh;
 }
 
+/* Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 /* Başlık */
 h2 {
     color: #FFF;
