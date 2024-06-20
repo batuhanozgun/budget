@@ -7,13 +7,17 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    const messageDiv = document.getElementById('message');
 
     try {
         await createUserWithEmailAndPassword(auth, email, password);
-        alert('Kayıt başarılı!');
-        window.location.href = 'landing.html';
+        window.location.href = 'verify_email.html';
     } catch (error) {
         console.error('Kayıt hatası: ', error);
-        alert('Kayıt hatası: ' + error.message);
+        if (error.code === 'auth/email-already-in-use') {
+            messageDiv.textContent = 'Zaten kayıtlısın, giriş yap';
+        } else {
+            alert('Kayıt hatası: ' + error.message);
+        }
     }
 });
