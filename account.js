@@ -33,6 +33,13 @@ async function onAccountTypeChange(event) {
     createFormFields(accountTypeInfo.fields);
 }
 
+function formatNumber(input) {
+    const value = parseFloat(input.value.replace(/,/g, ''));
+    if (!isNaN(value)) {
+        input.value = value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+}
+
 function createFormFields(fields) {
     const formContainer = document.getElementById('formFields');
     formContainer.innerHTML = '';
@@ -58,7 +65,11 @@ function createFormFields(fields) {
             input.type = field.type;
             input.name = field.name;
             if (field.type === 'number') {
-                input.step = 'any'; // Küsuratlı değerler için step özelliği eklendi
+                input.step = 'any';
+                input.addEventListener('blur', () => formatNumber(input));
+                input.addEventListener('focus', () => {
+                    input.value = input.value.replace(/\./g, '').replace(/,/g, '.');
+                });
             }
         }
         formContainer.appendChild(label);
@@ -113,7 +124,7 @@ document.getElementById('createAccountForm').addEventListener('submit', async (e
     const formFields = document.getElementById('formFields').querySelectorAll('input');
     const accountData = {};
     formFields.forEach(field => {
-        accountData[field.name] = field.value;
+        accountData[field.name] = field.value.replace(/\./g, '').replace(/,/g, '.'); // Veritabanına kaydedilmeden önce sayısal veriyi normalize etme
     });
     accountData['type'] = accountType;
     const auth = getAuth();
