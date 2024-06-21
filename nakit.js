@@ -7,7 +7,7 @@ export function getNakitFields() {
 
 export function getNakitValues() {
     return {
-        initialBalance: document.getElementById('initialBalance').value
+        initialBalance: parseFloat(document.getElementById('initialBalance').value).toFixed(2)
     };
 }
 
