@@ -1,5 +1,5 @@
 import { auth, db } from './firebaseConfig.js';
-import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { checkAuth } from './auth.js';
 
@@ -24,6 +24,49 @@ async function loadProfile(user) {
         console.log("No such document!");
     }
 }
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = await checkAuth();
+    if (!user) {
+        return;
+    }
+
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    const birthDate = document.getElementById('birthDate').value;
+
+    const docRef = doc(db, "users", user.uid);
+
+    try {
+        await setDoc(docRef, {
+            firstName: firstName,
+            lastName: lastName,
+            birthDate: birthDate
+        }, { merge: true });
+        alert("Profil bilgileri başarıyla güncellendi!");
+    } catch (error) {
+        console.error("Profil güncelleme hatası: ", error);
+        alert("Profil güncelleme hatası: " + error.message);
+    }
+});
+
+document.getElementById('loginInfoForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = await checkAuth();
+    if (!user) {
+        return;
+    }
+
+    const newEmail = document.getElementById('email').value;
+    try {
+        await updateEmail(user, newEmail);
+        alert("E-posta başarıyla güncellendi!");
+    } catch (error) {
+        console.error("E-posta güncelleme hatası: ", error);
+        alert("E-posta güncelleme hatası: " + error.message);
+    }
+});
 
 document.getElementById('passwordForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -50,48 +93,5 @@ document.getElementById('passwordForm').addEventListener('submit', async (e) => 
     } catch (error) {
         console.error("Şifre güncelleme hatası: ", error);
         alert("Şifre güncelleme hatası: " + error.message);
-    }
-});
-
-document.getElementById('profileForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const user = await checkAuth();
-    if (!user) {
-        return;
-    }
-
-    const firstName = document.getElementById('firstName').value;
-    const lastName = document.getElementById('lastName').value;
-    const birthDate = document.getElementById('birthDate').value;
-
-    const docRef = doc(db, "users", user.uid);
-
-    try {
-        await updateDoc(docRef, {
-            firstName: firstName,
-            lastName: lastName,
-            birthDate: birthDate
-        });
-        alert("Profil bilgileri başarıyla güncellendi!");
-    } catch (error) {
-        console.error("Profil güncelleme hatası: ", error);
-        alert("Profil güncelleme hatası: " + error.message);
-    }
-});
-
-document.getElementById('loginInfoForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const user = await checkAuth();
-    if (!user) {
-        return;
-    }
-
-    const newEmail = document.getElementById('email').value;
-    try {
-        await updateEmail(user, newEmail);
-        alert("E-posta başarıyla güncellendi!");
-    } catch (error) {
-        console.error("E-posta güncelleme hatası: ", error);
-        alert("E-posta güncelleme hatası: " + error.message);
     }
 });
