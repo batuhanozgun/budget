@@ -1,4 +1,4 @@
-export function getKrediKartıFields() {
+export function getKrediKartiFields() {
     return `
         <label for="cardLimit">Kart Limiti:</label>
         <input type="number" id="cardLimit" name="cardLimit" required>
@@ -10,7 +10,7 @@ export function getKrediKartıFields() {
         <div id="billingCycleDetails"></div>`;
 }
 
-export function getKrediKartıValues() {
+export function getKrediKartiValues() {
     return {
         cardLimit: document.getElementById('cardLimit').value,
         billingCycle: document.getElementById('billingCycle').value,
