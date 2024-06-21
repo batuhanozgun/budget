@@ -14,13 +14,13 @@
             <button id="logoutButton">Çıkış Yap</button>
         </header>
         <div class="content">
-            <h2>Hoş Geldiniz!</h2>
+            <h2>Hoş Geldiniz, <span id="userName"></span>!</h2>
             <p>Gelir ve gider takibi yapmak için aşağıdaki seçeneklerden birini seçin:</p>
             <div class="navigation">
-                <button data-target="kayit_gir.html">Kayıt Gir</button>
-                <button data-target="kayitlari_goruntule.html">Kayıtları Gör</button>
-                <button data-target="profil_duzenle.html">Profilim</button>
-                <button data-target="hesap_olustur.html">Hesapları Yönet</button>
+                <button onclick="loadPage('kayit_gir.html')">Kayıt Gir</button>
+                <button onclick="loadPage('kayitlari_goruntule.html')">Kayıtları Gör</button>
+                <button onclick="loadPage('profil_duzenle.html')">Profilim</button>
+                <button onclick="loadPage('hesap_olustur.html')">Hesapları Yönet</button>
             </div>
             <div id="message" class="message" style="display: none;"></div>
         </div>
@@ -28,5 +28,12 @@
     <div class="right">
         <iframe id="contentFrame" src="" frameborder="0" style="width: 100%; height: 100%;"></iframe>
     </div>
+    <script>
+        function loadPage(page) {
+            const iframe = document.getElementById('contentFrame');
+            iframe.src = '';
+            iframe.src = page;
+        }
+    </script>
 </body>
 </html>
