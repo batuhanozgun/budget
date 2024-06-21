@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, query, getDocs, where } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getFirestore, collection, query, getDocs, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
 // Firebase yapılandırmanızı buraya ekleyin
@@ -31,9 +31,10 @@ async function loadTransactions(uid) {
 
     const data = {};
     
-    querySnapshot.forEach((doc) => {
-        const transaction = doc.data();
-        const accountName = transaction.kaynakHesap; // Burada accountName yerine kaynakHesap'ı kullanıyoruz
+    for (const transactionDoc of querySnapshot.docs) {
+        const transaction = transactionDoc.data();
+        const kaynakHesapDoc = await getDoc(doc(db, 'accounts', transaction.kaynakHesap));
+        const accountName = kaynakHesapDoc.exists() ? kaynakHesapDoc.data().accountName : 'N/A';
         const amount = transaction.tutar;
 
         if (data[accountName]) {
@@ -41,7 +42,7 @@ async function loadTransactions(uid) {
         } else {
             data[accountName] = parseFloat(amount);
         }
-    });
+    }
 
     const labels = Object.keys(data);
     const values = Object.values(data);
