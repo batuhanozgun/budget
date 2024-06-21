@@ -5,6 +5,8 @@ async function loadTransactions(uid) {
     const tableBody = document.getElementById('transactionsTableBody');
     tableBody.innerHTML = '';
 
+    const transactionsByAccount = {};
+
     for (const transactionDoc of querySnapshot.docs) {
         const data = transactionDoc.data();
         const transactionId = transactionDoc.id;
@@ -74,28 +76,57 @@ async function loadTransactions(uid) {
             }
         }
 
-        const row = document.createElement('tr');
+        if (!transactionsByAccount[kaynakHesapName]) {
+            transactionsByAccount[kaynakHesapName] = [];
+        }
+        transactionsByAccount[kaynakHesapName].push({
+            id: transactionId,
+            data,
+            kategoriName,
+            altKategoriName,
+            kaynakHesapName,
+            hedefHesapName
+        });
+    }
 
-        row.innerHTML = `
-            <td>${data.kayitTipi}</td>
-            <td>${data.kayitYonu}</td>
-            <td>${kaynakHesapName}</td>
-            <td>${kategoriName}</td>
-            <td>${altKategoriName}</td>
-            <td>${hedefHesapName}</td>
-            <td>${data.tutar}</td>
-            <td>${data.taksitAdedi || ''}</td>
-            <td>${data.taksitTutar || ''}</td>
-            <td>${new Date(data.islemTarihi).toLocaleDateString()}</td>
-            <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
-            <td>
-                <div class="action-buttons">
-                    <button onclick="editTransaction('${transactionId}')">Düzenle</button>
-                    <button onclick="deleteTransaction('${transactionId}')">Sil</button>
-                </div>
-            </td>
-        `;
+    for (const account in transactionsByAccount) {
+        const accountTransactions = transactionsByAccount[account];
+        let accountTotal = 0;
 
-        tableBody.appendChild(row);
+        const accountRow = document.createElement('tr');
+        accountRow.innerHTML = `<td colspan="12" style="background-color: #eee; font-weight: bold;">${account}</td>`;
+        tableBody.appendChild(accountRow);
+
+        for (const { id, data, kategoriName, altKategoriName, kaynakHesapName, hedefHesapName } of accountTransactions) {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${data.kayitTipi}</td>
+                <td>${data.kayitYonu}</td>
+                <td>${kaynakHesapName}</td>
+                <td>${kategoriName}</td>
+                <td>${altKategoriName}</td>
+                <td>${hedefHesapName}</td>
+                <td>${data.tutar}</td>
+                <td>${data.taksitAdedi || ''}</td>
+                <td>${data.taksitTutar || ''}</td>
+                <td>${new Date(data.islemTarihi).toLocaleDateString()}</td>
+                <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="editTransaction('${id}')">Düzenle</button>
+                        <button onclick="deleteTransaction('${id}')">Sil</button>
+                    </div>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+
+            accountTotal += parseFloat(data.tutar);
+        }
+
+        const totalRow = document.createElement('tr');
+        totalRow.innerHTML = `<td colspan="6" style="text-align: right; font-weight: bold;">Toplam:</td><td colspan="6" style="font-weight: bold;">${accountTotal.toFixed(2)}</td>`;
+        tableBody.appendChild(totalRow);
     }
 }
