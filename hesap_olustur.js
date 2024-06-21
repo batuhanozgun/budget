@@ -1,12 +1,12 @@
 import { auth, db } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { getNakitFields, getNakitValues } from './nakit.js';
-import { getBankaFields, getBankaValues } from './banka.js';
-import { getKrediFields, getKrediValues } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues } from './krediKarti.js';
-import { getBirikimFields, getBirikimValues } from './birikim.js';
 import { checkAuth } from './auth.js';
 import { loadAccountDetails, displayAccountDetails } from './accountDetails.js';
+import { getNakitFields, getNakitValues } from './fields/nakit.js';
+import { getBankaFields, getBankaValues } from './fields/banka.js';
+import { getKrediFields, getKrediValues } from './fields/kredi.js';
+import { getKrediKartiFields, getKrediKartiValues } from './fields/krediKarti.js';
+import { getBirikimFields, getBirikimValues } from './fields/birikim.js';
 
 document.getElementById('accountType').addEventListener('change', updateDynamicFields);
 
@@ -46,17 +46,14 @@ async function loadAccounts(user) {
     querySnapshot.forEach((doc) => {
         const li = document.createElement('li');
         li.textContent = doc.data().accountName;
-        li.addEventListener('click', () => loadAccountDetails(doc.id));
+        li.addEventListener('click', async () => {
+            const accountData = await loadAccountDetails(doc.id);
+            if (accountData) {
+                displayAccountDetails(accountData);
+            }
+        });
         accountList.appendChild(li);
     });
-}
-
-async function loadAccountDetails(accountId) {
-    const accountData = await loadAccountDetails(accountId);
-
-    if (accountData) {
-        displayAccountDetails(accountData);
-    }
 }
 
 function updateDynamicFields() {
