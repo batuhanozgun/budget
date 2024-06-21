@@ -14,7 +14,7 @@
         <form id="accountForm">
             <label for="accountName">Hesap Adı:</label>
             <input type="text" id="accountName" name="accountName" required>
-            
+
             <label for="accountType">Hesap Türü:</label>
             <select id="accountType" name="accountType" required>
                 <option value="">Hesap Türünü Seç</option>
@@ -28,12 +28,14 @@
                 <option value="borcAlınan" disabled>Borç Alınanlar Hesabı</option>
                 <option value="harçlık" disabled>Harçlık Verilen Hesap (Çocuk)</option>
             </select>
-            
+
+            <div id="dynamicFields"></div>
+
             <button type="submit">Hesap Oluştur</button>
         </form>
-        
+
         <h2>Mevcut Hesaplar</h2>
-        <div id="existingAccounts"></div>
+        <ul id="accountList"></ul>
     </div>
 </body>
 </html>
