@@ -1,4 +1,3 @@
-// landing.js
 import { auth } from './firebaseConfig.js';
 import { signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
@@ -13,4 +12,15 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
         messageDiv.textContent = 'Çıkış hatası: ' + error.message;
         messageDiv.style.display = 'block';
     }
+});
+
+document.querySelectorAll('.navigation button').forEach(button => {
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = e.target.getAttribute('data-target');
+        if (target) {
+            window.location.href = target;
+            window.location.reload(true); // Sayfayı yeniden yükler ve önbelleği temizler
+        }
+    });
 });
