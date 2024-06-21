@@ -1,14 +1,25 @@
 body {
     font-size: 14px; /* Varsayılan yazı boyutu */
+    background-color: #F0F0F0; /* Genel arka plan rengi */
+}
+
+.container {
+    background-color: #FFF; /* Beyaz zemin */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 20px;
 }
 
 table {
     width: 100%;
+    border-collapse: collapse; /* Sınırları birleştir */
 }
 
 th, td {
     padding: 8px;
     text-align: left;
+    border: 1px solid #CCC; /* Hücre sınırları */
 }
 
 .font-control-buttons {
