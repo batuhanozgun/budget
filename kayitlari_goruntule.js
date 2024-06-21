@@ -40,40 +40,60 @@ async function loadTransactions(uid) {
         let kaynakHesapName = 'N/A';
         let hedefHesapName = 'N/A';
 
+        // Kategori verisini alırken hata kontrolü
         try {
-            const kategoriDoc = await getDoc(doc(db, 'categories', data.kategori));
-            if (kategoriDoc.exists()) {
-                kategoriName = kategoriDoc.data().name;
+            if (data.kategori) {
+                const kategoriDoc = await getDoc(doc(db, 'categories', data.kategori));
+                if (kategoriDoc.exists()) {
+                    kategoriName = kategoriDoc.data().name;
+                } else {
+                    console.warn('Kategori belgesi bulunamadı:', data.kategori);
+                }
+            } else {
+                console.warn('Kategori ID eksik:', data);
             }
         } catch (error) {
             console.error('Kategori verisi alınamadı:', error);
         }
 
+        // Alt Kategori verisini alırken hata kontrolü
         if (data.altKategori) {
             try {
                 const altKategoriDoc = await getDoc(doc(db, 'categories', data.kategori, 'subcategories', data.altKategori));
                 if (altKategoriDoc.exists()) {
                     altKategoriName = altKategoriDoc.data().name;
+                } else {
+                    console.warn('Alt Kategori belgesi bulunamadı:', data.altKategori);
                 }
             } catch (error) {
                 console.error('Alt Kategori verisi alınamadı:', error);
             }
         }
 
+        // Kaynak Hesap verisini alırken hata kontrolü
         try {
-            const kaynakHesapDoc = await getDoc(doc(db, 'accounts', data.kaynakHesap));
-            if (kaynakHesapDoc.exists()) {
-                kaynakHesapName = kaynakHesapDoc.data().accountName;
+            if (data.kaynakHesap) {
+                const kaynakHesapDoc = await getDoc(doc(db, 'accounts', data.kaynakHesap));
+                if (kaynakHesapDoc.exists()) {
+                    kaynakHesapName = kaynakHesapDoc.data().accountName;
+                } else {
+                    console.warn('Kaynak Hesap belgesi bulunamadı:', data.kaynakHesap);
+                }
+            } else {
+                console.warn('Kaynak Hesap ID eksik:', data);
             }
         } catch (error) {
             console.error('Kaynak Hesap verisi alınamadı:', error);
         }
 
+        // Hedef Hesap verisini alırken hata kontrolü
         if (data.hedefHesap) {
             try {
                 const hedefHesapDoc = await getDoc(doc(db, 'accounts', data.hedefHesap));
                 if (hedefHesapDoc.exists()) {
                     hedefHesapName = hedefHesapDoc.data().accountName;
+                } else {
+                    console.warn('Hedef Hesap belgesi bulunamadı:', data.hedefHesap);
                 }
             } catch (error) {
                 console.error('Hedef Hesap verisi alınamadı:', error);
