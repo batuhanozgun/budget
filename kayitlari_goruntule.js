@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, query, getDocs, where } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getFirestore, collection, query, getDocs, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
 // Firebase yapılandırmanızı buraya ekleyin
@@ -32,26 +32,36 @@ async function loadTransactions(uid) {
     const tableBody = document.getElementById('transactionsTableBody');
     tableBody.innerHTML = '';
 
-    querySnapshot.forEach((doc) => {
+    for (const doc of querySnapshot.docs) {
         const data = doc.data();
+
+        // Kategori adı ve alt kategori adı için ilgili koleksiyonlardan verileri çekiyoruz
+        const kategoriDoc = await getDoc(doc(db, 'categories', data.kategori));
+        const kategoriName = kategoriDoc.exists() ? kategoriDoc.data().name : 'N/A';
+
+        let altKategoriName = 'N/A';
+        if (data.altKategori) {
+            const altKategoriDoc = await getDoc(doc(db, 'categories', data.kategori, 'subcategories', data.altKategori));
+            altKategoriName = altKategoriDoc.exists() ? altKategoriDoc.data().name : 'N/A';
+        }
+
         const row = document.createElement('tr');
 
         row.innerHTML = `
             <td>${data.kayitTipi}</td>
             <td>${data.kayitYonu}</td>
             <td>${data.kaynakHesap}</td>
-            <td>${data.kategori}</td>
-            <td>${data.altKategori}</td>
+            <td>${kategoriName}</td>
+            <td>${altKategoriName}</td>
             <td>${data.hedefHesap || ''}</td>
             <td>${data.tutar}</td>
             <td>${data.taksitAdedi || ''}</td>
             <td>${data.taksitTutar || ''}</td>
             <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
-            <td>${data.userId}</td>
         `;
 
         tableBody.appendChild(row);
-    });
+    }
 }
 
 document.getElementById('searchInput').addEventListener('input', filterTransactions);
