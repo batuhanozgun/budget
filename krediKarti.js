@@ -17,7 +17,6 @@ export function getKrediKartiFields() {
         <div id="futureInstallmentsSection">
             <h3>Gelecek Dönem Taksitler</h3>
             <div id="installmentsContainer"></div>
-            <button type="button" id="addInstallmentButton">Taksit Ekle</button>
         </div>
     `;
 }
