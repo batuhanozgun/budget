@@ -18,10 +18,12 @@
             text-align: left;
         }
         .font-control-buttons {
-            margin-bottom: 10px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
         }
         .font-control-buttons button {
-            margin-right: 5px;
+            margin-left: 5px;
             padding: 5px 10px;
             font-size: 14px;
         }
@@ -40,12 +42,12 @@
     </script>
 </head>
 <body>
+    <div class="font-control-buttons">
+        <button onclick="changeFontSize(true)">A+</button>
+        <button onclick="changeFontSize(false)">A-</button>
+    </div>
     <div class="container">
         <h2>Kayıtları Görüntüle</h2>
-        <div class="font-control-buttons">
-            <button onclick="changeFontSize(true)">Yazı Boyutunu Artır</button>
-            <button onclick="changeFontSize(false)">Yazı Boyutunu Azalt</button>
-        </div>
         <input type="text" id="searchInput" placeholder="Ara...">
         <table id="transactionsTable">
             <thead>
