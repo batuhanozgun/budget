@@ -106,10 +106,15 @@ function updateDynamicFields() {
     dynamicFields.innerHTML = fields;
 
     // Enable form fields after account type is selected
-    document.getElementById('accountName').disabled = false;
-    document.getElementById('openingDate').disabled = false;
-    document.getElementById('currency').disabled = false;
-    document.querySelector('button[type="submit"]').disabled = false;
+    const accountName = document.getElementById('accountName');
+    const openingDate = document.getElementById('openingDate');
+    const currency = document.getElementById('currency');
+    const submitButton = document.querySelector('button[type="submit"]');
+
+    if (accountName) accountName.disabled = false;
+    if (openingDate) openingDate.disabled = false;
+    if (currency) currency.disabled = false;
+    if (submitButton) submitButton.disabled = false;
 }
 
 function getFormData() {
