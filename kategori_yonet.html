@@ -4,32 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kategori ve Alt Kategori Yönetimi</title>
-    <link rel="stylesheet" href="styles.css"> <!-- CSS dosya adını düzenle -->
+    <link rel="stylesheet" href="kayitlari_yonet.css">
 </head>
 <body>
     <div class="container">
         <h2>Kategori ve Alt Kategori Yönetimi</h2>
         <form id="categoryForm">
             <label for="kategoriAdi">Kategori Adı:</label>
-            <input type="text" id="kategoriAdi" name="kategoriAdi" required>
+            <input type="text" id="kategoriAdi" required>
             <button type="submit">Kategori Ekle</button>
         </form>
         
         <h3>Mevcut Kategoriler</h3>
-        <ul id="categoryList"></ul>
-        
+        <ul id="kategoriListesi">
+            <!-- Mevcut kategoriler buraya dinamik olarak yüklenecek -->
+        </ul>
+
         <h3>Alt Kategoriler</h3>
         <form id="subCategoryForm">
             <label for="kategoriSec">Kategori Seç:</label>
-            <select id="kategoriSec" name="kategoriSec" required></select>
-
+            <select id="kategoriSec" required>
+                <!-- Kategoriler buraya dinamik olarak yüklenecek -->
+            </select>
             <label for="altKategoriAdi">Alt Kategori Adı:</label>
-            <input type="text" id="altKategoriAdi" name="altKategoriAdi" required>
+            <input type="text" id="altKategoriAdi" required>
             <button type="submit">Alt Kategori Ekle</button>
         </form>
-        <ul id="subCategoryList"></ul>
+        
+        <ul id="altKategoriListesi">
+            <!-- Alt kategoriler buraya dinamik olarak yüklenecek -->
+        </ul>
     </div>
 
-    <script src="kategori_yonet.js" type="module"></script>
+    <script type="module" src="kayitlari_yonet.js"></script>
 </body>
 </html>
