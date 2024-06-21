@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giriş Yap</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="login.css">
     <script type="module" src="login.js"></script>
 </head>
 <body>
@@ -13,10 +13,19 @@
             <h1>BudgetIN</h1>
         </header>
         <div class="info">
-            <p>Bu web uygulaması gelir ve gider takibini yapan bir uygulamadır. Kayıtlı Kullanıcı sistemi ile çalışır. Önce kaydolunması gerekir. Her kullanıcının kayıtları ayrı tutulur. Kullanıcı giriş yaptıktan sonra o kullanıcının kayıtlarını görebilir sadece. Kayıtları güncelleyebilir ya da silebilir.</p>
-            <p>Girilen kayıtlar için özet tablolar ve grafikler oluşturur. Kredi kartı ile yapılan giderlerde taksit seçeneği olur, seçilen taksit sayısı kadar tutar bölünür. Kredi bilgisi girileceği zaman da aynı şekilde taksit seçeneği olur. Kredi seçeneğinde ayrıca ilk taksit, ikinci taksit ve son taksit ayrıca kullanıcı tarafından girilir. Buraya kadar gerçekleşen rakamları konuştuk.</p>
-            <p>Bir de Plan (yani bütçe) oluşturulabilir. Gerçekleşenler ile aynıdır fakat bu kayıtlar Plan olarak etiketlenir. Gerçekleşenler ise Real olarak etiketlenir. Plan birden çok versiyon ile yapılabilir. Aynı plan üzerinden yeni versiyon yaratılıp, düzenlenebilir. Bu gerçekleşenler ile planlar karşılaştırılabilir ve farkları alınabilir.</p>
-            <p>Bazı harcamalar (kira, okul ödemesi, aidat, fatura gibi) taksit mantığındaki gibi düzenli giderlerdir. Bunlar da yine giriş yapılırken dönemi belirlenip, başlangıç ve son tarihleri belirlenip, otomatik olarak kayıtları her dönem için yaratılır. Düzenlenmek istediğinde de aynı şekilde tüm dönem kayıtlarının düzenlenmesini sağlayacak şekilde bir düzenlenme sayfası olmalıdır. Her kayıt (gelir ya da gider olsun) bir başlangıç yapıldıktan sonra devamında aynı kayıt için yeni işlemler yapılabilmeli.</p>
+            <h2>Bilgi</h2>
+            <p>
+                Bu web uygulaması gelir ve gider takibini yapan bir uygulamadır. Kayıtlı Kullanıcı sistemi ile çalışır. Önce kaydolunması gerekir. Her kullanıcının kayıtları ayrı tutulur. Kullanıcı giriş yaptıktan sonra o kullanıcının kayıtlarını görebilir sadece. Kayıtları güncelleyebilir ya da silebilir.
+            </p>
+            <p>
+                Girilen kayıtlar için özet tablolar ve grafikler oluşturur. Kredi kartı ile yapılan giderlerde taksit seçeneği olur, seçilen taksit sayısı kadar tutar bölünür. Kredi bilgisi girileceği zaman da aynı şekilde taksit seçeneği olur. Kredi seçeneğinde ayrıca ilk taksit, ikinci taksit ve son taksit ayrıca kullanıcı tarafından girilir. Buraya kadar gerçekleşen rakamları konuştuk.
+            </p>
+            <p>
+                Bir de Plan (yani bütçe) oluşturulabilir. Gerçekleşenler ile aynıdır fakat bu kayıtlar Plan olarak etiketlenir. Gerçekleşenler ise Real olarak etiketlenir. Plan birden çok versiyon ile yapılabilir. Aynı plan üzerinden yeni versiyon yaratılıp, düzenlenebilir. Bu gerçekleşenler ile planlar karşılaştırılabilir ve farkları alınabilir.
+            </p>
+            <p>
+                Bazı harcamalar (kira, okul ödemesi, aidat, fatura gibi) taksit mantığındaki gibi düzenli giderlerdir. Bunlar da yine giriş yapılırken dönemi belirlenip, başlangıç ve son tarihleri belirlenip, otomatik olarak kayıtları her dönem için yaratılır. Düzenlenmek istediğinde de aynı şekilde tüm dönem kayıtlarının düzenlenmesini sağlayacak şekilde bir düzenlenme sayfası olmalıdır. Her kayıt (gelir ya da gider olsun) bir başlangıç yapıldıktan sonra devamında aynı kayıt için yeni işlemler yapılabilmeli.
+            </p>
         </div>
     </div>
     <div class="right">
@@ -24,15 +33,15 @@
             <h2>Giriş Yap</h2>
             <form id="loginForm">
                 <label for="email">E-posta:</label>
-                <input type="email" id="email" name="email" required><br>
+                <input type="email" id="email" name="email" required>
                 <label for="password">Şifre:</label>
-                <input type="password" id="password" name="password" required><br>
+                <input type="password" id="password" name="password" required>
                 <button type="submit">Giriş Yap</button>
             </form>
-            <div id="message" class="message" style="display: none;"></div>
             <div class="login-link">
                 <p>Hesabınız yok mu? <a href="index.html">Kayıt Ol</a></p>
             </div>
+            <div id="message" class="message"></div>
         </div>
     </div>
 </body>
