@@ -1,9 +1,9 @@
 export function getBankaFields() {
     return `
         <label for="initialBalance">Başlangıç Bakiyesi:</label>
-        <input type="number" id="initialBalance" name="initialBalance" required>
+        <input type="number" id="initialBalance" name="initialBalance" step="0.001" required>
         <label for="overdraftLimit">KMH Limiti:</label>
-        <input type="number" id="overdraftLimit" name="overdraftLimit" required>
+        <input type="number" id="overdraftLimit" name="overdraftLimit" step="0.001" required>
         <label for="overdraftInterestRate">KMH Faizi (%):</label>
         <input type="number" step="0.01" id="overdraftInterestRate" name="overdraftInterestRate" required>
     `;
@@ -11,8 +11,8 @@ export function getBankaFields() {
 
 export function getBankaValues() {
     return {
-        initialBalance: document.getElementById('initialBalance').value,
-        overdraftLimit: document.getElementById('overdraftLimit').value,
-        overdraftInterestRate: document.getElementById('overdraftInterestRate').value
+        initialBalance: parseFloat(document.getElementById('initialBalance').value).toFixed(3),
+        overdraftLimit: parseFloat(document.getElementById('overdraftLimit').value).toFixed(3),
+        overdraftInterestRate: parseFloat(document.getElementById('overdraftInterestRate').value).toFixed(2)
     };
 }
