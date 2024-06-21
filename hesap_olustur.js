@@ -8,28 +8,34 @@ import { getKrediFields, getKrediValues } from './kredi.js';
 import { getKrediKartiFields, getKrediKartiValues } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues } from './birikim.js';
 
-document.getElementById('accountType').addEventListener('change', updateDynamicFields);
-
-document.getElementById('accountForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
+document.addEventListener('DOMContentLoaded', async () => {
     const user = await checkAuth();
-    if (!user) {
-        return;
-    }
-
-    const accountData = getFormData();
-
-    try {
-        const docRef = await addDoc(collection(db, "accounts"), {
-            uid: user.uid,
-            ...accountData
-        });
-        console.log("Document written with ID: ", docRef.id);
+    if (user) {
         loadAccounts(user);
-    } catch (e) {
-        console.error("Error adding document: ", e);
     }
+
+    document.getElementById('accountType').addEventListener('change', updateDynamicFields);
+
+    document.getElementById('accountForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!user) {
+            return;
+        }
+
+        const accountData = getFormData();
+
+        try {
+            const docRef = await addDoc(collection(db, "accounts"), {
+                uid: user.uid,
+                ...accountData
+            });
+            console.log("Document written with ID: ", docRef.id);
+            loadAccounts(user);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
+    });
 });
 
 async function loadAccounts(user) {
@@ -155,13 +161,6 @@ function getFormData() {
         ...dynamicFields
     };
 }
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const user = await checkAuth();
-    if (user) {
-        loadAccounts(user);
-    }
-});
 
 function updateBillingCycleDetails() {
     const billingCycle = document.getElementById('billingCycle').value;
