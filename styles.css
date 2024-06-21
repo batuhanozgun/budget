@@ -7,12 +7,14 @@ body {
     padding: 0;
     display: flex;
     height: 100vh;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Konteyner */
 .container {
     max-width: 600px;
-    margin: auto;
+    margin: 20px;
     padding: 20px;
     background-color: #FFF;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -23,6 +25,7 @@ body {
 h2 {
     color: #002147;
     text-align: center;
+    margin-bottom: 20px;
 }
 
 /* Form Etiketler */
@@ -36,6 +39,8 @@ label {
 input[type="text"],
 input[type="date"],
 input[type="number"],
+input[type="email"],
+input[type="password"],
 select {
     width: 100%;
     padding: 10px;
@@ -43,6 +48,11 @@ select {
     border: 1px solid #CCC;
     border-radius: 5px;
     box-sizing: border-box;
+}
+
+/* Bölüm Arası Boşluk */
+.section {
+    margin-bottom: 20px;
 }
 
 /* Butonlar */
@@ -56,6 +66,7 @@ button {
     width: 100%;
     font-size: 16px;
     font-weight: bold;
+    margin-bottom: 10px;
 }
 
 button:hover {
