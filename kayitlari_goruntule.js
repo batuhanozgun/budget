@@ -1,164 +1,201 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, query, getDocs, where, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
+import { auth, db } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { checkAuth } from './auth.js';
+import { getNakitFields, getNakitValues } from './nakit.js';
+import { getBankaFields, getBankaValues } from './banka.js';
+import { getKrediFields, getKrediValues } from './kredi.js';
+import { getKrediKartiFields, getKrediKartiValues } from './krediKarti.js';
+import { getBirikimFields, getBirikimValues } from './birikim.js';
 
-// Firebase yapılandırmanızı buraya ekleyin
-const firebaseConfig = {
-    apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
-    authDomain: "batusbudget.firebaseapp.com",
-    projectId: "batusbudget",
-    storageBucket: "batusbudget.appspot.com",
-    messagingSenderId: "1084998760222",
-    appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-onAuthStateChanged(auth, (user) => {
+document.addEventListener('DOMContentLoaded', async () => {
+    const user = await checkAuth();
     if (user) {
-        loadTransactions(user.uid);
-    } else {
-        // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
-        window.location.href = 'login.html';
+        loadAccounts(user);
     }
+
+    document.getElementById('accountType').addEventListener('change', updateDynamicFields);
+
+    document.getElementById('accountForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!user) {
+            return;
+        }
+
+        const accountData = getFormData();
+
+        try {
+            const docRef = await addDoc(collection(db, "accounts"), {
+                uid: user.uid,
+                ...accountData
+            });
+            console.log("Document written with ID: ", docRef.id);
+            loadAccounts(user);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
+    });
+
+    document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
 });
 
-async function loadTransactions(uid) {
-    const q = query(collection(db, 'transactions'), where("userId", "==", uid));
+async function loadAccounts(user) {
+    if (!user) {
+        console.error('Kullanıcı oturumu açık değil.');
+        window.location.href = 'login.html'; // Kullanıcı oturum açmamışsa login sayfasına yönlendir
+        return;
+    }
+
+    const q = query(collection(db, "accounts"), where("uid", "==", user.uid));
     const querySnapshot = await getDocs(q);
-
-    const tableBody = document.getElementById('transactionsTableBody');
-    tableBody.innerHTML = '';
-
-    for (const transactionDoc of querySnapshot.docs) {
-        const data = transactionDoc.data();
-        const transactionId = transactionDoc.id;
-
-        let kategoriName = 'N/A';
-        let altKategoriName = 'N/A';
-        let kaynakHesapName = 'N/A';
-        let hedefHesapName = 'N/A';
-
-        // Kategori verisini alırken hata kontrolü
-        try {
-            if (data.kategori) {
-                const kategoriDoc = await getDoc(doc(db, 'categories', data.kategori));
-                if (kategoriDoc.exists()) {
-                    kategoriName = kategoriDoc.data().name;
-                } else {
-                    console.warn('Kategori belgesi bulunamadı:', data.kategori);
-                }
-            } else {
-                console.warn('Kategori ID eksik:', data);
+    const accountList = document.getElementById('accountList');
+    accountList.innerHTML = '';
+    querySnapshot.forEach((doc) => {
+        const li = document.createElement('li');
+        li.textContent = `${doc.data().accountName} - ${doc.data().accountType}`;
+        li.addEventListener('click', async () => {
+            const accountData = await loadAccountDetails(doc.id);
+            if (accountData) {
+                displayAccountDetails(accountData);
             }
-        } catch (error) {
-            console.error('Kategori verisi alınamadı:', error);
-        }
-
-        // Alt Kategori verisini alırken hata kontrolü
-        if (data.altKategori) {
-            try {
-                const altKategoriDoc = await getDoc(doc(db, 'categories', data.kategori, 'subcategories', data.altKategori));
-                if (altKategoriDoc.exists()) {
-                    altKategoriName = altKategoriDoc.data().name;
-                } else {
-                    console.warn('Alt Kategori belgesi bulunamadı:', data.altKategori);
-                }
-            } catch (error) {
-                console.error('Alt Kategori verisi alınamadı:', error);
-            }
-        }
-
-        // Kaynak Hesap verisini alırken hata kontrolü
-        try {
-            if (data.kaynakHesap) {
-                const kaynakHesapDoc = await getDoc(doc(db, 'accounts', data.kaynakHesap));
-                if (kaynakHesapDoc.exists()) {
-                    kaynakHesapName = kaynakHesapDoc.data().accountName;
-                } else {
-                    console.warn('Kaynak Hesap belgesi bulunamadı:', data.kaynakHesap);
-                }
-            } else {
-                console.warn('Kaynak Hesap ID eksik:', data);
-            }
-        } catch (error) {
-            console.error('Kaynak Hesap verisi alınamadı:', error);
-        }
-
-        // Hedef Hesap verisini alırken hata kontrolü
-        if (data.hedefHesap) {
-            try {
-                const hedefHesapDoc = await getDoc(doc(db, 'accounts', data.hedefHesap));
-                if (hedefHesapDoc.exists()) {
-                    hedefHesapName = hedefHesapDoc.data().accountName;
-                } else {
-                    console.warn('Hedef Hesap belgesi bulunamadı:', data.hedefHesap);
-                }
-            } catch (error) {
-                console.error('Hedef Hesap verisi alınamadı:', error);
-            }
-        }
-
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-            <td>${data.kayitTipi}</td>
-            <td>${data.kayitYonu}</td>
-            <td>${kaynakHesapName}</td>
-            <td>${kategoriName}</td>
-            <td>${altKategoriName}</td>
-            <td>${hedefHesapName}</td>
-            <td>${data.tutar}</td>
-            <td>${data.taksitAdedi || ''}</td>
-            <td>${data.taksitTutar || ''}</td>
-            <td>${new Date(data.islemTarihi).toLocaleDateString()}</td>
-            <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
-            <td>
-                <div class="action-buttons">
-                    <button onclick="editTransaction('${transactionId}')">Düzenle</button>
-                    <button onclick="deleteTransaction('${transactionId}')">Sil</button>
-                </div>
-            </td>
-        `;
-
-        tableBody.appendChild(row);
-    }
-}
-
-document.getElementById('searchInput').addEventListener('input', filterTransactions);
-
-function filterTransactions() {
-    const searchText = document.getElementById('searchInput').value.toLowerCase();
-    const rows = document.getElementById('transactionsTableBody').getElementsByTagName('tr');
-
-    for (const row of rows) {
-        const cells = row.getElementsByTagName('td');
-        let match = false;
-        for (const cell of cells) {
-            if (cell.textContent.toLowerCase().includes(searchText)) {
-                match = true;
-                break;
-            }
-        }
-        row.style.display = match ? '' : 'none';
-    }
-}
-
-window.deleteTransaction = async (transactionId) => {
-    if (confirm("Bu kaydı silmek istediğinize emin misiniz?")) {
-        await deleteDoc(doc(db, 'transactions', transactionId));
-        loadTransactions(auth.currentUser.uid);
-    }
-};
-
-window.editTransaction = async (transactionId) => {
-    const newAmount = prompt("Yeni tutarı girin:");
-    if (newAmount !== null) {
-        await updateDoc(doc(db, 'transactions', transactionId), {
-            tutar: parseFloat(newAmount)
         });
-        loadTransactions(auth.currentUser.uid);
+        accountList.appendChild(li);
+    });
+}
+
+async function loadAccountDetails(accountId) {
+    const accountDoc = await getDoc(doc(db, 'accounts', accountId));
+    return accountDoc.exists() ? accountDoc.data() : null;
+}
+
+function displayAccountDetails(accountData) {
+    const accountInfo = document.getElementById('accountInfo');
+    accountInfo.innerHTML = '';
+    for (const key in accountData) {
+        if (accountData.hasOwnProperty(key)) {
+            const p = document.createElement('p');
+            p.textContent = `${key}: ${accountData[key]}`;
+            accountInfo.appendChild(p);
+        }
     }
-};
+    document.getElementById('accountDetails').style.display = 'block';
+}
+
+function updateDynamicFields() {
+    const accountType = document.getElementById('accountType').value;
+    const dynamicFields = document.getElementById('dynamicFields');
+    const futureInstallmentsSection = document.getElementById('futureInstallmentsSection');
+    dynamicFields.innerHTML = '';
+    futureInstallmentsSection.style.display = 'none'; // Hide by default
+
+    let fields = '';
+    switch (accountType) {
+        case 'nakit':
+            fields = getNakitFields();
+            break;
+        case 'banka':
+            fields = getBankaFields();
+            break;
+        case 'kredi':
+            fields = getKrediFields();
+            break;
+        case 'krediKarti':
+            fields = getKrediKartiFields();
+            futureInstallmentsSection.style.display = 'block'; // Show future installments section
+            break;
+        case 'birikim':
+            fields = getBirikimFields();
+            break;
+    }
+
+    dynamicFields.innerHTML = fields;
+
+    // Enable form fields after account type is selected
+    document.getElementById('accountName').disabled = false;
+    document.getElementById('openingDate').disabled = false;
+    document.getElementById('currency').disabled = false;
+    document.querySelector('button[type="submit"]').disabled = false;
+}
+
+function getFormData() {
+    const accountName = document.getElementById('accountName').value;
+    const openingDate = document.getElementById('openingDate').value;
+    const currency = document.getElementById('currency').value;
+    const accountType = document.getElementById('accountType').value;
+
+    let dynamicFields = {};
+    switch (accountType) {
+        case 'nakit':
+            dynamicFields = getNakitValues();
+            break;
+        case 'banka':
+            dynamicFields = getBankaValues();
+            break;
+        case 'kredi':
+            dynamicFields = getKrediValues();
+            break;
+        case 'krediKarti':
+            dynamicFields = getKrediKartiValues();
+            break;
+        case 'birikim':
+            dynamicFields = getBirikimValues();
+            break;
+    }
+
+    const installments = getInstallmentsData();
+
+    return {
+        accountName,
+        openingDate,
+        currency,
+        accountType,
+        ...dynamicFields,
+        installments
+    };
+}
+
+function addInstallment() {
+    const container = document.getElementById('installmentsContainer');
+    const installmentDiv = document.createElement('div');
+    installmentDiv.classList.add('installment');
+    
+    installmentDiv.innerHTML = `
+        <label for="installmentMonth">Ay:</label>
+        <input type="number" class="installmentMonth" name="installmentMonth" min="1" max="12" required>
+        <label for="installmentYear">Yıl:</label>
+        <input type="number" class="installmentYear" name="installmentYear" min="2023" required>
+        <label for="installmentAmount">Tutar:</label>
+        <input type="number" class="installmentAmount" name="installmentAmount" required>
+        <button type="button" class="removeInstallmentButton">Kaldır</button>
+    `;
+
+    installmentDiv.querySelector('.removeInstallmentButton').addEventListener('click', () => {
+        container.removeChild(installmentDiv);
+    });
+
+    container.appendChild(installmentDiv);
+}
+
+function getInstallmentsData() {
+    const installments = [];
+    const installmentDivs = document.querySelectorAll('.installment');
+
+    installmentDivs.forEach(div => {
+        const month = div.querySelector('.installmentMonth').value;
+        const year = div.querySelector('.installmentYear').value;
+        const amount = div.querySelector('.installmentAmount').value;
+
+        if (month && year && amount) {
+            installments.push({ month, year, amount });
+        }
+    });
+
+    return installments;
+}
+
+// İşlevleri global hale getirin
+window.loadAccounts = loadAccounts;
+window.displayAccountDetails = displayAccountDetails;
+window.updateDynamicFields = updateDynamicFields;
+window.getFormData = getFormData;
+window.addInstallment = addInstallment;
