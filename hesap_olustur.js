@@ -78,8 +78,10 @@ async function deleteAccount() {
         if (user) {
             loadAccounts(user);
         }
+        showMessage('Hesap başarıyla silindi.');
     } catch (e) {
         console.error('Hesap silinirken hata oluştu:', e);
+        showMessage('Hesap silinirken hata oluştu.');
     }
 }
 
@@ -145,8 +147,10 @@ async function handleFormSubmit(e) {
             if (user) {
                 loadAccounts(user);
             }
+            showMessage('Hesap başarıyla güncellendi.');
         } catch (e) {
             console.error('Hesap güncellenirken hata oluştu:', e);
+            showMessage('Hesap güncellenirken hata oluştu.');
         }
     } else {
         try {
@@ -161,8 +165,10 @@ async function handleFormSubmit(e) {
             });
             console.log("Document written with ID: ", docRef.id);
             loadAccounts(user);
+            showMessage('Hesap başarıyla oluşturuldu.');
         } catch (e) {
             console.error("Error adding document: ", e);
+            showMessage('Hesap oluşturulurken hata oluştu.');
         }
     }
 }
@@ -235,6 +241,15 @@ function getFormData() {
         accountType,
         ...dynamicFields
     };
+}
+
+function showMessage(message) {
+    const messageDiv = document.getElementById('message');
+    messageDiv.textContent = message;
+    messageDiv.style.display = 'block';
+    setTimeout(() => {
+        messageDiv.style.display = 'none';
+    }, 3000);
 }
 
 // İşlevleri global hale getirin
