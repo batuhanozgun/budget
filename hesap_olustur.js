@@ -116,27 +116,7 @@ async function editAccount() {
 
     // Load dynamic fields
     const accountType = accountData.accountType;
-    let fields = '';
-    switch (accountType) {
-        case 'nakit':
-            fields = getNakitFields();
-            break;
-        case 'banka':
-            fields = getBankaFields();
-            break;
-        case 'kredi':
-            fields = getKrediFields();
-            break;
-        case 'krediKarti':
-            fields = getKrediKartiFields();
-            break;
-        case 'birikim':
-            fields = getBirikimFields();
-            break;
-    }
-    document.getElementById('dynamicFields').innerHTML = fields;
-
-    // Populate dynamic fields
+    updateDynamicFields();
     for (const key in accountData) {
         if (accountData.hasOwnProperty(key)) {
             const input = document.getElementById(key);
@@ -162,8 +142,10 @@ async function editAccount() {
         });
     }
 
-    // Update account
-    document.getElementById('accountForm').addEventListener('submit', async (e) => {
+    // Güncellemeyi gönder
+    const form = document.getElementById('accountForm');
+    form.removeEventListener('submit', handleSubmit);
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const updatedData = getFormData();
@@ -249,6 +231,25 @@ function getFormData() {
         accountType,
         ...dynamicFields
     };
+}
+
+function handleSubmit(e) {
+    e.preventDefault();
+
+    const accountData = getFormData();
+    const accountId = document.getElementById('editAccountButton').dataset.accountId;
+
+    updateDoc(doc(db, 'accounts', accountId), accountData)
+        .then(() => {
+            console.log('Hesap başarıyla güncellendi.');
+            const user = checkAuth();
+            if (user) {
+                loadAccounts(user);
+            }
+        })
+        .catch((error) => {
+            console.error('Hesap güncellenirken hata oluştu:', error);
+        });
 }
 
 // İşlevleri global hale getirin
