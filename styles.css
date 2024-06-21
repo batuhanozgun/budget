@@ -7,18 +7,22 @@ body {
     padding: 0;
     display: flex;
     height: 100vh;
-    align-items: center; /* Sayfanın ortasına hizalamak için */
-    justify-content: center; /* Sayfanın ortasına hizalamak için */
 }
 
-/* Container */
+/* Konteyner */
 .container {
+    max-width: 600px;
+    margin: 20px auto; /* Üst ve alt boşluk eklendi */
     padding: 20px;
-    max-width: 800px;
-    width: 100%;
+    background-color: #FFF;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-    border-radius: 8px;
+    border-radius: 10px;
+}
+
+/* Başlıklar */
+h2 {
+    color: #002147;
+    text-align: center;
 }
 
 /* Form Etiketler */
@@ -30,8 +34,8 @@ label {
 
 /* Form Girdileri */
 input[type="text"],
-input[type="number"],
 input[type="date"],
+input[type="number"],
 select {
     width: 100%;
     padding: 10px;
@@ -43,7 +47,7 @@ select {
 
 /* Butonlar */
 button {
-    background-color: #ee7942;
+    background-color: #002147;
     color: #FFF;
     padding: 10px 15px;
     border: none;
@@ -55,17 +59,25 @@ button {
 }
 
 button:hover {
-    background-color: #E04000;
+    background-color: #00172e;
 }
 
-/* Mesaj Alanı */
-.message {
-    margin-top: 20px;
-    font-size: 14px;
+/* Hesap Listesi */
+#accountList {
+    list-style: none;
+    padding: 0;
+}
+
+#accountList li {
+    background-color: #ee7942;
     color: #FFF;
-    text-align: center;
-    background-color: #ff6a6a; /* Kırmızı arka plan */
     padding: 10px;
+    margin-bottom: 5px;
     border-radius: 5px;
-    display: none; /* Hata olmadığında görünmez */
+    cursor: pointer;
+    text-align: center;
+}
+
+#accountList li:hover {
+    background-color: #E04000;
 }
