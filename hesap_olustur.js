@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Buton dinleyicisini burada tanımlıyoruz
+    // Burada "Taksit Ekle" butonunun dinleyicisini tanımlıyoruz
     document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
 });
 
