@@ -5,49 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hesap Oluştur</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="module" src="auth.js"></script>
-    <script type="module" src="accountDetails.js"></script>
+    <link rel="stylesheet" href="hesap_olustur.css">
     <script type="module" src="hesap_olustur.js"></script>
 </head>
 <body>
     <div class="container">
-        <div class="forms-wrapper">
-            <div class="form-container">
-                <h2>Yeni Hesap Oluştur</h2>
-                <form id="accountForm">
-                    <label for="accountType">Hesap Türü:</label>
-                    <select id="accountType" name="accountType" required>
-                        <option value="">Hesap Türünü Seç</option>
-                        <option value="nakit">Nakit (Cüzdan)</option>
-                        <option value="banka">Banka Hesabı</option>
-                        <option value="kredi">Kredi Hesabı</option>
-                        <option value="krediKarti">Kredi Kartı</option>
-                        <option value="birikim">Birikim Hesabı</option>
-                        <option value="yatırım" disabled>Yatırım Hesabı</option>
-                        <option value="borcVerilen" disabled>Borç Verilenler Hesabı</option>
-                        <option value="borcAlınan" disabled>Borç Alınanlar Hesabı</option>
-                        <option value="harçlık" disabled>Harçlık Verilen Hesap (Çocuk)</option>
-                    </select>
-                    <label for="accountName">Hesap Adı:</label>
-                    <input type="text" id="accountName" name="accountName" required disabled>
-                    <label for="openingDate">Hesap Açılış Tarihi:</label>
-                    <input type="date" id="openingDate" name="openingDate" required max="<?= date('Y-m-d') ?>" disabled>
-                    <label for="currency">Para Birimi:</label>
-                    <select id="currency" name="currency" required disabled>
-                        <option value="TL">TL</option>
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                    </select>
-                    <div id="dynamicFields"></div>
-                    <button type="submit" disabled>Hesap Oluştur</button>
-                </form>
-            </div>
-            <div class="form-container">
-                <h2>Mevcut Hesaplar</h2>
-                <ul id="accountList"></ul>
-                <div id="accountDetails"></div> <!-- Hesap detaylarını görüntülemek için eklendi -->
-            </div>
-        </div>
+        <h2>Hesap Oluştur</h2>
+        <form id="accountForm">
+            <label for="accountName">Hesap Adı:</label>
+            <input type="text" id="accountName" name="accountName" required>
+            
+            <label for="accountType">Hesap Türü:</label>
+            <select id="accountType" name="accountType" required>
+                <option value="">Hesap Türünü Seç</option>
+                <option value="nakit">Nakit (Cüzdan)</option>
+                <option value="banka">Banka Hesabı</option>
+                <option value="kredi">Kredi Hesabı</option>
+                <option value="krediKarti">Kredi Kartı</option>
+                <option value="birikim">Birikim Hesabı</option>
+                <option value="yatırım" disabled>Yatırım Hesabı</option>
+                <option value="borcVerilen" disabled>Borç Verilenler Hesabı</option>
+                <option value="borcAlınan" disabled>Borç Alınanlar Hesabı</option>
+                <option value="harçlık" disabled>Harçlık Verilen Hesap (Çocuk)</option>
+            </select>
+            
+            <button type="submit">Hesap Oluştur</button>
+        </form>
+        
+        <h2>Mevcut Hesaplar</h2>
+        <div id="existingAccounts"></div>
     </div>
 </body>
 </html>
