@@ -1,55 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kayıtları Görüntüle</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="kayitlari_goruntule.css">
-    <script type="module" src="kayitlari_goruntule.js"></script>
-    <script>
-        function changeFontSize(increase) {
-            const body = document.body;
-            let currentSize = parseFloat(window.getComputedStyle(body, null).getPropertyValue('font-size'));
-            if (increase) {
-                body.style.fontSize = (currentSize + 1) + 'px';
-            } else {
-                body.style.fontSize = (currentSize - 1) + 'px';
-            }
-        }
-    </script>
-</head>
-<body>
-    <div class="font-control-buttons">
-        <button onclick="changeFontSize(true)">A+</button>
-        <button onclick="changeFontSize(false)">A-</button>
-    </div>
-    <div class="container">
-        <h2>Kayıtları Görüntüle</h2>
-        <input type="text" id="searchInput" placeholder="Ara...">
-        <div class="table-container">
-            <table id="transactionsTable">
-                <thead>
-                    <tr>
-                        <th>Kayıt Tipi</th>
-                        <th>Kayıt Yönü</th>
-                        <th>Kaynak Hesap</th>
-                        <th>Kategori</th>
-                        <th>Alt Kategori</th>
-                        <th>Hedef Hesap</th>
-                        <th>Tutar</th>
-                        <th>Taksit Adedi</th>
-                        <th>Taksit Tutar</th>
-                        <th>İşlem Tarihi</th>
-                        <th>Oluşturma Tarihi</th>
-                        <th>İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody id="transactionsTableBody">
-                    <!-- Kayıtlar buraya dinamik olarak yüklenecek -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</body>
-</html>
+body {
+    font-size: 14px; /* Varsayılan yazı boyutu */
+    background-color: #F0F0F0; /* Genel arka plan rengi */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: #FFF; /* Beyaz zemin */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    overflow-x: auto; /* Yatay taşmayı önlemek için */
+    max-width: 1600px; /* Maksimum genişliği artırdık */
+    width: 100%;
+}
+
+.table-container {
+    overflow-x: auto; /* Yatay taşmayı önlemek için */
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse; /* Sınırları birleştir */
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #CCC; /* Hücre sınırları */
+}
+
+.font-control-buttons {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.font-control-buttons button {
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.action-buttons button {
+    padding: 5px 10px;
+    font-size: 12px;
+}
