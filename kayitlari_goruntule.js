@@ -45,15 +45,25 @@ async function loadTransactions(uid) {
             altKategoriName = altKategoriDoc.exists() ? altKategoriDoc.data().name : 'N/A';
         }
 
+        // Kaynak Hesap ve Hedef Hesap için ilgili koleksiyonlardan verileri çekiyoruz
+        const kaynakHesapDoc = await getDoc(doc(db, 'accounts', data.kaynakHesap));
+        const kaynakHesapName = kaynakHesapDoc.exists() ? kaynakHesapDoc.data().accountName : 'N/A';
+
+        let hedefHesapName = 'N/A';
+        if (data.hedefHesap) {
+            const hedefHesapDoc = await getDoc(doc(db, 'accounts', data.hedefHesap));
+            hedefHesapName = hedefHesapDoc.exists() ? hedefHesapDoc.data().accountName : 'N/A';
+        }
+
         const row = document.createElement('tr');
 
         row.innerHTML = `
             <td>${data.kayitTipi}</td>
             <td>${data.kayitYonu}</td>
-            <td>${data.kaynakHesap}</td>
+            <td>${kaynakHesapName}</td>
             <td>${kategoriName}</td>
             <td>${altKategoriName}</td>
-            <td>${data.hedefHesap || ''}</td>
+            <td>${hedefHesapName}</td>
             <td>${data.tutar}</td>
             <td>${data.taksitAdedi || ''}</td>
             <td>${data.taksitTutar || ''}</td>
