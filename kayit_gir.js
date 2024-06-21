@@ -135,7 +135,7 @@ document.getElementById('kayitYonu').addEventListener('change', () => {
         taksitAdedi.style.display = 'none';
         taksitTutarLabel.style.display = 'none';
         taksitTutar.style.display = 'none';
-    } else if (kaynakHesap === 'krediKarti') {
+    } else if (document.getElementById('kaynakHesap').value === 'krediKarti') {
         hedefHesapLabel.style.display = 'none';
         hedefHesap.style.display = 'none';
         taksitAdediLabel.style.display = 'block';
