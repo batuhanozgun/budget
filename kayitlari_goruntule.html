@@ -5,30 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kayıtları Görüntüle</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Bu CSS yalnızca bu sayfaya özgü olacak */
-        body {
-            font-size: 14px; /* Varsayılan yazı boyutu */
-        }
-        table {
-            width: 100%;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        .font-control-buttons {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 10px;
-        }
-        .font-control-buttons button {
-            padding: 5px 10px;
-            font-size: 14px;
-        }
-    </style>
+    <link rel="stylesheet" href="kayitlari_goruntule.css">
     <script type="module" src="kayitlari_goruntule.js"></script>
     <script>
         function changeFontSize(increase) {
@@ -64,6 +41,7 @@
                     <th>Taksit Tutar</th>
                     <th>İşlem Tarihi</th>
                     <th>Oluşturma Tarihi</th>
+                    <th>İşlemler</th> <!-- İşlem sütunu eklendi -->
                 </tr>
             </thead>
             <tbody id="transactionsTableBody">
