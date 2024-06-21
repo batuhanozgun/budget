@@ -32,8 +32,8 @@ async function loadTransactions(uid) {
     const tableBody = document.getElementById('transactionsTableBody');
     tableBody.innerHTML = '';
 
-    for (const doc of querySnapshot.docs) {
-        const data = doc.data();
+    for (const transactionDoc of querySnapshot.docs) {
+        const data = transactionDoc.data();
 
         // Kategori adı ve alt kategori adı için ilgili koleksiyonlardan verileri çekiyoruz
         const kategoriDoc = await getDoc(doc(db, 'categories', data.kategori));
