@@ -1,57 +1,70 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
-import { auth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
+import { auth, db } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { checkAuth } from './auth.js';
+import { loadAccountDetails, displayAccountDetails } from './accountDetails.js';
+import { getNakitFields, getNakitValues } from './nakit.js';
+import { getBankaFields, getBankaValues } from './banka.js';
+import { getKrediFields, getKrediValues } from './kredi.js';
+import { getKrediKartiFields, getKrediKartiValues } from './krediKarti.js';
+import { getBirikimFields, getBirikimValues } from './birikim.js';
 
-// Firebase yapılandırmanızı buraya ekleyin
-const firebaseConfig = {
-    apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
-    authDomain: "batusbudget.firebaseapp.com",
-    projectId: "batusbudget",
-    storageBucket: "batusbudget.appspot.com",
-    messagingSenderId: "1084998760222",
-    appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
-};
+document.getElementById('accountType').addEventListener('change', updateDynamicFields);
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+document.getElementById('accountForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-async function loadAccounts() {
-    const accountsContainer = document.getElementById('existingAccounts');
-    accountsContainer.innerHTML = '';
+    const user = await checkAuth();
+    if (!user) {
+        return;
+    }
 
-    const querySnapshot = await getDocs(collection(db, 'accounts'));
+    const accountData = getFormData();
 
+    try {
+        const docRef = await addDoc(collection(db, "accounts"), {
+            uid: user.uid,
+            ...accountData
+        });
+        console.log("Document written with ID: ", docRef.id);
+        loadAccounts(user);
+    } catch (e) {
+        console.error("Error adding document: ", e);
+    }
+});
+
+async function loadAccounts(user) {
+    if (!user) {
+        console.error('Kullanıcı oturumu açık değil.');
+        window.location.href = 'login.html'; // Kullanıcı oturum açmamışsa login sayfasına yönlendir
+        return;
+    }
+
+    const q = query(collection(db, "accounts"), where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+    const accountList = document.getElementById('accountList');
+    accountList.innerHTML = '';
     querySnapshot.forEach((doc) => {
-        const accountData = doc.data();
-        const accountDiv = document.createElement('div');
-        accountDiv.className = 'account-item';
-        accountDiv.innerHTML = `
-            <span>${accountData.accountName} - ${accountData.accountType}</span>
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${doc.data().accountName} - ${doc.data().accountType}</span>
             <div class="action-buttons">
-                <button onclick="editAccount('${doc.id}', '${accountData.accountName}', '${accountData.accountType}')">Düzenle</button>
-                <button onclick="deleteAccount('${doc.id}')">Sil</button>
+                <button class="edit" onclick="editAccount('${doc.id}', '${doc.data().accountName}', '${doc.data().accountType}')">Düzenle</button>
+                <button class="delete" onclick="deleteAccount('${doc.id}')">Sil</button>
             </div>
         `;
-        accountsContainer.appendChild(accountDiv);
-    });
-}
-
-async function addAccount(accountName, accountType) {
-    try {
-        await addDoc(collection(db, 'accounts'), {
-            accountName,
-            accountType
+        li.addEventListener('click', async () => {
+            const accountData = await loadAccountDetails(doc.id);
+            if (accountData) {
+                displayAccountDetails(accountData);
+            }
         });
-        loadAccounts();
-    } catch (error) {
-        console.error('Hata:', error);
-        alert('Hesap eklenirken bir hata oluştu.');
-    }
+        accountList.appendChild(li);
+    });
 }
 
 async function deleteAccount(accountId) {
     await deleteDoc(doc(db, 'accounts', accountId));
-    loadAccounts();
+    loadAccounts(await checkAuth());
 }
 
 function editAccount(accountId, accountName, accountType) {
@@ -65,18 +78,114 @@ function editAccount(accountId, accountName, accountType) {
 async function updateAccount(accountId, newAccountName, newAccountType) {
     const accountDoc = doc(db, 'accounts', accountId);
     await setDoc(accountDoc, { accountName: newAccountName, accountType: newAccountType }, { merge: true });
-    loadAccounts();
+    loadAccounts(await checkAuth());
 }
 
-document.getElementById('accountForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const accountName = document.getElementById('accountName').value;
+function updateDynamicFields() {
     const accountType = document.getElementById('accountType').value;
-    addAccount(accountName, accountType);
-    document.getElementById('accountForm').reset();
+    const dynamicFields = document.getElementById('dynamicFields');
+    dynamicFields.innerHTML = '';
+
+    let fields = '';
+    switch (accountType) {
+        case 'nakit':
+            fields = getNakitFields();
+            break;
+        case 'banka':
+            fields = getBankaFields();
+            break;
+        case 'kredi':
+            fields = getKrediFields();
+            break;
+        case 'krediKarti':
+            fields = getKrediKartiFields();
+            break;
+        case 'birikim':
+            fields = getBirikimFields();
+            break;
+    }
+
+    dynamicFields.innerHTML = fields;
+
+    if (accountType === 'krediKarti') {
+        document.getElementById('billingCycle').addEventListener('change', updateBillingCycleDetails);
+    }
+
+    if (accountType === 'birikim') {
+        document.getElementById('paymentFrequency').addEventListener('change', updatePaymentFrequencyDetails);
+    }
+
+    // Enable form fields after account type is selected
+    document.getElementById('accountName').disabled = false;
+    document.getElementById('openingDate').disabled = false;
+    document.getElementById('currency').disabled = false;
+    document.querySelector('button[type="submit"]').disabled = false;
+}
+
+function getFormData() {
+    const accountName = document.getElementById('accountName').value;
+    const openingDate = document.getElementById('openingDate').value;
+    const currency = document.getElementById('currency').value;
+    const accountType = document.getElementById('accountType').value;
+
+    let dynamicFields = {};
+    switch (accountType) {
+        case 'nakit':
+            dynamicFields = getNakitValues();
+            break;
+        case 'banka':
+            dynamicFields = getBankaValues();
+            break;
+        case 'kredi':
+            dynamicFields = getKrediValues();
+            break;
+        case 'krediKarti':
+            dynamicFields = getKrediKartiValues();
+            break;
+        case 'birikim':
+            dynamicFields = getBirikimValues();
+            break;
+    }
+
+    return {
+        accountName,
+        openingDate,
+        currency,
+        accountType,
+        ...dynamicFields
+    };
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const user = await checkAuth();
+    if (user) {
+        loadAccounts(user);
+    }
 });
 
-loadAccounts();
+function updateBillingCycleDetails() {
+    const billingCycle = document.getElementById('billingCycle').value;
+    const billingCycleDetails = document.getElementById('billingCycleDetails');
+    billingCycleDetails.innerHTML = '';
+
+    if (billingCycle === 'specificDay') {
+        billingCycleDetails.innerHTML += '<label for="billingDay">Gün:</label><input type="number" id="billingDay" name="billingDay" min="1" max="31" required>';
+    } else if (billingCycle === 'workDay') {
+        billingCycleDetails.innerHTML += '<label for="billingWorkDay">İş Günü:</label><select id="billingWorkDay" name="billingWorkDay" required><option value="first">Ayın ilk iş günü</option><option value="last">Ayın son iş günü</option></select>';
+    }
+}
+
+function updatePaymentFrequencyDetails() {
+    const paymentFrequency = document.getElementById('paymentFrequency').value;
+    const paymentFrequencyDetails = document.getElementById('paymentFrequencyDetails');
+    paymentFrequencyDetails.innerHTML = '';
+
+    if (paymentFrequency === 'weekly') {
+        paymentFrequencyDetails.innerHTML += '<label for="paymentDay">Gün:</label><select id="paymentDay" name="paymentDay" required><option value="monday">Pazartesi</option><option value="tuesday">Salı</option><option value="wednesday">Çarşamba</option><option value="thursday">Perşembe</option><option value="friday">Cuma</option><option value="saturday">Cumartesi</option><option value="sunday">Pazar</option></select>';
+    } else if (paymentFrequency === 'monthly') {
+        paymentFrequencyDetails.innerHTML += '<label for="paymentDate">Gün:</label><input type="number" id="paymentDate" name="paymentDate" min="1" max="31" required>';
+    }
+}
 
 // İşlevleri global hale getirin
 window.deleteAccount = deleteAccount;
