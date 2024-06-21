@@ -15,26 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('accountType').addEventListener('change', updateDynamicFields);
 
-    document.getElementById('accountForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        if (!user) {
-            return;
-        }
-
-        const accountData = getFormData();
-
-        try {
-            const docRef = await addDoc(collection(db, "accounts"), {
-                uid: user.uid,
-                ...accountData
-            });
-            console.log("Document written with ID: ", docRef.id);
-            loadAccounts(user);
-        } catch (e) {
-            console.error("Error adding document: ", e);
-        }
-    });
+    document.getElementById('accountForm').addEventListener('submit', handleFormSubmit);
 
     document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
     document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
@@ -142,17 +123,24 @@ async function editAccount() {
         });
     }
 
-    // Güncellemeyi gönder
-    const form = document.getElementById('accountForm');
-    form.removeEventListener('submit', handleSubmit);
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // Form submit eventini güncelleme için ayarla
+    document.getElementById('accountForm').dataset.mode = 'edit';
+    document.getElementById('accountForm').dataset.accountId = accountId;
+}
 
-        const updatedData = getFormData();
+async function handleFormSubmit(e) {
+    e.preventDefault();
 
+    const formMode = document.getElementById('accountForm').dataset.mode;
+    const accountData = getFormData();
+
+    if (formMode === 'edit') {
+        const accountId = document.getElementById('accountForm').dataset.accountId;
         try {
-            await updateDoc(doc(db, 'accounts', accountId), updatedData);
+            await updateDoc(doc(db, 'accounts', accountId), accountData);
             console.log('Hesap başarıyla güncellendi.');
+            document.getElementById('accountForm').dataset.mode = 'create';
+            document.getElementById('accountForm').dataset.accountId = '';
             const user = await checkAuth();
             if (user) {
                 loadAccounts(user);
@@ -160,7 +148,23 @@ async function editAccount() {
         } catch (e) {
             console.error('Hesap güncellenirken hata oluştu:', e);
         }
-    }, { once: true });
+    } else {
+        try {
+            const user = await checkAuth();
+            if (!user) {
+                return;
+            }
+
+            const docRef = await addDoc(collection(db, "accounts"), {
+                uid: user.uid,
+                ...accountData
+            });
+            console.log("Document written with ID: ", docRef.id);
+            loadAccounts(user);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
+    }
 }
 
 function updateDynamicFields() {
@@ -231,25 +235,6 @@ function getFormData() {
         accountType,
         ...dynamicFields
     };
-}
-
-function handleSubmit(e) {
-    e.preventDefault();
-
-    const accountData = getFormData();
-    const accountId = document.getElementById('editAccountButton').dataset.accountId;
-
-    updateDoc(doc(db, 'accounts', accountId), accountData)
-        .then(() => {
-            console.log('Hesap başarıyla güncellendi.');
-            const user = checkAuth();
-            if (user) {
-                loadAccounts(user);
-            }
-        })
-        .catch((error) => {
-            console.error('Hesap güncellenirken hata oluştu:', error);
-        });
 }
 
 // İşlevleri global hale getirin
