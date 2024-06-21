@@ -10,25 +10,24 @@
 <body>
     <div class="container">
         <h2>Kayıtları Görüntüle</h2>
-        <div class="filters">
-            <input type="text" id="searchInput" placeholder="Ara...">
-            <select id="categoryFilter">
-                <option value="">Kategori Seç</option>
-                <!-- Kategoriler buraya dinamik olarak eklenebilir -->
-            </select>
-            <input type="date" id="dateFilter">
-        </div>
-        <table>
+        <table id="transactionsTable">
             <thead>
                 <tr>
-                    <th>Tarih</th>
+                    <th>Kayıt Tipi</th>
+                    <th>Kayıt Yönü</th>
+                    <th>Kaynak Hesap</th>
                     <th>Kategori</th>
+                    <th>Alt Kategori</th>
+                    <th>Hedef Hesap</th>
                     <th>Tutar</th>
-                    <th>Detay</th>
+                    <th>Taksit Adedi</th>
+                    <th>Taksit Tutar</th>
+                    <th>Tarih</th>
+                    <th>Kullanıcı ID</th>
                 </tr>
             </thead>
-            <tbody id="transactionsTableBody">
-                <!-- Kayıtlar buraya dinamik olarak eklenecek -->
+            <tbody>
+                <!-- Kayıtlar buraya dinamik olarak yüklenecek -->
             </tbody>
         </table>
     </div>
