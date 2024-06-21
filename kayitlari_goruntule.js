@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, query, getDocs, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getFirestore, collection, query, getDocs, where, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
 // Firebase yapılandırmanızı buraya ekleyin
@@ -34,6 +34,7 @@ async function loadTransactions(uid) {
 
     for (const transactionDoc of querySnapshot.docs) {
         const data = transactionDoc.data();
+        const transactionId = transactionDoc.id;
 
         let kategoriName = 'N/A';
         let altKategoriName = 'N/A';
@@ -114,6 +115,12 @@ async function loadTransactions(uid) {
             <td>${data.taksitTutar || ''}</td>
             <td>${new Date(data.islemTarihi).toLocaleDateString()}</td>
             <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
+            <td>
+                <div class="action-buttons">
+                    <button onclick="editTransaction('${transactionId}')">Düzenle</button>
+                    <button onclick="deleteTransaction('${transactionId}')">Sil</button>
+                </div>
+            </td>
         `;
 
         tableBody.appendChild(row);
@@ -138,3 +145,20 @@ function filterTransactions() {
         row.style.display = match ? '' : 'none';
     }
 }
+
+window.deleteTransaction = async (transactionId) => {
+    if (confirm("Bu kaydı silmek istediğinize emin misiniz?")) {
+        await deleteDoc(doc(db, 'transactions', transactionId));
+        loadTransactions(auth.currentUser.uid);
+    }
+};
+
+window.editTransaction = async (transactionId) => {
+    const newAmount = prompt("Yeni tutarı girin:");
+    if (newAmount !== null) {
+        await updateDoc(doc(db, 'transactions', transactionId), {
+            tutar: parseFloat(newAmount)
+        });
+        loadTransactions(auth.currentUser.uid);
+    }
+};
