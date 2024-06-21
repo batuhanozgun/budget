@@ -65,6 +65,16 @@ async function loadAccounts() {
 loadCategories();
 loadAccounts();
 
+// Hedef Hesap Alanını Gösterme/Gizleme
+document.getElementById('kayitYonu').addEventListener('change', function () {
+    const hedefHesapDiv = document.getElementById('hedefHesapDiv');
+    if (this.value === 'Hesaplar Arası Kayıt') {
+        hedefHesapDiv.style.display = 'block';
+    } else {
+        hedefHesapDiv.style.display = 'none';
+    }
+});
+
 // Taksit Bilgileri Gösterme/Gizleme
 document.getElementById('kaynakHesap').addEventListener('change', function () {
     const taksitBilgileri = document.getElementById('taksitBilgileri');
@@ -107,6 +117,7 @@ document.getElementById('transactionForm').addEventListener('submit', async (e) 
         alert('Kayıt başarıyla eklendi!');
         document.getElementById('transactionForm').reset();
         document.getElementById('taksitBilgileri').style.display = 'none';
+        document.getElementById('hedefHesapDiv').style.display = 'none'; // Hedef Hesap alanını gizle
     } catch (error) {
         console.error('Hata:', error);
         alert('Kayıt eklenirken bir hata oluştu.');
