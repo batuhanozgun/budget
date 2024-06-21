@@ -16,7 +16,7 @@ const db = getFirestore(app);
 
 async function loadCategories() {
     const categorySelect = document.getElementById('kategoriSec');
-    const categoryList = document.getElementById('categoryList');
+    const categoryList = document.getElementById('kategoriListesi');
     categorySelect.innerHTML = '<option value="">Seçiniz</option>';
     categoryList.innerHTML = '';
 
@@ -30,21 +30,17 @@ async function loadCategories() {
         categorySelect.appendChild(option);
 
         const li = document.createElement('li');
-        li.textContent = doc.data().name;
-        li.dataset.id = doc.id;
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Sil';
-        deleteButton.addEventListener('click', async () => {
-            await deleteDoc(doc(db, 'categories', doc.id));
-            loadCategories();
-        });
-        li.appendChild(deleteButton);
+        li.innerHTML = `<span>${doc.data().name}</span>
+                        <div class="button-container">
+                            <button class="edit" onclick="editCategory('${doc.id}', '${doc.data().name}')">Düzenle</button>
+                            <button onclick="deleteCategory('${doc.id}')">Sil</button>
+                        </div>`;
         categoryList.appendChild(li);
     });
 }
 
 async function loadSubCategories() {
-    const subCategoryList = document.getElementById('subCategoryList');
+    const subCategoryList = document.getElementById('altKategoriListesi');
     subCategoryList.innerHTML = '';
 
     const selectedCategory = document.getElementById('kategoriSec').value;
@@ -54,18 +50,50 @@ async function loadSubCategories() {
 
         querySnapshot.forEach((doc) => {
             const li = document.createElement('li');
-            li.textContent = doc.data().name;
-            li.dataset.id = doc.id;
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Sil';
-            deleteButton.addEventListener('click', async () => {
-                await deleteDoc(doc(db, 'categories', selectedCategory, 'subcategories', doc.id));
-                loadSubCategories();
-            });
-            li.appendChild(deleteButton);
+            li.innerHTML = `<span>${doc.data().name}</span>
+                            <div class="button-container">
+                                <button class="edit" onclick="editSubCategory('${selectedCategory}', '${doc.id}', '${doc.data().name}')">Düzenle</button>
+                                <button onclick="deleteSubCategory('${selectedCategory}', '${doc.id}')">Sil</button>
+                            </div>`;
             subCategoryList.appendChild(li);
         });
     }
+}
+
+async function deleteCategory(categoryId) {
+    await deleteDoc(doc(db, 'categories', categoryId));
+    loadCategories();
+}
+
+async function deleteSubCategory(categoryId, subCategoryId) {
+    await deleteDoc(doc(db, 'categories', categoryId, 'subcategories', subCategoryId));
+    loadSubCategories();
+}
+
+function editCategory(categoryId, categoryName) {
+    const newCategoryName = prompt('Yeni Kategori Adı:', categoryName);
+    if (newCategoryName) {
+        updateCategoryName(categoryId, newCategoryName);
+    }
+}
+
+function editSubCategory(categoryId, subCategoryId, subCategoryName) {
+    const newSubCategoryName = prompt('Yeni Alt Kategori Adı:', subCategoryName);
+    if (newSubCategoryName) {
+        updateSubCategoryName(categoryId, subCategoryId, newSubCategoryName);
+    }
+}
+
+async function updateCategoryName(categoryId, newCategoryName) {
+    const categoryDoc = doc(db, 'categories', categoryId);
+    await setDoc(categoryDoc, { name: newCategoryName }, { merge: true });
+    loadCategories();
+}
+
+async function updateSubCategoryName(categoryId, subCategoryId, newSubCategoryName) {
+    const subCategoryDoc = doc(db, 'categories', categoryId, 'subcategories', subCategoryId);
+    await setDoc(subCategoryDoc, { name: newSubCategoryName }, { merge: true });
+    loadSubCategories();
 }
 
 document.getElementById('categoryForm').addEventListener('submit', async (e) => {
