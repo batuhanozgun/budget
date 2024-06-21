@@ -10,32 +10,40 @@
 </head>
 <body>
     <div class="container">
-        <h2>Hesap Oluştur</h2>
-        <form id="accountForm">
-            <label for="accountName">Hesap Adı:</label>
-            <input type="text" id="accountName" name="accountName" required>
+        <div class="form-section">
+            <h2>Hesap Oluştur</h2>
+            <form id="accountForm">
+                <label for="accountName">Hesap Adı:</label>
+                <input type="text" id="accountName" name="accountName" required>
 
-            <label for="accountType">Hesap Türü:</label>
-            <select id="accountType" name="accountType" required>
-                <option value="">Hesap Türünü Seç</option>
-                <option value="nakit">Nakit (Cüzdan)</option>
-                <option value="banka">Banka Hesabı</option>
-                <option value="kredi">Kredi Hesabı</option>
-                <option value="krediKarti">Kredi Kartı</option>
-                <option value="birikim">Birikim Hesabı</option>
-                <option value="yatırım" disabled>Yatırım Hesabı</option>
-                <option value="borcVerilen" disabled>Borç Verilenler Hesabı</option>
-                <option value="borcAlınan" disabled>Borç Alınanlar Hesabı</option>
-                <option value="harçlık" disabled>Harçlık Verilen Hesap (Çocuk)</option>
-            </select>
+                <label for="accountType">Hesap Türü:</label>
+                <select id="accountType" name="accountType" required>
+                    <option value="">Hesap Türünü Seç</option>
+                    <option value="nakit">Nakit (Cüzdan)</option>
+                    <option value="banka">Banka Hesabı</option>
+                    <option value="kredi">Kredi Hesabı</option>
+                    <option value="krediKarti">Kredi Kartı</option>
+                    <option value="birikim">Birikim Hesabı</option>
+                    <option value="yatırım" disabled>Yatırım Hesabı</option>
+                    <option value="borcVerilen" disabled>Borç Verilenler Hesabı</option>
+                    <option value="borcAlınan" disabled>Borç Alınanlar Hesabı</option>
+                    <option value="harçlık" disabled>Harçlık Verilen Hesap (Çocuk)</option>
+                </select>
 
-            <div id="dynamicFields"></div>
+                <div id="dynamicFields"></div>
 
-            <button type="submit">Hesap Oluştur</button>
-        </form>
-
-        <h2>Mevcut Hesaplar</h2>
-        <ul id="accountList"></ul>
+                <button type="submit">Hesap Oluştur</button>
+            </form>
+        </div>
+        
+        <div class="accounts-section">
+            <h2>Mevcut Hesaplar</h2>
+            <ul id="accountList"></ul>
+            <div id="accountDetails" style="display: none;">
+                <h3>Hesap Detayları</h3>
+                <div id="accountInfo"></div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
