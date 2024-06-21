@@ -12,10 +12,8 @@ document.getElementById('accountType').addEventListener('change', updateDynamicF
 document.getElementById('accountForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const user = auth.currentUser;
+    const user = await checkAuth();
     if (!user) {
-        console.error('Kullanıcı oturumu açık değil.');
-        window.location.href = 'login.html'; // Kullanıcı oturum açmamışsa login sayfasına yönlendir
         return;
     }
 
@@ -27,14 +25,13 @@ document.getElementById('accountForm').addEventListener('submit', async (e) => {
             ...accountData
         });
         console.log("Document written with ID: ", docRef.id);
-        loadAccounts();
+        loadAccounts(user);
     } catch (e) {
         console.error("Error adding document: ", e);
     }
 });
 
-async function loadAccounts() {
-    const user = auth.currentUser;
+async function loadAccounts(user) {
     if (!user) {
         console.error('Kullanıcı oturumu açık değil.');
         window.location.href = 'login.html'; // Kullanıcı oturum açmamışsa login sayfasına yönlendir
@@ -122,9 +119,11 @@ function getFormData() {
     };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
-    loadAccounts();
+document.addEventListener('DOMContentLoaded', async () => {
+    const user = await checkAuth();
+    if (user) {
+        loadAccounts(user);
+    }
 });
 
 function updateBillingCycleDetails() {
