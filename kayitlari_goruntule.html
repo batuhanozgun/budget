@@ -10,6 +10,7 @@
 <body>
     <div class="container">
         <h2>Kayıtları Görüntüle</h2>
+        <input type="text" id="searchInput" placeholder="Ara...">
         <table id="transactionsTable">
             <thead>
                 <tr>
@@ -26,7 +27,7 @@
                     <th>Kullanıcı ID</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="transactionsTableBody">
                 <!-- Kayıtlar buraya dinamik olarak yüklenecek -->
             </tbody>
         </table>
