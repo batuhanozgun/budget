@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getFirestore, collection, query, getDocs, where } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
 // Firebase yapılandırmanızı buraya ekleyin
@@ -29,7 +29,7 @@ async function loadTransactions(uid) {
     const q = query(collection(db, 'transactions'), where("userId", "==", uid));
     const querySnapshot = await getDocs(q);
 
-    const tableBody = document.querySelector('#transactionsTable tbody');
+    const tableBody = document.getElementById('transactionsTableBody');
     tableBody.innerHTML = '';
 
     querySnapshot.forEach((doc) => {
@@ -51,5 +51,18 @@ async function loadTransactions(uid) {
         `;
 
         tableBody.appendChild(row);
+    });
+}
+
+document.getElementById('searchInput').addEventListener('input', filterTransactions);
+
+function filterTransactions() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#transactionsTableBody tr');
+
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const rowText = Array.from(cells).map(cell => cell.textContent.toLowerCase()).join(' ');
+        row.style.display = rowText.includes(searchText) ? '' : 'none';
     });
 }
