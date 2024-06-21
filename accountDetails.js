@@ -1,36 +1,44 @@
-import { db } from './firebaseConfig.js';
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-
 export async function loadAccountDetails(accountId) {
     try {
-        const accountRef = doc(db, "accounts", accountId);
-        const accountSnap = await getDoc(accountRef);
-
-        if (accountSnap.exists()) {
-            const accountData = accountSnap.data();
-            return accountData;
+        const docRef = doc(db, "accounts", accountId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return docSnap.data();
         } else {
-            console.log("No such document!");
+            console.error("No such document!");
             return null;
         }
-    } catch (e) {
-        console.error("Error getting document:", e);
+    } catch (error) {
+        console.error("Error getting document:", error);
         return null;
     }
 }
 
-export function displayAccountDetails(accountData) {
-    const accountDetailsDiv = document.getElementById('accountDetails');
-    accountDetailsDiv.innerHTML = `
-        <h3>Hesap Detayları</h3>
-        <p>Hesap Adı: ${accountData.accountName}</p>
-        <p>Hesap Açılış Tarihi: ${accountData.openingDate}</p>
-        <p>Para Birimi: ${accountData.currency}</p>
-        <p>Hesap Türü: ${accountData.accountType}</p>
-        <!-- Dinamik alanlar -->
-        ${Object.keys(accountData).map(key => {
-            if (['accountName', 'openingDate', 'currency', 'accountType', 'uid'].includes(key)) return '';
-            return `<p>${key}: ${accountData[key]}</p>`;
-        }).join('')}
-    `;
+export function displayAccountDetails(accountData, accountType) {
+    const accountDetails = document.getElementById('accountDetails');
+    accountDetails.innerHTML = '';
+
+    const labels = getLabelsForAccountType(accountType);
+
+    for (const [key, value] of Object.entries(accountData)) {
+        const label = labels[key] || key;
+        accountDetails.innerHTML += `<p><strong>${label}:</strong> ${value}</p>`;
+    }
+}
+
+function getLabelsForAccountType(accountType) {
+    switch (accountType) {
+        case 'nakit':
+            return getNakitLabels();
+        case 'banka':
+            return getBankaLabels();
+        case 'kredi':
+            return getKrediLabels();
+        case 'krediKarti':
+            return getKrediKartiLabels();
+        case 'birikim':
+            return getBirikimLabels();
+        default:
+            return {};
+    }
 }
