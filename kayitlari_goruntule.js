@@ -1,46 +1,55 @@
-import { auth, db } from './firebaseConfig.js';
-import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { checkAuth } from './auth.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+import { getFirestore, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const user = await checkAuth();
+// Firebase yapılandırmanızı buraya ekleyin
+const firebaseConfig = {
+    apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
+    authDomain: "batusbudget.firebaseapp.com",
+    projectId: "batusbudget",
+    storageBucket: "batusbudget.appspot.com",
+    messagingSenderId: "1084998760222",
+    appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
     if (user) {
-        loadTransactions(user);
+        loadTransactions(user.uid);
+    } else {
+        // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
+        window.location.href = 'login.html';
     }
 });
 
-async function loadTransactions(user) {
-    const q = query(collection(db, "transactions"), where("userId", "==", user.uid));
+async function loadTransactions(uid) {
+    const q = query(collection(db, 'transactions'), where("userId", "==", uid));
     const querySnapshot = await getDocs(q);
-    const tableBody = document.getElementById('transactionsTableBody');
+
+    const tableBody = document.querySelector('#transactionsTable tbody');
     tableBody.innerHTML = '';
 
     querySnapshot.forEach((doc) => {
-        const transaction = doc.data();
+        const data = doc.data();
         const row = document.createElement('tr');
+
         row.innerHTML = `
-            <td>${transaction.date}</td>
-            <td>${transaction.kategori}</td>
-            <td>${transaction.tutar}</td>
-            <td>${transaction.kayitTipi}</td>
+            <td>${data.kayitTipi}</td>
+            <td>${data.kayitYonu}</td>
+            <td>${data.kaynakHesap}</td>
+            <td>${data.kategori}</td>
+            <td>${data.altKategori}</td>
+            <td>${data.hedefHesap || ''}</td>
+            <td>${data.tutar}</td>
+            <td>${data.taksitAdedi || ''}</td>
+            <td>${data.taksitTutar || ''}</td>
+            <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
+            <td>${data.userId}</td>
         `;
+
         tableBody.appendChild(row);
-    });
-}
-
-document.getElementById('searchInput').addEventListener('input', filterTransactions);
-
-function filterTransactions() {
-    const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const rows = document.querySelectorAll('#transactionsTableBody tr');
-
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        const match = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(searchInput));
-        if (match) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
     });
 }
