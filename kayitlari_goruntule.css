@@ -8,8 +8,9 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 20px;
+    margin: 20px auto;
     overflow-x: auto; /* Yatay taşmayı önlemek için */
+    max-width: 1600px; /* Maksimum genişliği artırdık */
 }
 
 .table-container {
