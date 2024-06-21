@@ -3,7 +3,8 @@ export function getBankaFields() {
         <label for="initialBalance">Başlangıç Bakiyesi:</label>
         <input type="number" id="initialBalance" name="initialBalance" required>
         <label for="overdraftLimit">KMH Limiti:</label>
-        <input type="number" id="overdraftLimit" name="overdraftLimit" required>`;
+        <input type="number" id="overdraftLimit" name="overdraftLimit" required>
+    `;
 }
 
 export function getBankaValues() {
