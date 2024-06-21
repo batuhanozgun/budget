@@ -14,9 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     document.getElementById('accountType').addEventListener('change', updateDynamicFields);
-
     document.getElementById('accountForm').addEventListener('submit', handleFormSubmit);
-
     document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
     document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
     document.getElementById('editAccountButton').addEventListener('click', editAccount);
@@ -79,6 +77,7 @@ async function deleteAccount() {
             loadAccounts(user);
         }
         showMessage('Hesap başarıyla silindi.');
+        resetForm();
     } catch (e) {
         console.error('Hesap silinirken hata oluştu:', e);
         showMessage('Hesap silinirken hata oluştu.');
@@ -128,6 +127,8 @@ async function editAccount() {
     // Form submit eventini güncelleme için ayarla
     document.getElementById('accountForm').dataset.mode = 'edit';
     document.getElementById('accountForm').dataset.accountId = accountId;
+    document.querySelector('.form-section h2').textContent = 'Hesabı Düzenle';
+    document.querySelector('.form-section button[type="submit"]').textContent = 'Güncelle';
 }
 
 async function handleFormSubmit(e) {
@@ -148,6 +149,7 @@ async function handleFormSubmit(e) {
                 loadAccounts(user);
             }
             showMessage('Hesap başarıyla güncellendi.');
+            resetForm();
         } catch (e) {
             console.error('Hesap güncellenirken hata oluştu:', e);
             showMessage('Hesap güncellenirken hata oluştu.');
@@ -166,6 +168,7 @@ async function handleFormSubmit(e) {
             console.log("Document written with ID: ", docRef.id);
             loadAccounts(user);
             showMessage('Hesap başarıyla oluşturuldu.');
+            resetForm();
         } catch (e) {
             console.error("Error adding document: ", e);
             showMessage('Hesap oluşturulurken hata oluştu.');
@@ -252,6 +255,14 @@ function showMessage(message) {
     }, 3000);
 }
 
+function resetForm() {
+    document.getElementById('accountForm').reset();
+    document.getElementById('accountForm').dataset.mode = 'create';
+    document.getElementById('accountForm').dataset.accountId = '';
+    document.querySelector('.form-section h2').textContent = 'Hesap Oluştur';
+    document.querySelector('.form-section button[type="submit"]').textContent = 'Hesap Oluştur';
+}
+
 // İşlevleri global hale getirin
 window.loadAccounts = loadAccounts;
 window.displayAccountDetails = displayAccountDetails;
@@ -260,3 +271,4 @@ window.getFormData = getFormData;
 window.addInstallment = addInstallment;
 window.deleteAccount = deleteAccount;
 window.editAccount = editAccount;
+window.resetForm = resetForm;
