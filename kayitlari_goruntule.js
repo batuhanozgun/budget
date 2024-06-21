@@ -112,22 +112,5 @@ async function loadTransactions(uid) {
             <td>${data.tutar}</td>
             <td>${data.taksitAdedi || ''}</td>
             <td>${data.taksitTutar || ''}</td>
-            <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
-        `;
-
-        tableBody.appendChild(row);
-    }
-}
-
-document.getElementById('searchInput').addEventListener('input', filterTransactions);
-
-function filterTransactions() {
-    const searchText = document.getElementById('searchInput').value.toLowerCase();
-    const rows = document.querySelectorAll('#transactionsTableBody tr');
-
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        const rowText = Array.from(cells).map(cell => cell.textContent.toLowerCase()).join(' ');
-        row.style.display = rowText.includes(searchText) ? '' : 'none';
-    });
-}
+            <td>${new Date(data.islemTarihi).toLocaleDateString()}</td>
+            <td>${new Date(data.date.seconds * 1000).to
