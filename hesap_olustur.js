@@ -1,5 +1,5 @@
 import { auth, db } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { collection, addDoc, getDocs, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { getNakitFields, getNakitValues } from './nakit.js';
 import { getBankaFields, getBankaValues } from './banka.js';
 import { getKrediFields, getKrediValues } from './kredi.js';
@@ -48,6 +48,41 @@ async function loadAccounts(user) {
         li.addEventListener('click', () => loadAccountDetails(doc.id));
         accountList.appendChild(li);
     });
+}
+
+async function loadAccountDetails(accountId) {
+    try {
+        const accountRef = doc(db, "accounts", accountId);
+        const accountSnap = await getDoc(accountRef);
+
+        if (accountSnap.exists()) {
+            const accountData = accountSnap.data();
+            // Hesap detaylarını göster
+            console.log("Account data:", accountData);
+            displayAccountDetails(accountData);
+        } else {
+            console.log("No such document!");
+        }
+    } catch (e) {
+        console.error("Error getting document:", e);
+    }
+}
+
+function displayAccountDetails(accountData) {
+    // Hesap detaylarını göstermek için HTML içeriği oluştur
+    const accountDetailsDiv = document.getElementById('accountDetails');
+    accountDetailsDiv.innerHTML = `
+        <h3>Hesap Detayları</h3>
+        <p>Hesap Adı: ${accountData.accountName}</p>
+        <p>Hesap Açılış Tarihi: ${accountData.openingDate}</p>
+        <p>Para Birimi: ${accountData.currency}</p>
+        <p>Hesap Türü: ${accountData.accountType}</p>
+        <!-- Dinamik alanlar -->
+        ${Object.keys(accountData).map(key => {
+            if (['accountName', 'openingDate', 'currency', 'accountType', 'uid'].includes(key)) return '';
+            return `<p>${key}: ${accountData[key]}</p>`;
+        }).join('')}
+    `;
 }
 
 function updateDynamicFields() {
