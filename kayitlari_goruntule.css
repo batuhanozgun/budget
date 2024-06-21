@@ -1,58 +1,81 @@
 body {
-    font-size: 14px; /* Varsayılan yazı boyutu */
-    background-color: #F0F0F0; /* Genel arka plan rengi */
+    font-size: 14px;
+    background-color: #F0F0F0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
 }
 
 .container {
-    background-color: #FFF; /* Beyaz zemin */
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: 1200px;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.box {
+    background-color: #FFF;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    overflow-x: auto; /* Yatay taşmayı önlemek için */
-    max-width: 1600px; /* Maksimum genişliği artırdık */
-    width: 100%;
+    flex: 1;
 }
 
-.table-container {
-    overflow-x: auto; /* Yatay taşmayı önlemek için */
-    width: 100%;
+h2, h3 {
+    margin-top: 0;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse; /* Sınırları birleştir */
-}
-
-th, td {
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #CCC; /* Hücre sınırları */
-}
-
-.font-control-buttons {
-    position: absolute;
-    top: 10px;
-    left: 10px;
+form {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
 }
 
-.font-control-buttons button {
-    padding: 5px 10px;
-    font-size: 14px;
+label, input, select, button {
+    margin-bottom: 10px;
 }
 
-.action-buttons {
-    display: flex;
-    gap: 5px;
+button {
+    padding: 10px;
+    background-color: #002147;
+    color: #FFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-.action-buttons button {
-    padding: 5px 10px;
-    font-size: 12px;
+button:hover {
+    background-color: #00172e;
+}
+
+#accountList {
+    list-style: none;
+    padding: 0;
+}
+
+#accountList li {
+    background-color: #002147; /* styles.css dosyasındaki renk */
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    color: #FFF;
+}
+
+#accountList li:hover {
+    background-color: #00172e; /* styles.css dosyasındaki hover rengi */
+}
+
+#accountDetails {
+    margin-top: 20px;
+}
+
+#accountDetails p {
+    margin: 0;
+    padding: 5px 0;
 }
