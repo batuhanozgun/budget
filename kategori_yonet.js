@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, setDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 
 // Firebase yapılandırmanızı buraya ekleyin
 const firebaseConfig = {
@@ -128,5 +128,9 @@ document.getElementById('subCategoryForm').addEventListener('submit', async (e) 
 });
 
 document.getElementById('kategoriSec').addEventListener('change', loadSubCategories);
+
+// İşlevleri global hale getirin
+window.deleteSubCategory = deleteSubCategory;
+window.editSubCategory = editSubCategory;
 
 loadCategories();
