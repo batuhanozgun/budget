@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
 import { getFirestore, collection, addDoc, query, getDocs } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
 // Firebase yapılandırmanızı buraya ekleyin
 const firebaseConfig = {
@@ -13,6 +14,20 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+let currentUser;
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+        loadCategories();
+        loadAccounts();
+    } else {
+        // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
+        window.location.href = 'login.html';
+    }
+});
 
 // Kategori ve Alt Kategori Yükleme
 async function loadCategories() {
@@ -62,9 +77,6 @@ async function loadAccounts() {
     });
 }
 
-loadCategories();
-loadAccounts();
-
 // Hedef Hesap Alanını Gösterme/Gizleme
 document.getElementById('kayitYonu').addEventListener('change', function () {
     const hedefHesapDiv = document.getElementById('hedefHesapDiv');
@@ -112,7 +124,7 @@ document.getElementById('transactionForm').addEventListener('submit', async (e) 
             taksitAdedi: taksitAdedi ? parseInt(taksitAdedi) : null,
             taksitTutar: taksitTutar ? parseFloat(taksitTutar) : null,
             date: new Date(),
-            userId: "currentUser" // Kullanıcı ID'si eklenmeli
+            userId: currentUser.uid // Kullanıcı UID'si ekleniyor
         });
         alert('Kayıt başarıyla eklendi!');
         document.getElementById('transactionForm').reset();
