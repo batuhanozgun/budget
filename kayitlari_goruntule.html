@@ -10,16 +10,14 @@
 <body>
     <div class="container">
         <h2>Kayıtları Görüntüle</h2>
-        <form id="filterForm">
+        <div class="filters">
             <input type="text" id="searchInput" placeholder="Ara...">
-            <select id="categorySelect">
+            <select id="categoryFilter">
                 <option value="">Kategori Seç</option>
-                <!-- Kategoriler buraya eklenecek -->
+                <!-- Kategoriler buraya dinamik olarak eklenebilir -->
             </select>
-            <input type="date" id="startDate">
-            <input type="date" id="endDate">
-            <button type="submit">Filtrele</button>
-        </form>
+            <input type="date" id="dateFilter">
+        </div>
         <table>
             <thead>
                 <tr>
@@ -30,7 +28,7 @@
                 </tr>
             </thead>
             <tbody id="transactionsTableBody">
-                <!-- Kayıtlar buraya eklenecek -->
+                <!-- Kayıtlar buraya dinamik olarak eklenecek -->
             </tbody>
         </table>
     </div>
