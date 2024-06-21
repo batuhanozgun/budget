@@ -11,25 +11,19 @@ body {
 .container {
     display: flex;
     justify-content: space-between;
+    gap: 20px;
+    max-width: 1200px;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.box {
     background-color: #FFF;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.form-section {
     flex: 1;
-    margin-right: 20px;
-}
-
-.accounts-section {
-    flex: 1;
-    background-color: #F0F0F0; /* Daha hafif bir gri ton */
-    padding: 10px;
-    border-radius: 10px;
 }
 
 h2, h3 {
@@ -64,16 +58,17 @@ button:hover {
 }
 
 #accountList li {
-    background-color: #fff;
+    background-color: #002147; /* styles.css dosyasındaki renk */
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 5px;
     cursor: pointer;
     border: 1px solid #ccc;
+    color: #FFF;
 }
 
 #accountList li:hover {
-    background-color: #ddd;
+    background-color: #00172e; /* styles.css dosyasındaki hover rengi */
 }
 
 #accountDetails {
