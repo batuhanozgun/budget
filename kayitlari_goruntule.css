@@ -12,6 +12,11 @@ body {
     overflow-x: auto; /* Yatay taşmayı önlemek için */
 }
 
+.table-container {
+    overflow-x: auto; /* Yatay taşmayı önlemek için */
+    width: 100%;
+}
+
 table {
     width: 100%;
     border-collapse: collapse; /* Sınırları birleştir */
