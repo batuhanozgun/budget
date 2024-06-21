@@ -13,16 +13,6 @@
     <div class="container">
         <h2>Yeni Hesap Oluştur</h2>
         <form id="accountForm">
-            <label for="accountName">Hesap Adı:</label>
-            <input type="text" id="accountName" name="accountName" required>
-            <label for="openingDate">Hesap Açılış Tarihi:</label>
-            <input type="date" id="openingDate" name="openingDate" required max="<?= date('Y-m-d') ?>">
-            <label for="currency">Para Birimi:</label>
-            <select id="currency" name="currency" required>
-                <option value="TL">TL</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-            </select>
             <label for="accountType">Hesap Türü:</label>
             <select id="accountType" name="accountType" required>
                 <option value="nakit">Nakit (Cüzdan)</option>
@@ -34,6 +24,16 @@
                 <option value="borcVerilen" disabled>Borç Verilenler Hesabı</option>
                 <option value="borcAlınan" disabled>Borç Alınanlar Hesabı</option>
                 <option value="harçlık" disabled>Harçlık Verilen Hesap (Çocuk)</option>
+            </select>
+            <label for="accountName">Hesap Adı:</label>
+            <input type="text" id="accountName" name="accountName" required>
+            <label for="openingDate">Hesap Açılış Tarihi:</label>
+            <input type="date" id="openingDate" name="openingDate" required max="<?= date('Y-m-d') ?>">
+            <label for="currency">Para Birimi:</label>
+            <select id="currency" name="currency" required>
+                <option value="TL">TL</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
             </select>
             <div id="dynamicFields"></div>
             <button type="submit">Hesap Oluştur</button>
