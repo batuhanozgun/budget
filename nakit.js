@@ -1,7 +1,7 @@
 export function getNakitFields() {
     return `
         <label for="initialBalance">Başlangıç Bakiyesi:</label>
-        <input type="number" id="initialBalance" name="initialBalance" required>
+        <input type="number" step="0.01" id="initialBalance" name="initialBalance" required>
     `;
 }
 
