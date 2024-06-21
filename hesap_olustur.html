@@ -34,11 +34,15 @@
                 <input type="date" id="openingDate" name="openingDate" required>
 
                 <label for="currency">Para Birimi:</label>
-                <input type="text" id="currency" name="currency" required>
+                <select id="currency" name="currency" required>
+                    <option value="">Para Birimi Seç</option>
+                    <option value="TL">TL</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
 
                 <div id="dynamicFields"></div>
 
-                <!-- Bu bölüm zaten kredi kartı hesap türü için gelececek -->
                 <div id="futureInstallmentsSection" style="display: none;">
                     <h3>Gelecek Dönem Taksitler</h3>
                     <div id="installmentsContainer"></div>
