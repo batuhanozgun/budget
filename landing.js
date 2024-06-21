@@ -19,7 +19,9 @@ document.querySelectorAll('.navigation button').forEach(button => {
         e.preventDefault();
         const target = e.target.getAttribute('data-target');
         if (target) {
-             window.location.href = target; // Tam sayfa yenileme yaparak hedef URL'yi yükler
+            const iframe = document.getElementById('contentFrame');
+            iframe.src = ''; // Bu satır iframe'i yeniden yüklemek için eklenmiştir
+            iframe.src = target;
         }
     });
 });
