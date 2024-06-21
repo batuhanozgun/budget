@@ -43,11 +43,13 @@
                 <!-- Alt Kategoriler dinamik olarak yüklenecek -->
             </select>
 
-            <label for="hedefHesap">Hedef Hesap:</label>
-            <select id="hedefHesap" name="hedefHesap" required>
-                <option value="">Hesap Seç</option>
-                <!-- Hesaplar dinamik olarak yüklenecek -->
-            </select>
+            <div id="hedefHesapDiv" style="display: none;">
+                <label for="hedefHesap">Hedef Hesap:</label>
+                <select id="hedefHesap" name="hedefHesap">
+                    <option value="">Hesap Seç</option>
+                    <!-- Hesaplar dinamik olarak yüklenecek -->
+                </select>
+            </div>
 
             <label for="tutar">Tutar:</label>
             <input type="number" id="tutar" name="tutar" required>
