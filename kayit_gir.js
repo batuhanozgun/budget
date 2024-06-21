@@ -1,137 +1,66 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, addDoc, query, getDocs } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Gir</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Kayıt Gir</h2>
+        <form id="transactionForm">
+            <label for="kayitTipi">Kayıt Tipi:</label>
+            <select id="kayitTipi" required>
+                <option value="">Seçiniz</option>
+                <option value="Gelir">Gelir</option>
+                <option value="Gider">Gider</option>
+            </select>
+            
+            <label for="kayitYonu">Kayıt Yönü:</label>
+            <select id="kayitYonu" required>
+                <option value="">Seçiniz</option>
+                <option value="Gelir Kaydı">Gelir Kaydı</option>
+                <option value="Harcama Kaydı">Harcama Kaydı</option>
+                <option value="Hesaplar Arası Kayıt">Hesaplar Arası Kayıt</option>
+            </select>
+            
+            <label for="kaynakHesap">Kaynak Hesap:</label>
+            <select id="kaynakHesap" required>
+                <!-- Hesaplar buraya dinamik olarak yüklenecek -->
+            </select>
+            
+            <label for="kategori">Kategori:</label>
+            <select id="kategori" required>
+                <!-- Kategoriler buraya dinamik olarak yüklenecek -->
+            </select>
+            
+            <label for="altKategori">Alt Kategori:</label>
+            <select id="altKategori">
+                <!-- Alt kategoriler buraya dinamik olarak yüklenecek -->
+            </select>
+            
+            <label for="hedefHesap" id="hedefHesapLabel" style="display:none;">Hedef Hesap:</label>
+            <select id="hedefHesap" style="display:none;">
+                <!-- Hesaplar buraya dinamik olarak yüklenecek -->
+            </select>
+            
+            <label for="tutar">Tutar:</label>
+            <input type="number" id="tutar" required>
+            
+            <label for="taksitAdedi" id="taksitAdediLabel" style="display:none;">Taksit Adedi:</label>
+            <input type="number" id="taksitAdedi" style="display:none;">
+            
+            <label for="taksitTutar" id="taksitTutarLabel" style="display:none;">Taksit Tutar:</label>
+            <input type="number" id="taksitTutar" style="display:none;">
+            
+            <label for="islemTarihi">İşlem Tarihi:</label>
+            <input type="date" id="islemTarihi" required>
+            
+            <button type="submit">Kaydet</button>
+        </form>
+    </div>
 
-// Firebase yapılandırmanızı buraya ekleyin
-const firebaseConfig = {
-    apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
-    authDomain: "batusbudget.firebaseapp.com",
-    projectId: "batusbudget",
-    storageBucket: "batusbudget.appspot.com",
-    messagingSenderId: "1084998760222",
-    appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-let currentUser;
-
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        currentUser = user;
-        loadCategories();
-        loadAccounts();
-    } else {
-        // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
-        window.location.href = 'login.html';
-    }
-});
-
-// Kategori ve Alt Kategori Yükleme
-async function loadCategories() {
-    const categorySelect = document.getElementById('kategori');
-    const altCategorySelect = document.getElementById('altKategori');
-
-    const q = query(collection(db, 'categories'));
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((doc) => {
-        const option = document.createElement('option');
-        option.value = doc.id;
-        option.textContent = doc.data().name;
-        categorySelect.appendChild(option);
-    });
-
-    categorySelect.addEventListener('change', async () => {
-        altCategorySelect.innerHTML = '<option value="">Seçiniz</option>';
-        const selectedCategory = categorySelect.value;
-        if (selectedCategory) {
-            const qAlt = query(collection(db, 'categories', selectedCategory, 'subcategories'));
-            const querySnapshotAlt = await getDocs(qAlt);
-            querySnapshotAlt.forEach((doc) => {
-                const option = document.createElement('option');
-                option.value = doc.id;
-                option.textContent = doc.data().name;
-                altCategorySelect.appendChild(option);
-            });
-        }
-    });
-}
-
-// Hesap Yükleme
-async function loadAccounts() {
-    const kaynakHesapSelect = document.getElementById('kaynakHesap');
-    const hedefHesapSelect = document.getElementById('hedefHesap');
-
-    const q = query(collection(db, 'accounts'));
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((doc) => {
-        const option = document.createElement('option');
-        option.value = doc.id;
-        option.textContent = doc.data().accountName; // Hesap Adı alanını kullanıyoruz
-        kaynakHesapSelect.appendChild(option);
-        hedefHesapSelect.appendChild(option.cloneNode(true)); // Hedef Hesap için aynı seçenekleri ekliyoruz
-    });
-}
-
-// Hedef Hesap Alanını Gösterme/Gizleme
-document.getElementById('kayitYonu').addEventListener('change', function () {
-    const hedefHesapDiv = document.getElementById('hedefHesapDiv');
-    if (this.value === 'Hesaplar Arası Kayıt') {
-        hedefHesapDiv.style.display = 'block';
-    } else {
-        hedefHesapDiv.style.display = 'none';
-    }
-});
-
-// Taksit Bilgileri Gösterme/Gizleme
-document.getElementById('kaynakHesap').addEventListener('change', function () {
-    const taksitBilgileri = document.getElementById('taksitBilgileri');
-    const selectedOption = this.options[this.selectedIndex];
-    if (selectedOption.text.includes('Kredi Kartı')) {
-        taksitBilgileri.style.display = 'block';
-    } else {
-        taksitBilgileri.style.display = 'none';
-    }
-});
-
-// Form Gönderme
-document.getElementById('transactionForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const kayitTipi = document.getElementById('kayitTipi').value;
-    const kayitYonu = document.getElementById('kayitYonu').value;
-    const kaynakHesap = document.getElementById('kaynakHesap').value;
-    const kategori = document.getElementById('kategori').value;
-    const altKategori = document.getElementById('altKategori').value;
-    const hedefHesap = document.getElementById('hedefHesap').value;
-    const tutar = document.getElementById('tutar').value;
-    const taksitAdedi = document.getElementById('taksitAdedi').value;
-    const taksitTutar = document.getElementById('taksitTutar').value;
-
-    try {
-        await addDoc(collection(db, 'transactions'), {
-            kayitTipi,
-            kayitYonu,
-            kaynakHesap,
-            kategori,
-            altKategori,
-            hedefHesap,
-            tutar: parseFloat(tutar),
-            taksitAdedi: taksitAdedi ? parseInt(taksitAdedi) : null,
-            taksitTutar: taksitTutar ? parseFloat(taksitTutar) : null,
-            date: new Date(),
-            userId: currentUser.uid // Kullanıcı UID'si ekleniyor
-        });
-        alert('Kayıt başarıyla eklendi!');
-        document.getElementById('transactionForm').reset();
-        document.getElementById('taksitBilgileri').style.display = 'none';
-        document.getElementById('hedefHesapDiv').style.display = 'none'; // Hedef Hesap alanını gizle
-    } catch (error) {
-        console.error('Hata:', error);
-        alert('Kayıt eklenirken bir hata oluştu.');
-    }
-});
+    <script type="module" src="kayit_gir.js"></script>
+</body>
+</html>
