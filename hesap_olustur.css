@@ -9,16 +9,30 @@ body {
 }
 
 .container {
+    display: flex;
+    justify-content: space-between;
     background-color: #FFF;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    max-width: 800px;
     width: 100%;
     box-sizing: border-box;
 }
 
-h2 {
+.form-section {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.accounts-section {
+    flex: 1;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+h2, h3 {
     margin-top: 0;
 }
 
@@ -44,35 +58,29 @@ button:hover {
     background-color: #00172e;
 }
 
-.account-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+#accountList {
+    list-style: none;
+    padding: 0;
+}
+
+#accountList li {
+    background-color: #fff;
     padding: 10px;
-    background-color: #f4f4f4;
+    margin-bottom: 5px;
     border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
 }
 
-.action-buttons {
-    display: flex;
-    gap: 5px;
+#accountList li:hover {
+    background-color: #ddd;
 }
 
-.action-buttons button {
-    padding: 5px 10px;
-    font-size: 12px;
-    background-color: #4CAF50;
+#accountDetails {
+    margin-top: 20px;
 }
 
-.action-buttons button:hover {
-    background-color: #45a049;
-}
-
-.action-buttons .delete {
-    background-color: #f44336;
-}
-
-.action-buttons .delete:hover {
-    background-color: #e53935;
+#accountDetails p {
+    margin: 0;
+    padding: 5px 0;
 }
