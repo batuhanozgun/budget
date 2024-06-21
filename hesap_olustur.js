@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // Buton dinleyicisini burada tanımlıyoruz
     document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
 });
 
