@@ -40,19 +40,23 @@
                 <!-- Alt kategoriler buraya dinamik olarak yüklenecek -->
             </select>
             
-            <label for="hedefHesap" id="hedefHesapLabel" style="display:none;">Hedef Hesap:</label>
-            <select id="hedefHesap" style="display:none;">
-                <!-- Hesaplar buraya dinamik olarak yüklenecek -->
-            </select>
+            <div id="hedefHesapDiv" style="display: none;">
+                <label for="hedefHesap">Hedef Hesap:</label>
+                <select id="hedefHesap">
+                    <!-- Hesaplar buraya dinamik olarak yüklenecek -->
+                </select>
+            </div>
             
             <label for="tutar">Tutar:</label>
             <input type="number" id="tutar" required>
             
-            <label for="taksitAdedi" id="taksitAdediLabel" style="display:none;">Taksit Adedi:</label>
-            <input type="number" id="taksitAdedi" style="display:none;">
-            
-            <label for="taksitTutar" id="taksitTutarLabel" style="display:none;">Taksit Tutar:</label>
-            <input type="number" id="taksitTutar" style="display:none;">
+            <div id="taksitBilgileri" style="display: none;">
+                <label for="taksitAdedi">Taksit Adedi:</label>
+                <input type="number" id="taksitAdedi">
+                
+                <label for="taksitTutar">Taksit Tutar:</label>
+                <input type="number" id="taksitTutar">
+            </div>
             
             <label for="islemTarihi">İşlem Tarihi:</label>
             <input type="date" id="islemTarihi" required>
