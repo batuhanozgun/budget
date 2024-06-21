@@ -27,7 +27,7 @@ body {
 
 .accounts-section {
     flex: 1;
-    background-color: #f4f4f4;
+    background-color: #F0F0F0; /* Daha hafif bir gri ton */
     padding: 10px;
     border-radius: 10px;
 }
