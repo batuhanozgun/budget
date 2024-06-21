@@ -29,7 +29,7 @@
             <label for="accountName">Hesap Adı:</label>
             <input type="text" id="accountName" name="accountName" required disabled>
             <label for="openingDate">Hesap Açılış Tarihi:</label>
-            <input type="date" id="openingDate" name="openingDate" required disabled max="<?= date('Y-m-d') ?>">
+            <input type="date" id="openingDate" name="openingDate" required disabled>
             <label for="currency">Para Birimi:</label>
             <select id="currency" name="currency" required disabled>
                 <option value="TL">TL</option>
@@ -39,6 +39,9 @@
             <div id="dynamicFields"></div>
             <button type="submit" disabled>Hesap Oluştur</button>
         </form>
+    </div>
+
+    <div class="container">
         <h2>Mevcut Hesaplar</h2>
         <ul id="accountList"></ul>
         <div id="accountDetails"></div> <!-- Hesap detaylarını görüntülemek için eklendi -->
