@@ -1,10 +1,16 @@
-import { db } from './firebaseConfig.js';
-import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { auth, db } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 document.getElementById('accountType').addEventListener('change', updateDynamicFields);
 
 document.getElementById('accountForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const user = auth.currentUser;
+    if (!user) {
+        console.error('Kullanıcı oturumu açık değil.');
+        return;
+    }
 
     const accountName = document.getElementById('accountName').value;
     const openingDate = document.getElementById('openingDate').value;
@@ -15,6 +21,7 @@ document.getElementById('accountForm').addEventListener('submit', async (e) => {
 
     try {
         const docRef = await addDoc(collection(db, "accounts"), {
+            uid: user.uid,
             accountName,
             openingDate,
             currency,
@@ -29,7 +36,14 @@ document.getElementById('accountForm').addEventListener('submit', async (e) => {
 });
 
 async function loadAccounts() {
-    const querySnapshot = await getDocs(collection(db, "accounts"));
+    const user = auth.currentUser;
+    if (!user) {
+        console.error('Kullanıcı oturumu açık değil.');
+        return;
+    }
+
+    const q = query(collection(db, "accounts"), where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
     const accountList = document.getElementById('accountList');
     accountList.innerHTML = '';
     querySnapshot.forEach((doc) => {
