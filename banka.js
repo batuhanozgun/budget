@@ -18,7 +18,10 @@ export function getBankaValues() {
 }
 
 function formatNumberInput(event) {
-    const value = event.target.value.replace(/,/g, '').replace(/\./g, '');
+    let value = event.target.value;
+    value = value.replace(/\D/g, ''); // Sadece rakamları al
+    value = parseFloat(value).toString(); // Sayıyı tekrar string'e çevir
+
     if (!isNaN(value) && value !== '') {
         const formattedValue = parseFloat(value).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         event.target.value = formattedValue;
