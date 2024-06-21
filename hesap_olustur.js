@@ -5,6 +5,7 @@ import { getBankaFields, getBankaValues } from './banka.js';
 import { getKrediFields, getKrediValues } from './kredi.js';
 import { getKrediKartiFields, getKrediKartiValues } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues } from './birikim.js';
+import { checkAuth } from './auth.js';
 
 document.getElementById('accountType').addEventListener('change', updateDynamicFields);
 
@@ -122,13 +123,8 @@ function getFormData() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const user = auth.currentUser;
-    if (user) {
-        loadAccounts();
-    } else {
-        console.error('Kullanıcı oturumu açık değil.');
-        window.location.href = 'login.html'; // Kullanıcı oturum açmamışsa login sayfasına yönlendir
-    }
+    checkAuth();
+    loadAccounts();
 });
 
 function updateBillingCycleDetails() {
