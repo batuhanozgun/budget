@@ -1,3 +1,5 @@
+import { db, doc, getDoc } from './firebaseConfig.js';
+
 export async function loadAccountDetails(accountId) {
     try {
         const docRef = doc(db, "accounts", accountId);
@@ -41,4 +43,56 @@ function getLabelsForAccountType(accountType) {
         default:
             return {};
     }
+}
+
+function getNakitLabels() {
+    return {
+        accountName: 'Hesap Adı',
+        openingDate: 'Hesap Açılış Tarihi',
+        currency: 'Para Birimi',
+        initialBalance: 'Başlangıç Bakiyesi'
+    };
+}
+
+function getBankaLabels() {
+    return {
+        accountName: 'Hesap Adı',
+        openingDate: 'Hesap Açılış Tarihi',
+        currency: 'Para Birimi',
+        initialBalance: 'Başlangıç Bakiyesi',
+        kmhLimit: 'KMH Limiti'
+    };
+}
+
+function getKrediLabels() {
+    return {
+        accountName: 'Hesap Adı',
+        openingDate: 'Hesap Açılış Tarihi',
+        currency: 'Para Birimi',
+        krediTutari: 'Kredi Tutarı',
+        yatanTutar: 'Hesaba Yatan Tutar',
+        masraflar: 'Masraflar',
+        sigorta: 'Sigorta',
+        vade: 'Vade'
+    };
+}
+
+function getKrediKartiLabels() {
+    return {
+        accountName: 'Hesap Adı',
+        openingDate: 'Hesap Açılış Tarihi',
+        currency: 'Para Birimi',
+        kartLimiti: 'Kart Limiti',
+        hesapKesimDonemi: 'Hesap Kesim Dönemi'
+    };
+}
+
+function getBirikimLabels() {
+    return {
+        accountName: 'Hesap Adı',
+        openingDate: 'Hesap Açılış Tarihi',
+        currency: 'Para Birimi',
+        hedefTutar: 'Hedef Tutar',
+        odemeSikligi: 'Ödeme Sıklığı'
+    };
 }
