@@ -1,15 +1,44 @@
 <!DOCTYPE html>
-<html lang="en" data-page="kayitlari_goruntule">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kayıtları Görüntüle</title>
-    <script type="module" src="main.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="kayitlari_goruntule.js"></script>
 </head>
 <body>
-    <div id="menuContainer"></div>
-    <div id="contentContainer">
-        <!-- Kayıtları görüntüleme bölümü burada olacak -->
+    <div class="container">
+        <h2>Kayıtları Görüntüle</h2>
+        <div class="filters">
+            <input type="text" id="search" placeholder="Ara...">
+            <select id="filterCategory">
+                <option value="">Kategori Seç</option>
+                <!-- Kategoriler buraya gelecek -->
+            </select>
+            <input type="date" id="filterDate">
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Kategori</th>
+                    <th>Tutar</th>
+                    <th>Detay</th>
+                </tr>
+            </thead>
+            <tbody id="recordsTable">
+                <!-- Kayıtlar buraya gelecek -->
+            </tbody>
+        </table>
+        <div id="recordDetails" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="detailsContent">
+                    <!-- Kayıt detayları buraya gelecek -->
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
