@@ -2,11 +2,11 @@ import { auth, db } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth } from './auth.js';
 import { loadAccountDetails, displayAccountDetails } from './accountDetails.js';
-import { getNakitFields, getNakitValues, getNakitLabels } from './nakit.js';
-import { getBankaFields, getBankaValues, getBankaLabels } from './banka.js';
-import { getKrediFields, getKrediValues, getKrediLabels } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues, getKrediKartiLabels } from './krediKarti.js';
-import { getBirikimFields, getBirikimValues, getBirikimLabels } from './birikim.js';
+import { getNakitFields, getNakitValues } from './nakit.js';
+import { getBankaFields, getBankaValues } from './banka.js';
+import { getKrediFields, getKrediValues } from './kredi.js';
+import { getKrediKartiFields, getKrediKartiValues } from './krediKarti.js';
+import { getBirikimFields, getBirikimValues } from './birikim.js';
 
 document.getElementById('accountType').addEventListener('change', updateDynamicFields);
 
@@ -153,34 +153,5 @@ function updatePaymentFrequencyDetails() {
         paymentFrequencyDetails.innerHTML += '<label for="paymentDay">Gün:</label><select id="paymentDay" name="paymentDay" required><option value="monday">Pazartesi</option><option value="tuesday">Salı</option><option value="wednesday">Çarşamba</option><option value="thursday">Perşembe</option><option value="friday">Cuma</option><option value="saturday">Cumartesi</option><option value="sunday">Pazar</option></select>';
     } else if (paymentFrequency === 'monthly') {
         paymentFrequencyDetails.innerHTML += '<label for="paymentDate">Gün:</label><input type="number" id="paymentDate" name="paymentDate" min="1" max="31" required>';
-    }
-}
-
-function displayAccountDetails(accountData, accountType) {
-    const accountDetails = document.getElementById('accountDetails');
-    accountDetails.innerHTML = '';
-
-    const labels = getLabelsForAccountType(accountType);
-
-    for (const [key, value] of Object.entries(accountData)) {
-        const label = labels[key] || key;
-        accountDetails.innerHTML += `<p><strong>${label}:</strong> ${value}</p>`;
-    }
-}
-
-function getLabelsForAccountType(accountType) {
-    switch (accountType) {
-        case 'nakit':
-            return getNakitLabels();
-        case 'banka':
-            return getBankaLabels();
-        case 'kredi':
-            return getKrediLabels();
-        case 'krediKarti':
-            return getKrediKartiLabels();
-        case 'birikim':
-            return getBirikimLabels();
-        default:
-            return {};
     }
 }
