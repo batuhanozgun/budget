@@ -49,7 +49,7 @@ async function loadAccounts(user) {
         li.addEventListener('click', async () => {
             const accountData = await loadAccountDetails(doc.id);
             if (accountData) {
-                displayAccountDetails(accountData, doc.data().accountType);
+                displayAccountDetails(accountData);
             }
         });
         accountList.appendChild(li);
@@ -60,6 +60,24 @@ function updateDynamicFields() {
     const accountType = document.getElementById('accountType').value;
     const dynamicFields = document.getElementById('dynamicFields');
     dynamicFields.innerHTML = '';
+
+    const accountName = document.getElementById('accountName');
+    const openingDate = document.getElementById('openingDate');
+    const currency = document.getElementById('currency');
+    const submitButton = document.querySelector('button[type="submit"]');
+
+    if (accountType === '') {
+        accountName.disabled = true;
+        openingDate.disabled = true;
+        currency.disabled = true;
+        submitButton.disabled = true;
+        return;
+    }
+
+    accountName.disabled = false;
+    openingDate.disabled = false;
+    currency.disabled = false;
+    submitButton.disabled = false;
 
     let fields = '';
     switch (accountType) {
