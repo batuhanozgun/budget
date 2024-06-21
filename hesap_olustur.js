@@ -1,7 +1,6 @@
 import { auth, db } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth } from './auth.js';
-import { loadAccountDetails, displayAccountDetails } from './accountDetails.js';
 import { getNakitFields, getNakitValues } from './nakit.js';
 import { getBankaFields, getBankaValues } from './banka.js';
 import { getKrediFields, getKrediValues } from './kredi.js';
@@ -51,13 +50,7 @@ async function loadAccounts(user) {
     accountList.innerHTML = '';
     querySnapshot.forEach((doc) => {
         const li = document.createElement('li');
-        li.innerHTML = `
-            <span>${doc.data().accountName} - ${doc.data().accountType}</span>
-            <div class="action-buttons">
-                <button class="edit" onclick="editAccount('${doc.id}', '${doc.data().accountName}', '${doc.data().accountType}')">Düzenle</button>
-                <button class="delete" onclick="deleteAccount('${doc.id}')">Sil</button>
-            </div>
-        `;
+        li.textContent = `${doc.data().accountName} - ${doc.data().accountType}`;
         li.addEventListener('click', async () => {
             const accountData = await loadAccountDetails(doc.id);
             if (accountData) {
@@ -68,23 +61,22 @@ async function loadAccounts(user) {
     });
 }
 
-async function deleteAccount(accountId) {
-    await deleteDoc(doc(db, 'accounts', accountId));
-    loadAccounts(await checkAuth());
+async function loadAccountDetails(accountId) {
+    const accountDoc = await getDoc(doc(db, 'accounts', accountId));
+    return accountDoc.exists() ? accountDoc.data() : null;
 }
 
-function editAccount(accountId, accountName, accountType) {
-    const newAccountName = prompt('Yeni Hesap Adı:', accountName);
-    const newAccountType = prompt('Yeni Hesap Türü:', accountType);
-    if (newAccountName && newAccountType) {
-        updateAccount(accountId, newAccountName, newAccountType);
+function displayAccountDetails(accountData) {
+    const accountInfo = document.getElementById('accountInfo');
+    accountInfo.innerHTML = '';
+    for (const key in accountData) {
+        if (accountData.hasOwnProperty(key)) {
+            const p = document.createElement('p');
+            p.textContent = `${key}: ${accountData[key]}`;
+            accountInfo.appendChild(p);
+        }
     }
-}
-
-async function updateAccount(accountId, newAccountName, newAccountType) {
-    const accountDoc = doc(db, 'accounts', accountId);
-    await setDoc(accountDoc, { accountName: newAccountName, accountType: newAccountType }, { merge: true });
-    loadAccounts(await checkAuth());
+    document.getElementById('accountDetails').style.display = 'block';
 }
 
 function updateDynamicFields() {
@@ -187,5 +179,7 @@ function updatePaymentFrequencyDetails() {
 }
 
 // İşlevleri global hale getirin
-window.deleteAccount = deleteAccount;
-window.editAccount = editAccount;
+window.loadAccounts = loadAccounts;
+window.displayAccountDetails = displayAccountDetails;
+window.updateDynamicFields = updateDynamicFields;
+window.getFormData = getFormData;
