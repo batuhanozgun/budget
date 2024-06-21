@@ -19,8 +19,7 @@ document.querySelectorAll('.navigation button').forEach(button => {
         e.preventDefault();
         const target = e.target.getAttribute('data-target');
         if (target) {
-            window.location.href = target;
-            window.location.reload(true); // Sayfayı yeniden yükler ve önbelleği temizler
+            document.getElementById('contentFrame').src = target;
         }
     });
 });
