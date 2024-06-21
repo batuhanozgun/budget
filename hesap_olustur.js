@@ -3,7 +3,7 @@ import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.c
 import { getNakitFields, getNakitValues } from './nakit.js';
 import { getBankaFields, getBankaValues } from './banka.js';
 import { getKrediFields, getKrediValues } from './kredi.js';
-import { getKrediKartıFields, getKrediKartıValues } from './krediKartı.js';
+import { getKrediKartiFields, getKrediKartiValues } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues } from './birikim.js';
 
 document.getElementById('accountType').addEventListener('change', updateDynamicFields);
@@ -66,8 +66,8 @@ function updateDynamicFields() {
         case 'kredi':
             fields = getKrediFields();
             break;
-        case 'krediKartı':
-            fields = getKrediKartıFields();
+        case 'krediKarti':
+            fields = getKrediKartiFields();
             break;
         case 'birikim':
             fields = getBirikimFields();
@@ -94,8 +94,8 @@ function getFormData() {
         case 'kredi':
             dynamicFields = getKrediValues();
             break;
-        case 'krediKartı':
-            dynamicFields = getKrediKartıValues();
+        case 'krediKarti':
+            dynamicFields = getKrediKartiValues();
             break;
         case 'birikim':
             dynamicFields = getBirikimValues();
