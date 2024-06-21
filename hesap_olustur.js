@@ -14,6 +14,7 @@ document.getElementById('accountForm').addEventListener('submit', async (e) => {
     const user = auth.currentUser;
     if (!user) {
         console.error('Kullanıcı oturumu açık değil.');
+        window.location.href = 'login.html'; // Kullanıcı oturum açmamışsa login sayfasına yönlendir
         return;
     }
 
@@ -35,6 +36,7 @@ async function loadAccounts() {
     const user = auth.currentUser;
     if (!user) {
         console.error('Kullanıcı oturumu açık değil.');
+        window.location.href = 'login.html'; // Kullanıcı oturum açmamışsa login sayfasına yönlendir
         return;
     }
 
@@ -125,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadAccounts();
     } else {
         console.error('Kullanıcı oturumu açık değil.');
+        window.location.href = 'login.html'; // Kullanıcı oturum açmamışsa login sayfasına yönlendir
     }
 });
 
