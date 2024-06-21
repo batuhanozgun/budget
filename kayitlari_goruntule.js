@@ -1,5 +1,5 @@
 import { auth, db } from './firebaseConfig.js';
-import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth } from './auth.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function loadTransactions(user) {
-    const q = query(collection(db, "transactions"), where("uid", "==", user.uid));
+    const q = query(collection(db, "transactions"), where("userId", "==", user.uid));
     const querySnapshot = await getDocs(q);
     const tableBody = document.getElementById('transactionsTableBody');
     tableBody.innerHTML = '';
@@ -20,50 +20,27 @@ async function loadTransactions(user) {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${transaction.date}</td>
-            <td>${transaction.category}</td>
-            <td>${transaction.amount}</td>
-            <td>${transaction.type}</td>
-            <td><button class="edit-btn" data-id="${doc.id}">Düzenle</button></td>
+            <td>${transaction.kategori}</td>
+            <td>${transaction.tutar}</td>
+            <td>${transaction.kayitTipi}</td>
         `;
         tableBody.appendChild(row);
     });
 }
 
-document.getElementById('filterForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const user = await checkAuth();
-    if (user) {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        const q = query(
-            collection(db, "transactions"),
-            where("uid", "==", user.uid),
-            where("date", ">=", startDate),
-            where("date", "<=", endDate)
-        );
-        const querySnapshot = await getDocs(q);
-        const tableBody = document.getElementById('transactionsTableBody');
-        tableBody.innerHTML = '';
+document.getElementById('searchInput').addEventListener('input', filterTransactions);
 
-        querySnapshot.forEach((doc) => {
-            const transaction = doc.data();
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${transaction.date}</td>
-                <td>${transaction.category}</td>
-                <td>${transaction.amount}</td>
-                <td>${transaction.type}</td>
-                <td><button class="edit-btn" data-id="${doc.id}">Düzenle</button></td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-});
+function filterTransactions() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#transactionsTableBody tr');
 
-document.addEventListener('click', function(e) {
-    if (e.target && e.target.className === 'edit-btn') {
-        const transactionId = e.target.getAttribute('data-id');
-        // Düzenleme işlemleri burada yapılacak
-        console.log(`Edit transaction with ID: ${transactionId}`);
-    }
-});
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const match = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(searchInput));
+        if (match) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
