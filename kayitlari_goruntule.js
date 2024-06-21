@@ -113,4 +113,28 @@ async function loadTransactions(uid) {
             <td>${data.taksitAdedi || ''}</td>
             <td>${data.taksitTutar || ''}</td>
             <td>${new Date(data.islemTarihi).toLocaleDateString()}</td>
-            <td>${new Date(data.date.seconds * 1000).to
+            <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
+        `;
+
+        tableBody.appendChild(row);
+    }
+}
+
+document.getElementById('searchInput').addEventListener('input', filterTransactions);
+
+function filterTransactions() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.getElementById('transactionsTableBody').getElementsByTagName('tr');
+
+    for (const row of rows) {
+        const cells = row.getElementsByTagName('td');
+        let match = false;
+        for (const cell of cells) {
+            if (cell.textContent.toLowerCase().includes(searchText)) {
+                match = true;
+                break;
+            }
+        }
+        row.style.display = match ? '' : 'none';
+    }
+}
