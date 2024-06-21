@@ -45,12 +45,31 @@ async function loadCategories() {
     });
 }
 
+// Hesap Yükleme
+async function loadAccounts() {
+    const kaynakHesapSelect = document.getElementById('kaynakHesap');
+    const hedefHesapSelect = document.getElementById('hedefHesap');
+
+    const q = query(collection(db, 'accounts'));
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc) => {
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = doc.data().accountName; // Hesap Adı alanını kullanıyoruz
+        kaynakHesapSelect.appendChild(option);
+        hedefHesapSelect.appendChild(option.cloneNode(true)); // Hedef Hesap için aynı seçenekleri ekliyoruz
+    });
+}
+
 loadCategories();
+loadAccounts();
 
 // Taksit Bilgileri Gösterme/Gizleme
 document.getElementById('kaynakHesap').addEventListener('change', function () {
     const taksitBilgileri = document.getElementById('taksitBilgileri');
-    if (this.value === 'krediKarti') {
+    const selectedOption = this.options[this.selectedIndex];
+    if (selectedOption.text.includes('Kredi Kartı')) {
         taksitBilgileri.style.display = 'block';
     } else {
         taksitBilgileri.style.display = 'none';
