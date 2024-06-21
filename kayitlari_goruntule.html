@@ -10,14 +10,16 @@
 <body>
     <div class="container">
         <h2>Kayıtları Görüntüle</h2>
-        <div class="filters">
-            <input type="text" id="search" placeholder="Ara...">
-            <select id="filterCategory">
+        <form id="filterForm">
+            <input type="text" id="searchInput" placeholder="Ara...">
+            <select id="categorySelect">
                 <option value="">Kategori Seç</option>
-                <!-- Kategoriler buraya gelecek -->
+                <!-- Kategoriler buraya eklenecek -->
             </select>
-            <input type="date" id="filterDate">
-        </div>
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+            <button type="submit">Filtrele</button>
+        </form>
         <table>
             <thead>
                 <tr>
@@ -27,18 +29,10 @@
                     <th>Detay</th>
                 </tr>
             </thead>
-            <tbody id="recordsTable">
-                <!-- Kayıtlar buraya gelecek -->
+            <tbody id="transactionsTableBody">
+                <!-- Kayıtlar buraya eklenecek -->
             </tbody>
         </table>
-        <div id="recordDetails" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <div id="detailsContent">
-                    <!-- Kayıt detayları buraya gelecek -->
-                </div>
-            </div>
-        </div>
     </div>
 </body>
 </html>
