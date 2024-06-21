@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Error adding document: ", e);
         }
     });
+
+    document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
 });
 
 async function loadAccounts(user) {
@@ -155,6 +157,3 @@ window.displayAccountDetails = displayAccountDetails;
 window.updateDynamicFields = updateDynamicFields;
 window.getFormData = getFormData;
 window.addInstallment = addInstallment;
-
-// Gelecek Dönem Taksitler Ekleme İşlemi
-document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
