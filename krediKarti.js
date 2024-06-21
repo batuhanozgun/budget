@@ -14,6 +14,11 @@ export function getKrediKartiFields() {
         <input type="date" id="statementDate" name="statementDate" required>
         <label for="paymentDueDate">Son Ödeme Tarihi:</label>
         <input type="date" id="paymentDueDate" name="paymentDueDate" required>
+        <div id="futureInstallmentsSection">
+            <h3>Gelecek Dönem Taksitler</h3>
+            <div id="installmentsContainer"></div>
+            <button type="button" id="addInstallmentButton">Taksit Ekle</button>
+        </div>
     `;
 }
 
@@ -25,6 +30,46 @@ export function getKrediKartiValues() {
         pendingAmountAtOpening: parseFloat(document.getElementById('pendingAmountAtOpening').value).toFixed(2),
         previousStatementBalance: parseFloat(document.getElementById('previousStatementBalance').value).toFixed(2),
         statementDate: document.getElementById('statementDate').value,
-        paymentDueDate: document.getElementById('paymentDueDate').value
+        paymentDueDate: document.getElementById('paymentDueDate').value,
+        installments: getInstallmentsData()
     };
+}
+
+export function addInstallment() {
+    const container = document.getElementById('installmentsContainer');
+    const installmentDiv = document.createElement('div');
+    installmentDiv.classList.add('installment');
+    
+    installmentDiv.innerHTML = `
+        <label for="installmentMonth">Ay:</label>
+        <input type="number" class="installmentMonth" name="installmentMonth" min="1" max="12" required>
+        <label for="installmentYear">Yıl:</label>
+        <input type="number" class="installmentYear" name="installmentYear" min="2023" required>
+        <label for="installmentAmount">Tutar:</label>
+        <input type="number" class="installmentAmount" name="installmentAmount" required>
+        <button type="button" class="removeInstallmentButton">Kaldır</button>
+    `;
+
+    installmentDiv.querySelector('.removeInstallmentButton').addEventListener('click', () => {
+        container.removeChild(installmentDiv);
+    });
+
+    container.appendChild(installmentDiv);
+}
+
+export function getInstallmentsData() {
+    const installments = [];
+    const installmentDivs = document.querySelectorAll('.installment');
+
+    installmentDivs.forEach(div => {
+        const month = div.querySelector('.installmentMonth').value;
+        const year = div.querySelector('.installmentYear').value;
+        const amount = div.querySelector('.installmentAmount').value;
+
+        if (month && year && amount) {
+            installments.push({ month, year, amount });
+        }
+    });
+
+    return installments;
 }
