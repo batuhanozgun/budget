@@ -5,11 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kayıtları Görüntüle</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Bu CSS yalnızca bu sayfaya özgü olacak */
+        body {
+            font-size: 14px; /* Varsayılan yazı boyutu */
+        }
+        table {
+            width: 100%;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        .font-control-buttons {
+            margin-bottom: 10px;
+        }
+        .font-control-buttons button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+    </style>
     <script type="module" src="kayitlari_goruntule.js"></script>
+    <script>
+        function changeFontSize(increase) {
+            const body = document.body;
+            let currentSize = parseFloat(window.getComputedStyle(body, null).getPropertyValue('font-size'));
+            if (increase) {
+                body.style.fontSize = (currentSize + 1) + 'px';
+            } else {
+                body.style.fontSize = (currentSize - 1) + 'px';
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container">
         <h2>Kayıtları Görüntüle</h2>
+        <div class="font-control-buttons">
+            <button onclick="changeFontSize(true)">Yazı Boyutunu Artır</button>
+            <button onclick="changeFontSize(false)">Yazı Boyutunu Azalt</button>
+        </div>
         <input type="text" id="searchInput" placeholder="Ara...">
         <table id="transactionsTable">
             <thead>
