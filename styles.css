@@ -6,31 +6,23 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
+    height: 100vh;
 }
 
 /* Konteyner */
 .container {
     max-width: 600px;
-    width: 100%;
-    margin: 20px auto;
+    margin: auto;
     padding: 20px;
     background-color: #FFF;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    overflow: auto; /* İçeriğin taşmasını önler ve kaydırma çubuğu ekler */
-    max-height: 80vh; /* Sayfanın %80'i kadar yüksekliğe izin verir */
 }
 
 /* Başlıklar */
 h2 {
     color: #002147;
     text-align: center;
-    position: sticky; /* Başlığı sabitler */
-    top: 0; /* Üstte sabitler */
-    background-color: #FFF; /* Başlığın arka plan rengini beyaz yapar */
-    padding: 10px 0;
-    z-index: 10; /* Başlığın diğer içeriklerin üzerinde olmasını sağlar */
 }
 
 /* Form Etiketler */
