@@ -4,7 +4,7 @@ import { checkAuth } from './auth.js';
 import { getNakitFields, getNakitValues } from './nakit.js';
 import { getBankaFields, getBankaValues } from './banka.js';
 import { getKrediFields, getKrediValues } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues } from './krediKarti.js';
+import { getKrediKartiFields, getKrediKartiValues, addInstallment, getInstallmentsData } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues } from './birikim.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -82,7 +82,9 @@ function displayAccountDetails(accountData) {
 function updateDynamicFields() {
     const accountType = document.getElementById('accountType').value;
     const dynamicFields = document.getElementById('dynamicFields');
+    const futureInstallmentsSection = document.getElementById('futureInstallmentsSection');
     dynamicFields.innerHTML = '';
+    futureInstallmentsSection.style.display = 'none'; // Hide by default
 
     let fields = '';
     switch (accountType) {
@@ -97,6 +99,7 @@ function updateDynamicFields() {
             break;
         case 'krediKarti':
             fields = getKrediKartiFields();
+            futureInstallmentsSection.style.display = 'block'; // Show future installments section
             break;
         case 'birikim':
             fields = getBirikimFields();
@@ -106,15 +109,10 @@ function updateDynamicFields() {
     dynamicFields.innerHTML = fields;
 
     // Enable form fields after account type is selected
-    const accountName = document.getElementById('accountName');
-    const openingDate = document.getElementById('openingDate');
-    const currency = document.getElementById('currency');
-    const submitButton = document.querySelector('button[type="submit"]');
-
-    if (accountName) accountName.disabled = false;
-    if (openingDate) openingDate.disabled = false;
-    if (currency) currency.disabled = false;
-    if (submitButton) submitButton.disabled = false;
+    document.getElementById('accountName').disabled = false;
+    document.getElementById('openingDate').disabled = false;
+    document.getElementById('currency').disabled = false;
+    document.querySelector('button[type="submit"]').disabled = false;
 }
 
 function getFormData() {
@@ -156,3 +154,7 @@ window.loadAccounts = loadAccounts;
 window.displayAccountDetails = displayAccountDetails;
 window.updateDynamicFields = updateDynamicFields;
 window.getFormData = getFormData;
+window.addInstallment = addInstallment;
+
+// Gelecek Dönem Taksitler Ekleme İşlemi
+document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
