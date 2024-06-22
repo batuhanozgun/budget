@@ -99,6 +99,7 @@ async function loadTransactions(uid) {
         const accountRow = document.createElement('tr');
         accountRow.innerHTML = `<td colspan="12" style="background-color: #eee; font-weight: bold;">${account}</td>`;
         tableBody.appendChild(accountRow);
+        console.log(`Added header row for account: ${account}`);
 
         for (const { id, data, kategoriName, altKategoriName, kaynakHesapName, hedefHesapName } of accountTransactions) {
             const row = document.createElement('tr');
@@ -124,6 +125,7 @@ async function loadTransactions(uid) {
             `;
 
             tableBody.appendChild(row);
+            console.log(`Added row for transaction ID: ${id}`);
 
             accountTotal += parseFloat(data.tutar);
         }
@@ -133,5 +135,6 @@ async function loadTransactions(uid) {
         const totalRow = document.createElement('tr');
         totalRow.innerHTML = `<td colspan="6" style="text-align: right; font-weight: bold;">Toplam:</td><td colspan="6" style="font-weight: bold;">${accountTotal.toFixed(2)}</td>`;
         tableBody.appendChild(totalRow);
+        console.log(`Added total row for account: ${account}`);
     }
 }
