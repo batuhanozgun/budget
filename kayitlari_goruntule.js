@@ -96,11 +96,6 @@ async function loadTransactions(uid) {
         const accountTransactions = transactionsByAccount[account];
         let accountTotal = 0;
 
-        const accountRow = document.createElement('tr');
-        accountRow.innerHTML = `<td colspan="12" style="background-color: #eee; font-weight: bold;">${account}</td>`;
-        tableBody.appendChild(accountRow);
-        console.log(`Added header row for account: ${account}`);
-
         for (const { id, data, kategoriName, altKategoriName, kaynakHesapName, hedefHesapName } of accountTransactions) {
             const row = document.createElement('tr');
 
@@ -116,7 +111,12 @@ async function loadTransactions(uid) {
                 <td>${data.taksitTutar || ''}</td>
                 <td>${new Date(data.islemTarihi).toLocaleDateString()}</td>
                 <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
-                <td></td>
+                <td>
+                    <div class="action-buttons">
+                        <button onclick="editTransaction('${id}')">Düzenle</button>
+                        <button onclick="deleteTransaction('${id}')">Sil</button>
+                    </div>
+                </td>
             `;
 
             tableBody.appendChild(row);
