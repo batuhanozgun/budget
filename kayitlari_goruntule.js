@@ -116,12 +116,7 @@ async function loadTransactions(uid) {
                 <td>${data.taksitTutar || ''}</td>
                 <td>${new Date(data.islemTarihi).toLocaleDateString()}</td>
                 <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
-                <td>
-                    <div class="action-buttons">
-                        <button onclick="editTransaction('${id}')">Düzenle</button>
-                        <button onclick="deleteTransaction('${id}')">Sil</button>
-                    </div>
-                </td>
+                <td></td>
             `;
 
             tableBody.appendChild(row);
