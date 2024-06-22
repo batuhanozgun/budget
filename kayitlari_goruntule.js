@@ -89,6 +89,9 @@ async function loadTransactions(uid) {
         });
     }
 
+    // Konsola yazdırma işlemleri ile verilerin doğru olduğunu kontrol edelim
+    console.log('Transactions By Account:', transactionsByAccount);
+
     for (const account in transactionsByAccount) {
         const accountTransactions = transactionsByAccount[account];
         let accountTotal = 0;
@@ -124,6 +127,8 @@ async function loadTransactions(uid) {
 
             accountTotal += parseFloat(data.tutar);
         }
+
+        console.log(`Account: ${account}, Total: ${accountTotal}`);
 
         const totalRow = document.createElement('tr');
         totalRow.innerHTML = `<td colspan="6" style="text-align: right; font-weight: bold;">Toplam:</td><td colspan="6" style="font-weight: bold;">${accountTotal.toFixed(2)}</td>`;
