@@ -3,6 +3,7 @@ import { getDocs, collection, doc, getDoc } from "https://www.gstatic.com/fireba
 import { checkAuth } from './auth.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    showLoadingOverlay();
     const user = await checkAuth();
     if (user) {
         const transactions = await getTransactions(user.uid);
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         displayCategoryBalances(transactions);
         displayTransactions(transactions);
     }
+    hideLoadingOverlay();
 });
 
 async function getTransactions(uid) {
@@ -96,4 +98,12 @@ function displayTransactions(transactions) {
 
 function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function showLoadingOverlay() {
+    document.querySelector('.loading-overlay').style.display = 'flex';
+}
+
+function hideLoadingOverlay() {
+    document.querySelector('.loading-overlay').style.display = 'none';
 }
