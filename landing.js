@@ -22,10 +22,8 @@ document.querySelectorAll('.navigation button').forEach(button => {
         const target = e.target.getAttribute('data-target');
         if (target) {
             const iframe = document.getElementById('contentFrame');
-            iframe.src = ''; // İframe içeriğini önce boşalt
-            setTimeout(() => {
-                iframe.src = target; // Sayfayı yeniden yükle
-            }, 100);
+            const timestamp = new Date().getTime(); // Benzersiz URL için zaman damgası ekle
+            iframe.src = `${target}?t=${timestamp}`; // Benzersiz URL ile iframe'i yükle
         }
     });
 });
