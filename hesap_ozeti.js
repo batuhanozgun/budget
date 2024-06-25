@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = await checkAuth();
     if (user) {
         const transactions = await getTransactions(user.uid);
-        displayAccountBalances(transactions);
-        displayCategoryBalances(transactions);
-        displayTransactions(transactions);
+        await displayAccountBalances(transactions);
+        await displayCategoryBalances(transactions);
+        await displayTransactions(transactions);
     }
     hideLoadingOverlay();
 });
@@ -26,19 +26,19 @@ async function getTransactions(uid) {
     return transactions;
 }
 
-function displayAccountBalances(transactions) {
+async function displayAccountBalances(transactions) {
     const summaryTableBody = document.getElementById('accountBalancesTable').getElementsByTagName('tbody')[0];
     const accountBalances = {};
 
-    transactions.forEach(transaction => {
+    for (const transaction of transactions) {
         const { kaynakHesap, tutar } = transaction;
         if (!accountBalances[kaynakHesap]) {
             accountBalances[kaynakHesap] = 0;
         }
         accountBalances[kaynakHesap] += parseFloat(tutar);
-    });
+    }
 
-    Object.keys(accountBalances).forEach(async accountId => {
+    for (const accountId of Object.keys(accountBalances)) {
         const accountDoc = await getDoc(doc(db, 'accounts', accountId));
         const accountName = accountDoc.exists() ? accountDoc.data().accountName : 'Unknown Account';
         const row = summaryTableBody.insertRow();
@@ -47,22 +47,22 @@ function displayAccountBalances(transactions) {
 
         accountNameCell.textContent = accountName;
         balanceCell.textContent = formatNumber(accountBalances[accountId]);
-    });
+    }
 }
 
-function displayCategoryBalances(transactions) {
+async function displayCategoryBalances(transactions) {
     const summaryTableBody = document.getElementById('categoryBalancesTable').getElementsByTagName('tbody')[0];
     const categoryBalances = {};
 
-    transactions.forEach(transaction => {
+    for (const transaction of transactions) {
         const { kategori, tutar } = transaction;
         if (!categoryBalances[kategori]) {
             categoryBalances[kategori] = 0;
         }
         categoryBalances[kategori] += parseFloat(tutar);
-    });
+    }
 
-    Object.keys(categoryBalances).forEach(async categoryId => {
+    for (const categoryId of Object.keys(categoryBalances)) {
         const categoryDoc = await getDoc(doc(db, 'categories', categoryId));
         const categoryName = categoryDoc.exists() ? categoryDoc.data().name : 'Unknown Category';
         const row = summaryTableBody.insertRow();
@@ -71,13 +71,13 @@ function displayCategoryBalances(transactions) {
 
         categoryNameCell.textContent = categoryName;
         balanceCell.textContent = formatNumber(categoryBalances[categoryId]);
-    });
+    }
 }
 
-function displayTransactions(transactions) {
+async function displayTransactions(transactions) {
     const summaryTableBody = document.getElementById('summaryTable').getElementsByTagName('tbody')[0];
 
-    transactions.forEach(transaction => {
+    for (const transaction of transactions) {
         const row = summaryTableBody.insertRow();
 
         const accountNameCell = row.insertCell(0);
@@ -87,13 +87,22 @@ function displayTransactions(transactions) {
         const amountCell = row.insertCell(4);
         const transactionTypeCell = row.insertCell(5);
 
-        accountNameCell.textContent = transaction.kaynakHesap; // Hesap adı
-        transactionDateCell.textContent = transaction.islemTarihi; // İşlem tarihi
-        categoryCell.textContent = transaction.kategori; // Kategori
-        subCategoryCell.textContent = transaction.altKategori; // Alt kategori
-        amountCell.textContent = formatNumber(transaction.tutar); // Tutar
-        transactionTypeCell.textContent = transaction.kayitTipi; // İşlem tipi
-    });
+        const accountDoc = await getDoc(doc(db, 'accounts', transaction.kaynakHesap));
+        const accountName = accountDoc.exists() ? accountDoc.data().accountName : 'Unknown Account';
+
+        const categoryDoc = await getDoc(doc(db, 'categories', transaction.kategori));
+        const categoryName = categoryDoc.exists() ? categoryDoc.data().name : 'Unknown Category';
+
+        const subCategoryDoc = await getDoc(doc(db, 'categories', transaction.kategori, 'subcategories', transaction.altKategori));
+        const subCategoryName = subCategoryDoc.exists() ? subCategoryDoc.data().name : 'Unknown Subcategory';
+
+        accountNameCell.textContent = accountName;
+        transactionDateCell.textContent = new Date(transaction.islemTarihi).toLocaleDateString();
+        categoryCell.textContent = categoryName;
+        subCategoryCell.textContent = subCategoryName;
+        amountCell.textContent = formatNumber(transaction.tutar);
+        transactionTypeCell.textContent = transaction.kayitTipi;
+    }
 }
 
 function formatNumber(num) {
