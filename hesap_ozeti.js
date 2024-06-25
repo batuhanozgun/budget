@@ -1,70 +1,79 @@
 import { db } from './firebaseConfig.js';
-import { getDocs, collection, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { getDocs, collection, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { checkAuth } from './auth.js';
 
-const auth = getAuth();
-
-document.addEventListener('DOMContentLoaded', () => {
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            showLoading();
-            const transactions = await getTransactions(user.uid);
-            const transactionsWithDetails = await addDetailsToTransactions(transactions);
-            hideLoading();
-            displayTransactions(transactionsWithDetails);
-            displayAccountBalances(transactionsWithDetails);
-            displayCategoryBalances(transactionsWithDetails);
-        } else {
-            // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
-            window.location.href = 'login.html';
-        }
-    });
+document.addEventListener('DOMContentLoaded', async () => {
+    const user = await checkAuth();
+    if (user) {
+        const transactions = await getTransactions(user.uid);
+        displayAccountBalances(transactions);
+        displayCategoryBalances(transactions);
+        displayTransactions(transactions);
+    }
 });
 
 async function getTransactions(uid) {
-    const q = query(collection(db, 'transactions'), where('userId', '==', uid));
-    const transactionsSnapshot = await getDocs(q);
+    const transactionsSnapshot = await getDocs(collection(db, 'transactions'));
     const transactions = [];
     transactionsSnapshot.forEach(doc => {
-        transactions.push({ id: doc.id, ...doc.data() });
+        const data = doc.data();
+        if (data.userId === uid) {
+            transactions.push(data);
+        }
     });
     return transactions;
 }
 
-async function addDetailsToTransactions(transactions) {
-    const accountPromises = transactions.map(async transaction => {
-        if (transaction.kaynakHesap) {
-            const kaynakHesapDoc = await getDoc(doc(db, 'accounts', transaction.kaynakHesap));
-            if (kaynakHesapDoc.exists()) {
-                transaction.kaynakHesapName = kaynakHesapDoc.data().accountName;
-            }
+function displayAccountBalances(transactions) {
+    const summaryTableBody = document.getElementById('accountBalancesTable').getElementsByTagName('tbody')[0];
+    const accountBalances = {};
+
+    transactions.forEach(transaction => {
+        const { kaynakHesap, tutar } = transaction;
+        if (!accountBalances[kaynakHesap]) {
+            accountBalances[kaynakHesap] = 0;
         }
-        if (transaction.hedefHesap) {
-            const hedefHesapDoc = await getDoc(doc(db, 'accounts', transaction.hedefHesap));
-            if (hedefHesapDoc.exists()) {
-                transaction.hedefHesapName = hedefHesapDoc.data().accountName;
-            }
-        }
-        if (transaction.kategori) {
-            const kategoriDoc = await getDoc(doc(db, 'categories', transaction.kategori));
-            if (kategoriDoc.exists()) {
-                transaction.kategoriName = kategoriDoc.data().name;
-            }
-        }
-        if (transaction.altKategori) {
-            const altKategoriDoc = await getDoc(doc(db, 'categories', transaction.kategori, 'subcategories', transaction.altKategori));
-            if (altKategoriDoc.exists()) {
-                transaction.altKategoriName = altKategoriDoc.data().name;
-            }
-        }
-        return transaction;
+        accountBalances[kaynakHesap] += parseFloat(tutar);
     });
-    return Promise.all(accountPromises);
+
+    Object.keys(accountBalances).forEach(async accountId => {
+        const accountDoc = await getDoc(doc(db, 'accounts', accountId));
+        const accountName = accountDoc.exists() ? accountDoc.data().accountName : 'Unknown Account';
+        const row = summaryTableBody.insertRow();
+        const accountNameCell = row.insertCell(0);
+        const balanceCell = row.insertCell(1);
+
+        accountNameCell.textContent = accountName;
+        balanceCell.textContent = formatNumber(accountBalances[accountId]);
+    });
+}
+
+function displayCategoryBalances(transactions) {
+    const summaryTableBody = document.getElementById('categoryBalancesTable').getElementsByTagName('tbody')[0];
+    const categoryBalances = {};
+
+    transactions.forEach(transaction => {
+        const { kategori, tutar } = transaction;
+        if (!categoryBalances[kategori]) {
+            categoryBalances[kategori] = 0;
+        }
+        categoryBalances[kategori] += parseFloat(tutar);
+    });
+
+    Object.keys(categoryBalances).forEach(async categoryId => {
+        const categoryDoc = await getDoc(doc(db, 'categories', categoryId));
+        const categoryName = categoryDoc.exists() ? categoryDoc.data().name : 'Unknown Category';
+        const row = summaryTableBody.insertRow();
+        const categoryNameCell = row.insertCell(0);
+        const balanceCell = row.insertCell(1);
+
+        categoryNameCell.textContent = categoryName;
+        balanceCell.textContent = formatNumber(categoryBalances[categoryId]);
+    });
 }
 
 function displayTransactions(transactions) {
     const summaryTableBody = document.getElementById('summaryTable').getElementsByTagName('tbody')[0];
-    summaryTableBody.innerHTML = '';  // Tablodaki önceki verileri temizle
 
     transactions.forEach(transaction => {
         const row = summaryTableBody.insertRow();
@@ -76,79 +85,15 @@ function displayTransactions(transactions) {
         const amountCell = row.insertCell(4);
         const transactionTypeCell = row.insertCell(5);
 
-        accountNameCell.textContent = transaction.kaynakHesapName || transaction.kaynakHesap; // Hesap adı
-        transactionDateCell.textContent = new Date(transaction.islemTarihi).toLocaleDateString(); // İşlem tarihi
-        categoryCell.textContent = transaction.kategoriName || transaction.kategori; // Kategori
-        subCategoryCell.textContent = transaction.altKategoriName || transaction.altKategori; // Alt kategori
-        amountCell.textContent = transaction.tutar; // Tutar
+        accountNameCell.textContent = transaction.kaynakHesap; // Hesap adı
+        transactionDateCell.textContent = transaction.islemTarihi; // İşlem tarihi
+        categoryCell.textContent = transaction.kategori; // Kategori
+        subCategoryCell.textContent = transaction.altKategori; // Alt kategori
+        amountCell.textContent = formatNumber(transaction.tutar); // Tutar
         transactionTypeCell.textContent = transaction.kayitTipi; // İşlem tipi
     });
 }
 
-function displayAccountBalances(transactions) {
-    const accountBalances = {};
-    transactions.forEach(transaction => {
-        const account = transaction.kaynakHesapName || transaction.kaynakHesap;
-        const amount = parseFloat(transaction.tutar);
-
-        if (!accountBalances[account]) {
-            accountBalances[account] = 0;
-        }
-
-        if (transaction.kayitTipi === 'Gelir') {
-            accountBalances[account] += amount;
-        } else if (transaction.kayitTipi === 'Gider') {
-            accountBalances[account] -= amount;
-        }
-    });
-
-    const accountBalancesTableBody = document.getElementById('accountBalancesTable').getElementsByTagName('tbody')[0];
-    accountBalancesTableBody.innerHTML = '';  // Tablodaki önceki verileri temizle
-
-    for (const [account, balance] of Object.entries(accountBalances)) {
-        const row = accountBalancesTableBody.insertRow();
-        const accountNameCell = row.insertCell(0);
-        const balanceCell = row.insertCell(1);
-
-        accountNameCell.textContent = account;
-        balanceCell.textContent = balance.toFixed(2);
-    }
-}
-
-function displayCategoryBalances(transactions) {
-    const categoryBalances = {};
-    transactions.forEach(transaction => {
-        const category = transaction.kategoriName || transaction.kategori;
-        const amount = parseFloat(transaction.tutar);
-
-        if (!categoryBalances[category]) {
-            categoryBalances[category] = 0;
-        }
-
-        if (transaction.kayitTipi === 'Gelir') {
-            categoryBalances[category] += amount;
-        } else if (transaction.kayitTipi === 'Gider') {
-            categoryBalances[category] -= amount;
-        }
-    });
-
-    const categoryBalancesTableBody = document.getElementById('categoryBalancesTable').getElementsByTagName('tbody')[0];
-    categoryBalancesTableBody.innerHTML = '';  // Tablodaki önceki verileri temizle
-
-    for (const [category, balance] of Object.entries(categoryBalances)) {
-        const row = categoryBalancesTableBody.insertRow();
-        const categoryNameCell = row.insertCell(0);
-        const balanceCell = row.insertCell(1);
-
-        categoryNameCell.textContent = category;
-        balanceCell.textContent = balance.toFixed(2);
-    }
-}
-
-function showLoading() {
-    document.querySelector('.loading-overlay').style.display = 'flex';
-}
-
-function hideLoading() {
-    document.querySelector('.loading-overlay').style.display = 'none';
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
