@@ -17,7 +17,7 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
     overflow-x: auto; /* Yatay taşmayı önlemek için */
-    max-width: 1200px; /* Maksimum genişliği artırdık */
+    max-width: 600px; /* Maksimum genişliği artırdık */
     width: 100%;
     margin-bottom: 20px; /* Tablolar arasında boşluk */
 }
