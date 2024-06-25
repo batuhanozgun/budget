@@ -146,9 +146,9 @@ window.editTransaction = async (transactionId) => {
 };
 
 function showLoading() {
-    document.getElementById('loading').style.display = 'block';
+    document.querySelector('.loading-overlay').style.display = 'flex';
 }
 
 function hideLoading() {
-    document.getElementById('loading').style.display = 'none';
+    document.querySelector('.loading-overlay').style.display = 'none';
 }
