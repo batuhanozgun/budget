@@ -1,5 +1,5 @@
 import { db } from './firebaseConfig.js';
-import { getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getDocs, collection, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
 const auth = getAuth();
@@ -8,9 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const transactions = await getTransactions(user.uid);
-            displayTransactions(transactions);
-            displayAccountBalances(transactions);
-            displayCategoryBalances(transactions);
+            const transactionsWithDetails = await addDetailsToTransactions(transactions);
+            displayTransactions(transactionsWithDetails);
+            displayAccountBalances(transactionsWithDetails);
+            displayCategoryBalances(transactionsWithDetails);
         } else {
             // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
             window.location.href = 'login.html';
@@ -28,6 +29,37 @@ async function getTransactions(uid) {
     return transactions;
 }
 
+async function addDetailsToTransactions(transactions) {
+    const accountPromises = transactions.map(async transaction => {
+        if (transaction.kaynakHesap) {
+            const kaynakHesapDoc = await getDoc(doc(db, 'accounts', transaction.kaynakHesap));
+            if (kaynakHesapDoc.exists()) {
+                transaction.kaynakHesapName = kaynakHesapDoc.data().accountName;
+            }
+        }
+        if (transaction.hedefHesap) {
+            const hedefHesapDoc = await getDoc(doc(db, 'accounts', transaction.hedefHesap));
+            if (hedefHesapDoc.exists()) {
+                transaction.hedefHesapName = hedefHesapDoc.data().accountName;
+            }
+        }
+        if (transaction.kategori) {
+            const kategoriDoc = await getDoc(doc(db, 'categories', transaction.kategori));
+            if (kategoriDoc.exists()) {
+                transaction.kategoriName = kategoriDoc.data().name;
+            }
+        }
+        if (transaction.altKategori) {
+            const altKategoriDoc = await getDoc(doc(db, 'categories', transaction.kategori, 'subcategories', transaction.altKategori));
+            if (altKategoriDoc.exists()) {
+                transaction.altKategoriName = altKategoriDoc.data().name;
+            }
+        }
+        return transaction;
+    });
+    return Promise.all(accountPromises);
+}
+
 function displayTransactions(transactions) {
     const summaryTableBody = document.getElementById('summaryTable').getElementsByTagName('tbody')[0];
     summaryTableBody.innerHTML = '';  // Tablodaki önceki verileri temizle
@@ -42,10 +74,10 @@ function displayTransactions(transactions) {
         const amountCell = row.insertCell(4);
         const transactionTypeCell = row.insertCell(5);
 
-        accountNameCell.textContent = transaction.kaynakHesap; // Hesap adı
+        accountNameCell.textContent = transaction.kaynakHesapName || transaction.kaynakHesap; // Hesap adı
         transactionDateCell.textContent = new Date(transaction.islemTarihi).toLocaleDateString(); // İşlem tarihi
-        categoryCell.textContent = transaction.kategori; // Kategori
-        subCategoryCell.textContent = transaction.altKategori; // Alt kategori
+        categoryCell.textContent = transaction.kategoriName || transaction.kategori; // Kategori
+        subCategoryCell.textContent = transaction.altKategoriName || transaction.altKategori; // Alt kategori
         amountCell.textContent = transaction.tutar; // Tutar
         transactionTypeCell.textContent = transaction.kayitTipi; // İşlem tipi
     });
@@ -54,7 +86,7 @@ function displayTransactions(transactions) {
 function displayAccountBalances(transactions) {
     const accountBalances = {};
     transactions.forEach(transaction => {
-        const account = transaction.kaynakHesap;
+        const account = transaction.kaynakHesapName || transaction.kaynakHesap;
         const amount = parseFloat(transaction.tutar);
         if (!accountBalances[account]) {
             accountBalances[account] = 0;
@@ -82,7 +114,7 @@ function displayAccountBalances(transactions) {
 function displayCategoryBalances(transactions) {
     const categoryBalances = {};
     transactions.forEach(transaction => {
-        const category = transaction.kategori;
+        const category = transaction.kategoriName || transaction.kategori;
         const amount = parseFloat(transaction.tutar);
         if (!categoryBalances[category]) {
             categoryBalances[category] = 0;
