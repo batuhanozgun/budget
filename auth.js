@@ -12,3 +12,7 @@ export function checkAuth() {
         });
     });
 }
+
+export function getCurrentUser() {
+    return auth.currentUser;
+}
