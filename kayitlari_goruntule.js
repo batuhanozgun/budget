@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, query, getDocs, where, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getFirestore, collection, query, getDocs, where, doc, getDoc, deleteDoc, updateDoc, limit, startAfter } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
 // Firebase yapılandırmanızı buraya ekleyin
@@ -16,6 +16,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+let lastVisible = null;
+let isLoading = false;
+
 onAuthStateChanged(auth, (user) => {
     if (user) {
         loadTransactions(user.uid);
@@ -26,11 +29,18 @@ onAuthStateChanged(auth, (user) => {
 });
 
 async function loadTransactions(uid) {
-    const q = query(collection(db, 'transactions'), where("userId", "==", uid));
-    const querySnapshot = await getDocs(q);
-
+    if (isLoading) return;
+    isLoading = true;
+    
     const tableBody = document.getElementById('transactionsTableBody');
-    tableBody.innerHTML = '';
+
+    let q = query(collection(db, 'transactions'), where("userId", "==", uid), limit(10));
+    if (lastVisible) {
+        q = query(collection(db, 'transactions'), where("userId", "==", uid), startAfter(lastVisible), limit(10));
+    }
+
+    const querySnapshot = await getDocs(q);
+    lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
 
     for (const transactionDoc of querySnapshot.docs) {
         const data = transactionDoc.data();
@@ -125,6 +135,7 @@ async function loadTransactions(uid) {
 
         tableBody.appendChild(row);
     }
+    isLoading = false;
 }
 
 document.getElementById('searchInput').addEventListener('input', filterTransactions);
@@ -162,3 +173,10 @@ window.editTransaction = async (transactionId) => {
         loadTransactions(auth.currentUser.uid);
     }
 };
+
+// Sayfalama için sonsuz kaydırma
+window.addEventListener('scroll', () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && !isLoading) {
+        loadTransactions(auth.currentUser.uid);
+    }
+});
