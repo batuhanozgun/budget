@@ -70,6 +70,7 @@ th, td {
     justify-content: center;
     align-items: center;
     z-index: 1000; /* Üstte görünmesi için */
+    flex-direction: column; /* Dikey hizalama için */
 }
 
 .loading-spinner {
@@ -89,6 +90,6 @@ th, td {
 .loading-text {
     color: #FFF;
     font-size: 20px;
-    margin-top: 10px;
+    margin-top: 10px; /* Spinner ile text arasında boşluk */
     text-align: center;
 }
