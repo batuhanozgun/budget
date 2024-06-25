@@ -18,8 +18,10 @@ const auth = getAuth(app);
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
+        showLoading();
         const transactions = await getTransactions(user.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
+        hideLoading();
         displayTransactions(transactionsWithDetails);
     } else {
         // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
@@ -120,9 +122,11 @@ function filterTransactions() {
 
 window.deleteTransaction = async (transactionId) => {
     if (confirm("Bu kaydı silmek istediğinize emin misiniz?")) {
+        showLoading();
         await deleteDoc(doc(db, 'transactions', transactionId));
         const transactions = await getTransactions(auth.currentUser.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
+        hideLoading();
         displayTransactions(transactionsWithDetails);
     }
 };
@@ -130,11 +134,21 @@ window.deleteTransaction = async (transactionId) => {
 window.editTransaction = async (transactionId) => {
     const newAmount = prompt("Yeni tutarı girin:");
     if (newAmount !== null) {
+        showLoading();
         await updateDoc(doc(db, 'transactions', transactionId), {
             tutar: parseFloat(newAmount)
         });
         const transactions = await getTransactions(auth.currentUser.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
+        hideLoading();
         displayTransactions(transactionsWithDetails);
     }
 };
+
+function showLoading() {
+    document.getElementById('loading').style.display = 'block';
+}
+
+function hideLoading() {
+    document.getElementById('loading').style.display = 'none';
+}
