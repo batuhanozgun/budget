@@ -1,40 +1,95 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    font-size: 14px; /* Varsayılan yazı boyutu */
+    background-color: #F0F0F0; /* Genel arka plan rengi */
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
 }
 
 .container {
-    background-color: white;
+    background-color: #FFF; /* Beyaz zemin */
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    overflow-x: auto; /* Yatay taşmayı önlemek için */
+    max-width: 1600px; /* Maksimum genişliği artırdık */
+    width: 100%;
 }
 
-h2 {
-    text-align: center;
-    margin-bottom: 20px;
+.table-container {
+    overflow-x: auto; /* Yatay taşmayı önlemek için */
+    width: 100%;
 }
 
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse; /* Sınırları birleştir */
 }
 
 th, td {
-    padding: 10px;
+    padding: 8px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border: 1px solid #CCC; /* Hücre sınırları */
 }
 
-th {
-    background-color: #f2f2f2;
+.font-control-buttons {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 10px;
 }
 
-tr:hover {
-    background-color: #f5f5f5;
+.font-control-buttons button {
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.action-buttons button {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+/* Loading overlay stilini ekleyelim */
+.loading-overlay {
+    display: none; /* Başlangıçta gizli */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Yarı şeffaf siyah arka plan */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Üstte görünmesi için */
+    flex-direction: column; /* Dikey hizalama için */
+}
+
+.loading-spinner {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: #FFF;
+    font-size: 20px;
+    margin-top: 10px; /* Spinner ile text arasında boşluk */
+    text-align: center;
 }
