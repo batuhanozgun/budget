@@ -26,28 +26,39 @@ onAuthStateChanged(auth, (user) => {
 });
 
 async function loadTransactions(uid) {
-    const q = query(collection(db, 'transactions'), where("userId", "==", uid));
-    const querySnapshot = await getDocs(q);
+    const messageDiv = document.getElementById('message');
+    messageDiv.textContent = 'Veriler yükleniyor...';
+    messageDiv.style.display = 'block';
 
-    const data = {};
-    
-    for (const transactionDoc of querySnapshot.docs) {
-        const transaction = transactionDoc.data();
-        const kaynakHesapDoc = await getDoc(doc(db, 'accounts', transaction.kaynakHesap));
-        const accountName = kaynakHesapDoc.exists() ? kaynakHesapDoc.data().accountName : 'N/A';
-        const amount = transaction.tutar;
+    try {
+        const q = query(collection(db, 'transactions'), where("userId", "==", uid));
+        const querySnapshot = await getDocs(q);
 
-        if (data[accountName]) {
-            data[accountName] += parseFloat(amount);
-        } else {
-            data[accountName] = parseFloat(amount);
+        const data = {};
+
+        for (const transactionDoc of querySnapshot.docs) {
+            const transaction = transactionDoc.data();
+            const kaynakHesapDoc = await getDoc(doc(db, 'accounts', transaction.kaynakHesap));
+            const accountName = kaynakHesapDoc.exists() ? kaynakHesapDoc.data().accountName : 'N/A';
+            const amount = transaction.tutar;
+
+            if (data[accountName]) {
+                data[accountName] += parseFloat(amount);
+            } else {
+                data[accountName] = parseFloat(amount);
+            }
         }
+
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+
+        renderChart(labels, values);
+        messageDiv.style.display = 'none';
+    } catch (error) {
+        console.error('Veri yükleme hatası: ', error);
+        messageDiv.textContent = 'Veri yükleme hatası: ' + error.message;
+        messageDiv.style.display = 'block';
     }
-
-    const labels = Object.keys(data);
-    const values = Object.values(data);
-
-    renderChart(labels, values);
 }
 
 function renderChart(labels, values) {
