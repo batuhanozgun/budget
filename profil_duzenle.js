@@ -93,5 +93,10 @@ document.getElementById('passwordForm').addEventListener('submit', async (e) => 
     } catch (error) {
         console.error("Şifre güncelleme hatası: ", error);
         alert("Şifre güncelleme hatası: " + error.message);
+        if (error.code === 'auth/wrong-password') {
+            alert("Geçerli şifrenizi yanlış girdiniz.");
+        } else if (error.code === 'auth/weak-password') {
+            alert("Yeni şifreniz çok zayıf.");
+        }
     }
 });
