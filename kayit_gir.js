@@ -19,7 +19,7 @@ const auth = getAuth(app);
 onAuthStateChanged(auth, (user) => {
     if (user) {
         loadAccounts(user.uid);
-        loadCategories();
+        loadCategories(user.uid);
         document.getElementById('transactionForm').addEventListener('submit', (e) => {
             e.preventDefault();
             saveTransaction(user.uid);
@@ -48,11 +48,11 @@ async function loadAccounts(uid) {
     });
 }
 
-async function loadCategories() {
+async function loadCategories(uid) {
     const categorySelect = document.getElementById('kategori');
     categorySelect.innerHTML = '<option value="">Seçiniz</option>';
 
-    const q = query(collection(db, 'categories'));
+    const q = query(collection(db, 'categories'), where("userId", "==", uid));
     const querySnapshot = await getDocs(q);
 
     querySnapshot.forEach((doc) => {
@@ -62,17 +62,17 @@ async function loadCategories() {
         categorySelect.appendChild(option);
     });
 
-    categorySelect.addEventListener('change', loadSubCategories);
+    categorySelect.addEventListener('change', () => loadSubCategories(uid));
 }
 
-async function loadSubCategories() {
+async function loadSubCategories(uid) {
     const categorySelect = document.getElementById('kategori');
     const subCategorySelect = document.getElementById('altKategori');
     subCategorySelect.innerHTML = '<option value="">Seçiniz</option>';
 
     const selectedCategory = categorySelect.value;
     if (selectedCategory) {
-        const q = query(collection(db, 'categories', selectedCategory, 'subcategories'));
+        const q = query(collection(db, 'categories', selectedCategory, 'subcategories'), where("userId", "==", uid));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
