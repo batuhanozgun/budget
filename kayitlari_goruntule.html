@@ -20,6 +20,10 @@
     </script>
 </head>
 <body>
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Veriler yükleniyor...</div>
+    </div>
     <div class="font-control-buttons">
         <button onclick="changeFontSize(true)">A+</button>
         <button onclick="changeFontSize(false)">A-</button>
@@ -28,7 +32,6 @@
         <h2>Kayıtları Görüntüle</h2>
         <input type="text" id="searchInput" placeholder="Ara...">
         <div class="table-container">
-            <div id="loading" class="loading">Veriler yükleniyor...</div>
             <table id="transactionsTable">
                 <thead>
                     <tr>
