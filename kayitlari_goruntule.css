@@ -21,6 +21,7 @@ body {
 .table-container {
     overflow-x: auto; /* Yatay taşmayı önlemek için */
     width: 100%;
+    position: relative; /* Loading div'i konumlandırmak için */
 }
 
 table {
@@ -55,4 +56,20 @@ th, td {
 .action-buttons button {
     padding: 5px 10px;
     font-size: 12px;
+}
+
+/* Loading stilini ekleyelim */
+.loading {
+    display: none; /* Başlangıçta gizli */
+    text-align: center;
+    font-size: 18px;
+    padding: 20px;
+    position: absolute; /* Mutlak konumlandırma */
+    top: 50%; /* Yatay merkezleme */
+    left: 50%; /* Dikey merkezleme */
+    transform: translate(-50%, -50%); /* Tam merkezleme */
+    background-color: rgba(255, 255, 255, 0.8); /* Hafif beyaz arka plan */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 10; /* Üstte görünmesi için */
 }
