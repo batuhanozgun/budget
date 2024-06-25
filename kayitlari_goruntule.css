@@ -70,12 +70,21 @@ th, td {
     justify-content: center;
     align-items: center;
     z-index: 1000; /* Üstte görünmesi için */
+}
+
+.loading-container {
+    display: flex;
     flex-direction: column; /* Dikey hizalama için */
+    align-items: center;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9); /* Hafif şeffaf beyaz arka plan */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .loading-spinner {
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #3498db; /* Blue */
+    border: 8px solid #cccccc; /* Daha koyu gri */
+    border-top: 8px solid #3498db; /* Mavi */
     border-radius: 50%;
     width: 60px;
     height: 60px;
@@ -88,7 +97,7 @@ th, td {
 }
 
 .loading-text {
-    color: #FFF;
+    color: #333; /* Daha koyu yazı rengi */
     font-size: 20px;
     margin-top: 10px; /* Spinner ile text arasında boşluk */
     text-align: center;
