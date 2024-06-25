@@ -7,8 +7,10 @@ const auth = getAuth();
 document.addEventListener('DOMContentLoaded', () => {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
+            showLoading();
             const transactions = await getTransactions(user.uid);
             const transactionsWithDetails = await addDetailsToTransactions(transactions);
+            hideLoading();
             displayTransactions(transactionsWithDetails);
             displayAccountBalances(transactionsWithDetails);
             displayCategoryBalances(transactionsWithDetails);
@@ -88,9 +90,11 @@ function displayAccountBalances(transactions) {
     transactions.forEach(transaction => {
         const account = transaction.kaynakHesapName || transaction.kaynakHesap;
         const amount = parseFloat(transaction.tutar);
+
         if (!accountBalances[account]) {
             accountBalances[account] = 0;
         }
+
         if (transaction.kayitTipi === 'Gelir') {
             accountBalances[account] += amount;
         } else if (transaction.kayitTipi === 'Gider') {
@@ -103,10 +107,10 @@ function displayAccountBalances(transactions) {
 
     for (const [account, balance] of Object.entries(accountBalances)) {
         const row = accountBalancesTableBody.insertRow();
-        const accountCell = row.insertCell(0);
+        const accountNameCell = row.insertCell(0);
         const balanceCell = row.insertCell(1);
 
-        accountCell.textContent = account;
+        accountNameCell.textContent = account;
         balanceCell.textContent = balance.toFixed(2);
     }
 }
@@ -116,9 +120,11 @@ function displayCategoryBalances(transactions) {
     transactions.forEach(transaction => {
         const category = transaction.kategoriName || transaction.kategori;
         const amount = parseFloat(transaction.tutar);
+
         if (!categoryBalances[category]) {
             categoryBalances[category] = 0;
         }
+
         if (transaction.kayitTipi === 'Gelir') {
             categoryBalances[category] += amount;
         } else if (transaction.kayitTipi === 'Gider') {
@@ -131,10 +137,18 @@ function displayCategoryBalances(transactions) {
 
     for (const [category, balance] of Object.entries(categoryBalances)) {
         const row = categoryBalancesTableBody.insertRow();
-        const categoryCell = row.insertCell(0);
+        const categoryNameCell = row.insertCell(0);
         const balanceCell = row.insertCell(1);
 
-        categoryCell.textContent = category;
+        categoryNameCell.textContent = category;
         balanceCell.textContent = balance.toFixed(2);
     }
+}
+
+function showLoading() {
+    document.querySelector('.loading-overlay').style.display = 'flex';
+}
+
+function hideLoading() {
+    document.querySelector('.loading-overlay').style.display = 'none';
 }
