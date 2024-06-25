@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, query, getDocs, where, doc, getDoc, deleteDoc, updateDoc, limit, startAfter } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getFirestore, collection, query, getDocs, where, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
 // Firebase yapılandırmanızı buraya ekleyin
@@ -16,126 +16,87 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let lastVisible = null;
-let isLoading = false;
-
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
-        loadTransactions(user.uid);
+        const transactions = await getTransactions(user.uid);
+        const transactionsWithDetails = await addDetailsToTransactions(transactions);
+        displayTransactions(transactionsWithDetails);
     } else {
         // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
         window.location.href = 'login.html';
     }
 });
 
-async function loadTransactions(uid) {
-    if (isLoading) return;
-    isLoading = true;
-    
+async function getTransactions(uid) {
+    const q = query(collection(db, 'transactions'), where('userId', '==', uid));
+    const transactionsSnapshot = await getDocs(q);
+    const transactions = [];
+    transactionsSnapshot.forEach(doc => {
+        transactions.push({ id: doc.id, ...doc.data() });
+    });
+    return transactions;
+}
+
+async function addDetailsToTransactions(transactions) {
+    const accountPromises = transactions.map(async transaction => {
+        if (transaction.kaynakHesap) {
+            const kaynakHesapDoc = await getDoc(doc(db, 'accounts', transaction.kaynakHesap));
+            if (kaynakHesapDoc.exists()) {
+                transaction.kaynakHesapName = kaynakHesapDoc.data().accountName;
+            }
+        }
+        if (transaction.hedefHesap) {
+            const hedefHesapDoc = await getDoc(doc(db, 'accounts', transaction.hedefHesap));
+            if (hedefHesapDoc.exists()) {
+                transaction.hedefHesapName = hedefHesapDoc.data().accountName;
+            }
+        }
+        if (transaction.kategori) {
+            const kategoriDoc = await getDoc(doc(db, 'categories', transaction.kategori));
+            if (kategoriDoc.exists()) {
+                transaction.kategoriName = kategoriDoc.data().name;
+            }
+        }
+        if (transaction.altKategori) {
+            const altKategoriDoc = await getDoc(doc(db, 'categories', transaction.kategori, 'subcategories', transaction.altKategori));
+            if (altKategoriDoc.exists()) {
+                transaction.altKategoriName = altKategoriDoc.data().name;
+            }
+        }
+        return transaction;
+    });
+    return Promise.all(accountPromises);
+}
+
+function displayTransactions(transactions) {
     const tableBody = document.getElementById('transactionsTableBody');
+    tableBody.innerHTML = '';  // Tablodaki önceki verileri temizle
 
-    let q = query(collection(db, 'transactions'), where("userId", "==", uid), limit(10));
-    if (lastVisible) {
-        q = query(collection(db, 'transactions'), where("userId", "==", uid), startAfter(lastVisible), limit(10));
-    }
-
-    const querySnapshot = await getDocs(q);
-    lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-
-    for (const transactionDoc of querySnapshot.docs) {
-        const data = transactionDoc.data();
-        const transactionId = transactionDoc.id;
-
-        let kategoriName = 'N/A';
-        let altKategoriName = 'N/A';
-        let kaynakHesapName = 'N/A';
-        let hedefHesapName = 'N/A';
-
-        // Kategori verisini alırken hata kontrolü
-        try {
-            if (data.kategori) {
-                const kategoriDoc = await getDoc(doc(db, 'categories', data.kategori));
-                if (kategoriDoc.exists()) {
-                    kategoriName = kategoriDoc.data().name;
-                } else {
-                    console.warn('Kategori belgesi bulunamadı:', data.kategori);
-                }
-            } else {
-                console.warn('Kategori ID eksik:', data);
-            }
-        } catch (error) {
-            console.error('Kategori verisi alınamadı:', error);
-        }
-
-        // Alt Kategori verisini alırken hata kontrolü
-        if (data.altKategori) {
-            try {
-                const altKategoriDoc = await getDoc(doc(db, 'categories', data.kategori, 'subcategories', data.altKategori));
-                if (altKategoriDoc.exists()) {
-                    altKategoriName = altKategoriDoc.data().name;
-                } else {
-                    console.warn('Alt Kategori belgesi bulunamadı:', data.altKategori);
-                }
-            } catch (error) {
-                console.error('Alt Kategori verisi alınamadı:', error);
-            }
-        }
-
-        // Kaynak Hesap verisini alırken hata kontrolü
-        try {
-            if (data.kaynakHesap) {
-                const kaynakHesapDoc = await getDoc(doc(db, 'accounts', data.kaynakHesap));
-                if (kaynakHesapDoc.exists()) {
-                    kaynakHesapName = kaynakHesapDoc.data().accountName;
-                } else {
-                    console.warn('Kaynak Hesap belgesi bulunamadı:', data.kaynakHesap);
-                }
-            } else {
-                console.warn('Kaynak Hesap ID eksik:', data);
-            }
-        } catch (error) {
-            console.error('Kaynak Hesap verisi alınamadı:', error);
-        }
-
-        // Hedef Hesap verisini alırken hata kontrolü
-        if (data.hedefHesap) {
-            try {
-                const hedefHesapDoc = await getDoc(doc(db, 'accounts', data.hedefHesap));
-                if (hedefHesapDoc.exists()) {
-                    hedefHesapName = hedefHesapDoc.data().accountName;
-                } else {
-                    console.warn('Hedef Hesap belgesi bulunamadı:', data.hedefHesap);
-                }
-            } catch (error) {
-                console.error('Hedef Hesap verisi alınamadı:', error);
-            }
-        }
-
+    transactions.forEach(transaction => {
         const row = document.createElement('tr');
 
         row.innerHTML = `
-            <td>${data.kayitTipi}</td>
-            <td>${data.kayitYonu}</td>
-            <td>${kaynakHesapName}</td>
-            <td>${kategoriName}</td>
-            <td>${altKategoriName}</td>
-            <td>${hedefHesapName}</td>
-            <td>${data.tutar}</td>
-            <td>${data.taksitAdedi || ''}</td>
-            <td>${data.taksitTutar || ''}</td>
-            <td>${new Date(data.islemTarihi).toLocaleDateString()}</td>
-            <td>${new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
+            <td>${transaction.kayitTipi}</td>
+            <td>${transaction.kayitYonu}</td>
+            <td>${transaction.kaynakHesapName || transaction.kaynakHesap}</td>
+            <td>${transaction.kategoriName || transaction.kategori}</td>
+            <td>${transaction.altKategoriName || transaction.altKategori}</td>
+            <td>${transaction.hedefHesapName || transaction.hedefHesap}</td>
+            <td>${transaction.tutar}</td>
+            <td>${transaction.taksitAdedi || ''}</td>
+            <td>${transaction.taksitTutar || ''}</td>
+            <td>${new Date(transaction.islemTarihi).toLocaleDateString()}</td>
+            <td>${new Date(transaction.date.seconds * 1000).toLocaleDateString()}</td>
             <td>
                 <div class="action-buttons">
-                    <button onclick="editTransaction('${transactionId}')">Düzenle</button>
-                    <button onclick="deleteTransaction('${transactionId}')">Sil</button>
+                    <button onclick="editTransaction('${transaction.id}')">Düzenle</button>
+                    <button onclick="deleteTransaction('${transaction.id}')">Sil</button>
                 </div>
             </td>
         `;
 
         tableBody.appendChild(row);
-    }
-    isLoading = false;
+    });
 }
 
 document.getElementById('searchInput').addEventListener('input', filterTransactions);
@@ -160,7 +121,9 @@ function filterTransactions() {
 window.deleteTransaction = async (transactionId) => {
     if (confirm("Bu kaydı silmek istediğinize emin misiniz?")) {
         await deleteDoc(doc(db, 'transactions', transactionId));
-        loadTransactions(auth.currentUser.uid);
+        const transactions = await getTransactions(auth.currentUser.uid);
+        const transactionsWithDetails = await addDetailsToTransactions(transactions);
+        displayTransactions(transactionsWithDetails);
     }
 };
 
@@ -170,13 +133,8 @@ window.editTransaction = async (transactionId) => {
         await updateDoc(doc(db, 'transactions', transactionId), {
             tutar: parseFloat(newAmount)
         });
-        loadTransactions(auth.currentUser.uid);
+        const transactions = await getTransactions(auth.currentUser.uid);
+        const transactionsWithDetails = await addDetailsToTransactions(transactions);
+        displayTransactions(transactionsWithDetails);
     }
 };
-
-// Sayfalama için sonsuz kaydırma
-window.addEventListener('scroll', () => {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && !isLoading) {
-        loadTransactions(auth.currentUser.uid);
-    }
-});
