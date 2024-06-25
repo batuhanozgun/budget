@@ -21,7 +21,6 @@ body {
 .table-container {
     overflow-x: auto; /* Yatay taşmayı önlemek için */
     width: 100%;
-    position: relative; /* Loading div'i konumlandırmak için */
 }
 
 table {
@@ -58,18 +57,38 @@ th, td {
     font-size: 12px;
 }
 
-/* Loading stilini ekleyelim */
-.loading {
+/* Loading overlay stilini ekleyelim */
+.loading-overlay {
     display: none; /* Başlangıçta gizli */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Yarı şeffaf siyah arka plan */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Üstte görünmesi için */
+}
+
+.loading-spinner {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: #FFF;
+    font-size: 20px;
+    margin-top: 10px;
     text-align: center;
-    font-size: 18px;
-    padding: 20px;
-    position: absolute; /* Mutlak konumlandırma */
-    top: 50%; /* Yatay merkezleme */
-    left: 50%; /* Dikey merkezleme */
-    transform: translate(-50%, -50%); /* Tam merkezleme */
-    background-color: rgba(255, 255, 255, 0.8); /* Hafif beyaz arka plan */
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 10; /* Üstte görünmesi için */
 }
