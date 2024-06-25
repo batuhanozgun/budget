@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, setDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, setDoc, where } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { checkAuth, getCurrentUser } from './auth.js';
 
 // Firebase yapılandırmanızı buraya ekleyin
 const firebaseConfig = {
@@ -15,12 +16,15 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function loadCategories() {
+    const user = getCurrentUser();
+    if (!user) return;
+
     const categorySelect = document.getElementById('kategoriSec');
     const categoryList = document.getElementById('kategoriListesi');
     categorySelect.innerHTML = '<option value="">Seçiniz</option>';
     categoryList.innerHTML = '';
 
-    const q = query(collection(db, 'categories'));
+    const q = query(collection(db, 'categories'), where('userId', '==', user.uid));
     const querySnapshot = await getDocs(q);
 
     querySnapshot.forEach((doc) => {
@@ -40,12 +44,15 @@ async function loadCategories() {
 }
 
 async function loadSubCategories() {
+    const user = getCurrentUser();
+    if (!user) return;
+
     const subCategoryList = document.getElementById('altKategoriListesi');
     subCategoryList.innerHTML = '';
 
     const selectedCategory = document.getElementById('kategoriSec').value;
     if (selectedCategory) {
-        const q = query(collection(db, 'categories', selectedCategory, 'subcategories'));
+        const q = query(collection(db, 'categories', selectedCategory, 'subcategories'), where('userId', '==', user.uid));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
@@ -98,10 +105,14 @@ async function updateSubCategoryName(categoryId, subCategoryId, newSubCategoryNa
 
 document.getElementById('categoryForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const user = getCurrentUser();
+    if (!user) return;
+
     const kategoriAdi = document.getElementById('kategoriAdi').value;
     try {
         await addDoc(collection(db, 'categories'), {
-            name: kategoriAdi
+            name: kategoriAdi,
+            userId: user.uid
         });
         document.getElementById('categoryForm').reset();
         loadCategories();
@@ -113,11 +124,15 @@ document.getElementById('categoryForm').addEventListener('submit', async (e) => 
 
 document.getElementById('subCategoryForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const user = getCurrentUser();
+    if (!user) return;
+
     const selectedCategory = document.getElementById('kategoriSec').value;
     const altKategoriAdi = document.getElementById('altKategoriAdi').value;
     try {
         await addDoc(collection(db, 'categories', selectedCategory, 'subcategories'), {
-            name: altKategoriAdi
+            name: altKategoriAdi,
+            userId: user.uid
         });
         document.getElementById('subCategoryForm').reset();
         loadSubCategories();
@@ -133,4 +148,6 @@ document.getElementById('kategoriSec').addEventListener('change', loadSubCategor
 window.deleteSubCategory = deleteSubCategory;
 window.editSubCategory = editSubCategory;
 
-loadCategories();
+checkAuth().then(() => {
+    loadCategories();
+});
