@@ -41,7 +41,8 @@ th, td {
 th {
     position: sticky;
     top: 0;
-    background-color: #FFF; /* Başlık arka plan rengi */
+    background-color: #002147; /* Başlık arka plan rengi - Lacivert */
+    color: #FFF; /* Başlık yazı rengi - Beyaz */
     z-index: 2;
 }
 
