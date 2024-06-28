@@ -1,128 +1,117 @@
-import { auth, db } from './firebaseConfig.js';
-import { signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import { collection, getDocs, addDoc, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { checkAuth } from './auth.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
-document.getElementById('logoutButton').addEventListener('click', async () => {
-    const messageDiv = document.getElementById('message');
+// Firebase yapılandırmanızı buraya ekleyin
+const firebaseConfig = {
+    apiKey: "AIzaSyDidWK1ghqKTzokhT-YoqGb7Tz9w5AFjhM",
+    authDomain: "batusbudget.firebaseapp.com",
+    projectId: "batusbudget",
+    storageBucket: "batusbudget.appspot.com",
+    messagingSenderId: "1084998760222",
+    appId: "1:1084998760222:web:d28492021d0ccefaf2bb0f"
+};
 
-    try {
-        await signOut(auth);
-        window.location.href = 'login.html';
-    } catch (error) {
-        console.error('Çıkış hatası: ', error);
-        messageDiv.textContent = 'Çıkış hatası: ' + error.message;
-        messageDiv.style.display = 'block';
-    }
-});
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-document.addEventListener('DOMContentLoaded', async () => {
-    showLoadingOverlay();
-    const user = await checkAuth();
+onAuthStateChanged(auth, (user) => {
     if (user) {
-        await loadUsers();
-        await loadRecordTypes();
-        await loadRecordDirections();
+        loadKayitTipleri();
+        loadKayitYonleri();
+        document.getElementById('kayitTipiForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            addKayitTipi();
+        });
+        document.getElementById('kayitYonuForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            addKayitYonu();
+        });
+    } else {
+        // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
+        window.location.href = 'login.html';
     }
-    hideLoadingOverlay();
 });
 
-async function loadUsers() {
-    const usersSnapshot = await getDocs(collection(db, 'users'));
-    const tableBody = document.getElementById('usersTable').getElementsByTagName('tbody')[0];
-    tableBody.innerHTML = '';
+async function loadKayitTipleri() {
+    const kayitTipiList = document.getElementById('kayitTipiList');
+    kayitTipiList.innerHTML = '';
 
-    usersSnapshot.forEach(doc => {
-        const user = doc.data();
-        const row = tableBody.insertRow();
-        row.insertCell(0).textContent = doc.id;
-        row.insertCell(1).textContent = user.firstName + ' ' + user.lastName;
-        row.insertCell(2).textContent = user.email;
-    });
-}
+    const querySnapshot = await getDocs(collection(db, 'kayitTipleri'));
 
-async function loadRecordTypes() {
-    const recordTypesSnapshot = await getDocs(collection(db, 'recordTypes'));
-    const tableBody = document.getElementById('recordTypesTable').getElementsByTagName('tbody')[0];
-    tableBody.innerHTML = '';
-
-    recordTypesSnapshot.forEach(doc => {
-        const recordType = doc.data().name;
-        const row = tableBody.insertRow();
-        row.insertCell(0).textContent = recordType;
-
-        const actionsCell = row.insertCell(1);
+    querySnapshot.forEach((doc) => {
+        const li = document.createElement('li');
+        li.textContent = doc.data().name;
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Sil';
-        deleteButton.onclick = () => deleteRecordType(doc.id);
-        actionsCell.appendChild(deleteButton);
+        deleteButton.addEventListener('click', () => deleteKayitTipi(doc.id));
+        li.appendChild(deleteButton);
+        kayitTipiList.appendChild(li);
     });
 }
 
-async function loadRecordDirections() {
-    const recordDirectionsSnapshot = await getDocs(collection(db, 'recordDirections'));
-    const tableBody = document.getElementById('recordDirectionsTable').getElementsByTagName('tbody')[0];
-    tableBody.innerHTML = '';
+async function loadKayitYonleri() {
+    const kayitYonuList = document.getElementById('kayitYonuList');
+    kayitYonuList.innerHTML = '';
 
-    recordDirectionsSnapshot.forEach(doc => {
-        const recordDirection = doc.data().name;
-        const row = tableBody.insertRow();
-        row.insertCell(0).textContent = recordDirection;
+    const querySnapshot = await getDocs(collection(db, 'kayitYonleri'));
 
-        const actionsCell = row.insertCell(1);
+    querySnapshot.forEach((doc) => {
+        const li = document.createElement('li');
+        li.textContent = doc.data().name;
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Sil';
-        deleteButton.onclick = () => deleteRecordDirection(doc.id);
-        actionsCell.appendChild(deleteButton);
+        deleteButton.addEventListener('click', () => deleteKayitYonu(doc.id));
+        li.appendChild(deleteButton);
+        kayitYonuList.appendChild(li);
     });
 }
 
-document.getElementById('addRecordTypeForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const newRecordType = document.getElementById('newRecordType').value;
-    try {
-        await addDoc(collection(db, 'recordTypes'), { name: newRecordType });
-        document.getElementById('newRecordType').value = '';
-        await loadRecordTypes();
-    } catch (error) {
-        console.error('Kayıt Tipi eklenirken hata:', error);
-    }
-});
+async function addKayitTipi() {
+    const kayitTipiInput = document.getElementById('kayitTipiInput');
+    const kayitTipi = kayitTipiInput.value;
 
-document.getElementById('addRecordDirectionForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const newRecordDirection = document.getElementById('newRecordDirection').value;
     try {
-        await addDoc(collection(db, 'recordDirections'), { name: newRecordDirection });
-        document.getElementById('newRecordDirection').value = '';
-        await loadRecordDirections();
+        await addDoc(collection(db, 'kayitTipleri'), { name: kayitTipi });
+        kayitTipiInput.value = '';
+        loadKayitTipleri();
     } catch (error) {
-        console.error('Kayıt Yönü eklenirken hata:', error);
-    }
-});
-
-async function deleteRecordType(recordTypeId) {
-    try {
-        await deleteDoc(doc(db, 'recordTypes', recordTypeId));
-        await loadRecordTypes();
-    } catch (error) {
-        console.error('Kayıt Tipi silinirken hata:', error);
+        console.error('Hata:', error);
+        alert('Kayıt tipi eklenirken bir hata oluştu.');
     }
 }
 
-async function deleteRecordDirection(recordDirectionId) {
+async function addKayitYonu() {
+    const kayitYonuInput = document.getElementById('kayitYonuInput');
+    const kayitYonu = kayitYonuInput.value;
+
     try {
-        await deleteDoc(doc(db, 'recordDirections', recordDirectionId));
-        await loadRecordDirections();
+        await addDoc(collection(db, 'kayitYonleri'), { name: kayitYonu });
+        kayitYonuInput.value = '';
+        loadKayitYonleri();
     } catch (error) {
-        console.error('Kayıt Yönü silinirken hata:', error);
+        console.error('Hata:', error);
+        alert('Kayıt yönü eklenirken bir hata oluştu.');
     }
 }
 
-function showLoadingOverlay() {
-    document.querySelector('.loading-overlay').style.display = 'flex';
+async function deleteKayitTipi(id) {
+    try {
+        await deleteDoc(doc(db, 'kayitTipleri', id));
+        loadKayitTipleri();
+    } catch (error) {
+        console.error('Hata:', error);
+        alert('Kayıt tipi silinirken bir hata oluştu.');
+    }
 }
 
-function hideLoadingOverlay() {
-    document.querySelector('.loading-overlay').style.display = 'none';
+async function deleteKayitYonu(id) {
+    try {
+        await deleteDoc(doc(db, 'kayitYonleri', id));
+        loadKayitYonleri();
+    } catch (error) {
+        console.error('Hata:', error);
+        alert('Kayıt yönü silinirken bir hata oluştu.');
+    }
 }
