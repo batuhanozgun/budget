@@ -20,22 +20,51 @@
             <h1>Admin Paneli</h1>
             <button id="logoutButton">Çıkış Yap</button>
         </header>
-        <h2>Kullanıcı İşlemleri</h2>
-        <table id="transactionsTable">
+        <h2>Kullanıcılar</h2>
+        <table id="usersTable">
             <thead>
                 <tr>
                     <th>Kullanıcı ID</th>
-                    <th>Hesap Adı</th>
-                    <th>İşlem Tarihi</th>
-                    <th>Kategori</th>
-                    <th>Alt Kategori</th>
-                    <th>Tutar</th>
-                    <th>İşlem Tipi</th>
+                    <th>İsim</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Kullanıcı verileri burada görünecek -->
+            </tbody>
+        </table>
+
+        <h2>Kayıt Tipleri</h2>
+        <form id="addRecordTypeForm">
+            <input type="text" id="newRecordType" placeholder="Yeni Kayıt Tipi" required>
+            <button type="submit">Ekle</button>
+        </form>
+        <table id="recordTypesTable">
+            <thead>
+                <tr>
+                    <th>Kayıt Tipi</th>
                     <th>İşlemler</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Veriler burada görünecek -->
+                <!-- Kayıt Tipleri burada görünecek -->
+            </tbody>
+        </table>
+
+        <h2>Kayıt Yönleri</h2>
+        <form id="addRecordDirectionForm">
+            <input type="text" id="newRecordDirection" placeholder="Yeni Kayıt Yönü" required>
+            <button type="submit">Ekle</button>
+        </form>
+        <table id="recordDirectionsTable">
+            <thead>
+                <tr>
+                    <th>Kayıt Yönü</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Kayıt Yönleri burada görünecek -->
             </tbody>
         </table>
     </div>
