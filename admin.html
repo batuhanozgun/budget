@@ -1,15 +1,43 @@
 <!DOCTYPE html>
-<html lang="en" data-page="admin">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
-    <script type="module" src="main.js"></script>
+    <title>Admin Paneli</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <script type="module" src="admin.js"></script>
 </head>
 <body>
-    <div id="menuContainer"></div>
-    <div id="contentContainer">
-        <!-- Admin paneli burada olacak -->
+    <div class="loading-overlay">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Veriler Yükleniyor...</div>
+        </div>
+    </div>
+    <div class="container">
+        <header>
+            <h1>Admin Paneli</h1>
+            <button id="logoutButton">Çıkış Yap</button>
+        </header>
+        <h2>Kullanıcı İşlemleri</h2>
+        <table id="transactionsTable">
+            <thead>
+                <tr>
+                    <th>Kullanıcı ID</th>
+                    <th>Hesap Adı</th>
+                    <th>İşlem Tarihi</th>
+                    <th>Kategori</th>
+                    <th>Alt Kategori</th>
+                    <th>Tutar</th>
+                    <th>İşlem Tipi</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Veriler burada görünecek -->
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
