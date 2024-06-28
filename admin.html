@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Paneli</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
     <script type="module" src="admin.js"></script>
 </head>
 <body>
@@ -12,9 +12,17 @@
         <h2>Admin Paneli</h2>
 
         <h3>Kullanıcı Listesi</h3>
-        <ul id="userList">
-            <!-- Kullanıcılar buraya yüklenecek -->
-        </ul>
+        <table id="userTable">
+            <thead>
+                <tr>
+                    <th>E-posta</th>
+                    <th>Son Giriş</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Kullanıcılar buraya yüklenecek -->
+            </tbody>
+        </table>
 
         <h3>Kayıt Tipleri</h3>
         <form id="kayitTipiForm">
