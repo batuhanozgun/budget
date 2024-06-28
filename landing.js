@@ -54,7 +54,7 @@ async function checkAdmin(user) {
 
     if (docSnap.exists()) {
         const userData = docSnap.data();
-        if (userData.isAdmin) {
+        if (userData.admin) {
             document.getElementById('adminButton').style.display = 'block';
         }
     }
