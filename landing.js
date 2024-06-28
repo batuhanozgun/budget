@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = await checkAuth();
     if (user) {
         loadUserName(user);
+        checkAdmin(user); // Admin kontrolü ekliyoruz
     }
 });
 
@@ -44,5 +45,17 @@ async function loadUserName(user) {
         document.getElementById('userName').textContent = userData.firstName || '';
     } else {
         console.log("No such document!");
+    }
+}
+
+async function checkAdmin(user) {
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const userData = docSnap.data();
+        if (userData.isAdmin) {
+            document.getElementById('adminButton').style.display = 'block';
+        }
     }
 }
