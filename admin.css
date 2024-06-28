@@ -6,8 +6,8 @@ body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
+    align-items: center;
+    height: 100vh;
 }
 
 .container {
@@ -15,9 +15,9 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 20px;
+    width: 90%;
     max-width: 600px;
-    width: 100%;
+    margin: 20px auto;
 }
 
 h2, h3 {
@@ -25,16 +25,17 @@ h2, h3 {
 }
 
 form {
-    margin-bottom: 20px;
     display: flex;
-    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 form input[type="text"] {
     padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
+    flex-grow: 1;
     margin-right: 10px;
+    border: 1px solid #CCC;
+    border-radius: 5px;
 }
 
 form button {
@@ -53,6 +54,7 @@ form button:hover {
 ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
 ul li {
@@ -72,28 +74,9 @@ ul li button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-left: 5px;
 }
 
 ul li button:hover {
     background-color: #c0392b;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-table, th, td {
-    border: 1px solid #ccc;
-}
-
-th, td {
-    padding: 10px;
-    text-align: left;
-}
-
-th {
-    background-color: #3498db;
-    color: white;
 }
