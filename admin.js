@@ -1,6 +1,6 @@
 import { auth, db } from './firebaseConfig.js';
 import { signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import { collection, getDocs, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { collection, getDocs, addDoc, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth } from './auth.js';
 
 document.getElementById('logoutButton').addEventListener('click', async () => {
@@ -20,84 +20,102 @@ document.addEventListener('DOMContentLoaded', async () => {
     showLoadingOverlay();
     const user = await checkAuth();
     if (user) {
-        const transactions = await getAllTransactions();
-        await displayTransactions(transactions);
+        await loadUsers();
+        await loadRecordTypes();
+        await loadRecordDirections();
     }
     hideLoadingOverlay();
 });
 
-async function getAllTransactions() {
-    const transactionsSnapshot = await getDocs(collection(db, 'transactions'));
-    const transactions = [];
-    transactionsSnapshot.forEach(doc => {
-        transactions.push({ id: doc.id, ...doc.data() });
+async function loadUsers() {
+    const usersSnapshot = await getDocs(collection(db, 'users'));
+    const tableBody = document.getElementById('usersTable').getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = '';
+
+    usersSnapshot.forEach(doc => {
+        const user = doc.data();
+        const row = tableBody.insertRow();
+        row.insertCell(0).textContent = doc.id;
+        row.insertCell(1).textContent = user.firstName + ' ' + user.lastName;
+        row.insertCell(2).textContent = user.email;
     });
-    return transactions;
 }
 
-async function displayTransactions(transactions) {
-    const tableBody = document.getElementById('transactionsTable').getElementsByTagName('tbody')[0];
+async function loadRecordTypes() {
+    const recordTypesSnapshot = await getDocs(collection(db, 'recordTypes'));
+    const tableBody = document.getElementById('recordTypesTable').getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = '';
 
-    for (const transaction of transactions) {
+    recordTypesSnapshot.forEach(doc => {
+        const recordType = doc.data().name;
         const row = tableBody.insertRow();
+        row.insertCell(0).textContent = recordType;
 
-        const userIdCell = row.insertCell(0);
-        const accountNameCell = row.insertCell(1);
-        const transactionDateCell = row.insertCell(2);
-        const categoryCell = row.insertCell(3);
-        const subCategoryCell = row.insertCell(4);
-        const amountCell = row.insertCell(5);
-        const transactionTypeCell = row.insertCell(6);
-        const actionsCell = row.insertCell(7);
-
-        const accountDoc = await getDoc(doc(db, 'accounts', transaction.kaynakHesap));
-        const accountName = accountDoc.exists() ? accountDoc.data().accountName : 'Unknown Account';
-
-        const categoryDoc = await getDoc(doc(db, 'categories', transaction.kategori));
-        const categoryName = categoryDoc.exists() ? categoryDoc.data().name : 'Unknown Category';
-
-        const subCategoryDoc = await getDoc(doc(db, 'categories', transaction.kategori, 'subcategories', transaction.altKategori));
-        const subCategoryName = subCategoryDoc.exists() ? subCategoryDoc.data().name : 'Unknown Subcategory';
-
-        userIdCell.textContent = transaction.userId;
-        accountNameCell.textContent = accountName;
-        transactionDateCell.textContent = new Date(transaction.islemTarihi).toLocaleDateString();
-        categoryCell.textContent = categoryName;
-        subCategoryCell.textContent = subCategoryName;
-        amountCell.textContent = formatNumber(transaction.tutar);
-        transactionTypeCell.textContent = transaction.kayitTipi;
-
-        const editButton = document.createElement('button');
-        editButton.textContent = 'Düzenle';
-        editButton.onclick = () => editTransaction(transaction.id);
-
+        const actionsCell = row.insertCell(1);
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Sil';
-        deleteButton.onclick = () => deleteTransaction(transaction.id);
-
-        actionsCell.appendChild(editButton);
+        deleteButton.onclick = () => deleteRecordType(doc.id);
         actionsCell.appendChild(deleteButton);
+    });
+}
+
+async function loadRecordDirections() {
+    const recordDirectionsSnapshot = await getDocs(collection(db, 'recordDirections'));
+    const tableBody = document.getElementById('recordDirectionsTable').getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = '';
+
+    recordDirectionsSnapshot.forEach(doc => {
+        const recordDirection = doc.data().name;
+        const row = tableBody.insertRow();
+        row.insertCell(0).textContent = recordDirection;
+
+        const actionsCell = row.insertCell(1);
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Sil';
+        deleteButton.onclick = () => deleteRecordDirection(doc.id);
+        actionsCell.appendChild(deleteButton);
+    });
+}
+
+document.getElementById('addRecordTypeForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newRecordType = document.getElementById('newRecordType').value;
+    try {
+        await addDoc(collection(db, 'recordTypes'), { name: newRecordType });
+        document.getElementById('newRecordType').value = '';
+        await loadRecordTypes();
+    } catch (error) {
+        console.error('Kayıt Tipi eklenirken hata:', error);
+    }
+});
+
+document.getElementById('addRecordDirectionForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newRecordDirection = document.getElementById('newRecordDirection').value;
+    try {
+        await addDoc(collection(db, 'recordDirections'), { name: newRecordDirection });
+        document.getElementById('newRecordDirection').value = '';
+        await loadRecordDirections();
+    } catch (error) {
+        console.error('Kayıt Yönü eklenirken hata:', error);
+    }
+});
+
+async function deleteRecordType(recordTypeId) {
+    try {
+        await deleteDoc(doc(db, 'recordTypes', recordTypeId));
+        await loadRecordTypes();
+    } catch (error) {
+        console.error('Kayıt Tipi silinirken hata:', error);
     }
 }
 
-function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
-async function editTransaction(transactionId) {
-    const newAmount = prompt("Yeni tutarı girin:");
-    if (newAmount !== null) {
-        await updateDoc(doc(db, 'transactions', transactionId), {
-            tutar: parseFloat(newAmount)
-        });
-        location.reload(); // Sayfayı yeniden yükleyerek güncellenmiş verileri göster
-    }
-}
-
-async function deleteTransaction(transactionId) {
-    if (confirm("Bu kaydı silmek istediğinize emin misiniz?")) {
-        await deleteDoc(doc(db, 'transactions', transactionId));
-        location.reload(); // Sayfayı yeniden yükleyerek güncellenmiş verileri göster
+async function deleteRecordDirection(recordDirectionId) {
+    try {
+        await deleteDoc(doc(db, 'recordDirections', recordDirectionId));
+        await loadRecordDirections();
+    } catch (error) {
+        console.error('Kayıt Yönü silinirken hata:', error);
     }
 }
 
