@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, query, where } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
 // Firebase yapılandırmanızı buraya ekleyin
@@ -20,8 +20,8 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         loadAccounts(user.uid);
         loadCategories(user.uid);
-        loadKayitTipleri(); // Yeni fonksiyon
-        loadKayitYonleri(); // Yeni fonksiyon
+        loadKayitTipleri();
+        loadKayitYonleri();
         document.getElementById('transactionForm').addEventListener('submit', (e) => {
             e.preventDefault();
             saveTransaction(user.uid);
@@ -90,7 +90,8 @@ async function loadKayitTipleri() {
     const kayitTipiSelect = document.getElementById('kayitTipi');
     kayitTipiSelect.innerHTML = '<option value="">Seçiniz</option>';
 
-    const querySnapshot = await getDocs(collection(db, 'kayitTipleri'));
+    const q = query(collection(db, 'kayitTipleri'), orderBy("line"));
+    const querySnapshot = await getDocs(q);
 
     querySnapshot.forEach((doc) => {
         const option = document.createElement('option');
@@ -104,7 +105,8 @@ async function loadKayitYonleri() {
     const kayitYonuSelect = document.getElementById('kayitYonu');
     kayitYonuSelect.innerHTML = '<option value="">Seçiniz</option>';
 
-    const querySnapshot = await getDocs(collection(db, 'kayitYonleri'));
+    const q = query(collection(db, 'kayitYonleri'), orderBy("line"));
+    const querySnapshot = await getDocs(q);
 
     querySnapshot.forEach((doc) => {
         const option = document.createElement('option');
