@@ -1,6 +1,7 @@
 // login.js
-import { auth } from './firebaseConfig.js';
+import { auth, db } from './firebaseConfig.js';
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -10,7 +11,14 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const messageDiv = document.getElementById('message');
 
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Son giriş zamanını güncelle
+        await updateDoc(doc(db, 'users', user.uid), {
+            lastLogin: new Date()
+        });
+
         window.location.href = 'landing.html';
     } catch (error) {
         console.error('Giriş hatası: ', error);
