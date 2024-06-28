@@ -18,6 +18,7 @@ const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
+        loadUsers();
         loadKayitTipleri();
         loadKayitYonleri();
         document.getElementById('kayitTipiForm').addEventListener('submit', (e) => {
@@ -33,6 +34,19 @@ onAuthStateChanged(auth, (user) => {
         window.location.href = 'login.html';
     }
 });
+
+async function loadUsers() {
+    const userList = document.getElementById('userList');
+    userList.innerHTML = '';
+
+    const querySnapshot = await getDocs(collection(db, 'users'));
+
+    querySnapshot.forEach((doc) => {
+        const li = document.createElement('li');
+        li.textContent = doc.data().email;
+        userList.appendChild(li);
+    });
+}
 
 async function loadKayitTipleri() {
     const kayitTipiList = document.getElementById('kayitTipiList');
