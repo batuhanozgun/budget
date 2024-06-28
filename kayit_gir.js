@@ -20,6 +20,8 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         loadAccounts(user.uid);
         loadCategories(user.uid);
+        loadKayitTipleri(); // Yeni fonksiyon
+        loadKayitYonleri(); // Yeni fonksiyon
         document.getElementById('transactionForm').addEventListener('submit', (e) => {
             e.preventDefault();
             saveTransaction(user.uid);
@@ -82,6 +84,34 @@ async function loadSubCategories(uid) {
             subCategorySelect.appendChild(option);
         });
     }
+}
+
+async function loadKayitTipleri() {
+    const kayitTipiSelect = document.getElementById('kayitTipi');
+    kayitTipiSelect.innerHTML = '<option value="">Seçiniz</option>';
+
+    const querySnapshot = await getDocs(collection(db, 'kayitTipleri'));
+
+    querySnapshot.forEach((doc) => {
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = doc.data().name;
+        kayitTipiSelect.appendChild(option);
+    });
+}
+
+async function loadKayitYonleri() {
+    const kayitYonuSelect = document.getElementById('kayitYonu');
+    kayitYonuSelect.innerHTML = '<option value="">Seçiniz</option>';
+
+    const querySnapshot = await getDocs(collection(db, 'kayitYonleri'));
+
+    querySnapshot.forEach((doc) => {
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = doc.data().name;
+        kayitYonuSelect.appendChild(option);
+    });
 }
 
 async function saveTransaction(uid) {
