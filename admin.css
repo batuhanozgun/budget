@@ -5,10 +5,7 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    flex-direction: column;
+    height: 100vh;
 }
 
 .container {
@@ -17,101 +14,62 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
-    overflow-x: auto;
-    max-width: 1200px;
+    max-width: 600px;
     width: 100%;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+h2, h3 {
+    margin-top: 0;
 }
 
-header h1 {
-    margin: 0;
+form {
+    margin-bottom: 20px;
 }
 
-#logoutButton {
-    background-color: #ff6a6a;
-    color: #FFF;
-    padding: 10px 15px;
+form input[type="text"] {
+    padding: 10px;
+    width: calc(100% - 80px);
+    box-sizing: border-box;
+    margin-right: 10px;
+}
+
+form button {
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
 }
 
-#logoutButton:hover {
-    background-color: #E04000;
+form button:hover {
+    background-color: #2980b9;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+ul {
+    list-style-type: none;
+    padding: 0;
 }
 
-th, td {
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #CCC;
+ul li {
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
 }
 
-th {
-    background-color: #002147;
-    color: #FFF;
-}
-
-.action-buttons button {
+ul li button {
     padding: 5px 10px;
-    font-size: 12px;
-    margin-right: 5px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-.loading-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.loading-spinner {
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #3498db;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loading-text {
-    color: #333;
-    font-size: 20px;
-    margin-top: 10px;
-    text-align: center;
+ul li button:hover {
+    background-color: #c0392b;
 }
