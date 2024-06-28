@@ -5,68 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Paneli</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="admin.css">
     <script type="module" src="admin.js"></script>
 </head>
 <body>
-    <div class="loading-overlay">
-        <div class="loading-container">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">Veriler Yükleniyor...</div>
-        </div>
-    </div>
     <div class="container">
-        <header>
-            <h1>Admin Paneli</h1>
-            <button id="logoutButton">Çıkış Yap</button>
-        </header>
-        <h2>Kullanıcılar</h2>
-        <table id="usersTable">
-            <thead>
-                <tr>
-                    <th>Kullanıcı ID</th>
-                    <th>İsim</th>
-                    <th>Email</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Kullanıcı verileri burada görünecek -->
-            </tbody>
-        </table>
+        <h2>Admin Paneli</h2>
 
-        <h2>Kayıt Tipleri</h2>
-        <form id="addRecordTypeForm">
-            <input type="text" id="newRecordType" placeholder="Yeni Kayıt Tipi" required>
+        <h3>Kayıt Tipleri</h3>
+        <form id="kayitTipiForm">
+            <input type="text" id="kayitTipiInput" placeholder="Yeni Kayıt Tipi" required>
             <button type="submit">Ekle</button>
         </form>
-        <table id="recordTypesTable">
-            <thead>
-                <tr>
-                    <th>Kayıt Tipi</th>
-                    <th>İşlemler</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Kayıt Tipleri burada görünecek -->
-            </tbody>
-        </table>
+        <ul id="kayitTipiList">
+            <!-- Kayıt Tipleri buraya yüklenecek -->
+        </ul>
 
-        <h2>Kayıt Yönleri</h2>
-        <form id="addRecordDirectionForm">
-            <input type="text" id="newRecordDirection" placeholder="Yeni Kayıt Yönü" required>
+        <h3>Kayıt Yönleri</h3>
+        <form id="kayitYonuForm">
+            <input type="text" id="kayitYonuInput" placeholder="Yeni Kayıt Yönü" required>
             <button type="submit">Ekle</button>
         </form>
-        <table id="recordDirectionsTable">
-            <thead>
-                <tr>
-                    <th>Kayıt Yönü</th>
-                    <th>İşlemler</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Kayıt Yönleri burada görünecek -->
-            </tbody>
-        </table>
+        <ul id="kayitYonuList">
+            <!-- Kayıt Yönleri buraya yüklenecek -->
+        </ul>
     </div>
 </body>
 </html>
