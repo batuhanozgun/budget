@@ -36,15 +36,24 @@ onAuthStateChanged(auth, (user) => {
 });
 
 async function loadUsers() {
-    const userList = document.getElementById('userList');
-    userList.innerHTML = '';
+    const userTableBody = document.getElementById('userTable').getElementsByTagName('tbody')[0];
+    userTableBody.innerHTML = '';
 
     const querySnapshot = await getDocs(collection(db, 'users'));
 
     querySnapshot.forEach((doc) => {
-        const li = document.createElement('li');
-        li.textContent = doc.data().email;
-        userList.appendChild(li);
+        const tr = document.createElement('tr');
+        const userData = doc.data();
+        
+        const emailTd = document.createElement('td');
+        emailTd.textContent = userData.email;
+        tr.appendChild(emailTd);
+
+        const lastLoginTd = document.createElement('td');
+        lastLoginTd.textContent = userData.lastLogin ? new Date(userData.lastLogin.seconds * 1000).toLocaleString() : 'N/A';
+        tr.appendChild(lastLoginTd);
+
+        userTableBody.appendChild(tr);
     });
 }
 
