@@ -1,5 +1,5 @@
 import { checkAuth } from './auth.js';
-import { checkDuplicateAccountName, addAccount, updateAccount, deleteAccountById, loadAccounts } from './HO_account.js';
+import { addAccount, updateAccount, deleteAccountById, checkDuplicateAccountName, loadAccounts } from './HO_account.js';
 import { showMessage, resetForm } from './HO_ui.js';
 
 export async function handleFormSubmit(e) {
@@ -15,32 +15,30 @@ export async function handleFormSubmit(e) {
         return;
     }
 
-    const duplicate = await checkDuplicateAccountName(user.uid, accountData.accountName);
-    if (duplicate && formMode === 'create') {
-        showMessage('Aynı isimde bir hesap zaten var.');
-        return;
-    }
-
     if (formMode === 'edit') {
         const accountId = document.getElementById('accountForm').dataset.accountId;
         try {
             await updateAccount(accountId, accountData);
             console.log('Hesap başarıyla güncellendi.');
-            document.getElementById('accountForm').dataset.mode = 'create';
-            document.getElementById('accountForm').dataset.accountId = '';
-            await loadAccounts(user);
             showMessage('Hesap başarıyla güncellendi.');
+            loadAccounts(user);
             resetForm();
         } catch (e) {
             console.error('Hesap güncellenirken hata oluştu:', e);
             showMessage('Hesap güncellenirken hata oluştu.');
         }
     } else {
+        const isDuplicate = await checkDuplicateAccountName(user.uid, accountData.accountName);
+        if (isDuplicate) {
+            showMessage('Bu isimde bir hesap zaten var.');
+            return;
+        }
+
         try {
-            const accountId = await addAccount(user, accountData);
+            await addAccount(user, accountData);
             console.log('Hesap başarıyla oluşturuldu.');
-            await loadAccounts(user);
             showMessage('Hesap başarıyla oluşturuldu.');
+            loadAccounts(user);
             resetForm();
         } catch (e) {
             console.error('Hesap oluşturulurken hata oluştu:', e);
@@ -56,12 +54,11 @@ export async function handleDeleteAccount() {
     try {
         await deleteAccountById(accountId);
         console.log('Hesap başarıyla silindi.');
-        document.getElementById('accountDetails').remove();
+        showMessage('Hesap başarıyla silindi.');
         const user = await checkAuth();
         if (user) {
-            await loadAccounts(user);
+            loadAccounts(user);
         }
-        showMessage('Hesap başarıyla silindi.');
         resetForm();
     } catch (e) {
         console.error('Hesap silinirken hata oluştu:', e);
