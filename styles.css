@@ -160,22 +160,12 @@ th {
     cursor: pointer;
 }
 
-/* Geri Bildirim Mesajları */
-.message {
-    display: none;
+#messageBox {
     padding: 10px;
-    margin-bottom: 10px;
+    margin-top: 20px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-}
-
-.message.success {
     background-color: #dff0d8;
     color: #3c763d;
-    border: 1px solid #d6e9c6;
-}
-
-.message.error {
-    background-color: #f2dede;
-    color: #a94442;
-    border: 1px solid #ebccd1;
+    display: none;
 }
