@@ -52,27 +52,13 @@ button:hover {
     background-color: #00172e;
 }
 
-#accountGroups {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+#accountList {
+    list-style: none;
+    padding: 0;
 }
 
-.account-type-group {
-    background-color: #FFF;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-}
-
-.account-type-title {
-    font-weight: bold;
-    color: #002147;
-    margin-bottom: 10px;
-}
-
-.account-item {
-    background-color: #002147;
+#accountList li {
+    background-color: #002147; /* styles.css dosyasındaki renk */
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 5px;
@@ -81,8 +67,8 @@ button:hover {
     color: #FFF;
 }
 
-.account-item:hover {
-    background-color: #00172e;
+#accountList li:hover {
+    background-color: #00172e; /* styles.css dosyasındaki hover rengi */
 }
 
 #accountDetails {
@@ -102,4 +88,32 @@ button:hover {
     color: #3c763d;
     border: 1px solid #d6e9c6;
     border-radius: 4px;
+}
+
+/* Hesap Grupları */
+.account-type-group {
+    margin-bottom: 20px;
+}
+
+.account-type-title {
+    font-weight: bold;
+    background-color: #002147;
+    color: #FFF;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.account-item {
+    background-color: #FFF;
+    color: #002147;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #002147;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.account-item:hover {
+    background-color: #002147;
+    color: #FFF;
 }
