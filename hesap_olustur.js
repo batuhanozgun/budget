@@ -16,9 +16,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('accountType').addEventListener('change', updateDynamicFields);
     document.getElementById('accountForm').addEventListener('submit', handleFormSubmit);
     document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
-    document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
-    document.getElementById('editAccountButton').addEventListener('click', editAccount);
-    document.getElementById('cancelEditButton').addEventListener('click', resetForm);
 });
 
 async function loadAccounts(user) {
@@ -63,20 +60,12 @@ async function loadAccounts(user) {
             const accountDiv = document.createElement('div');
             accountDiv.classList.add('account-item');
             accountDiv.textContent = account.accountName;
-
-            const accountDetailsDiv = document.createElement('div');
-            accountDetailsDiv.classList.add('account-details');
-            accountDetailsDiv.style.display = 'none';
-            accountDiv.appendChild(accountDetailsDiv);
-
             accountDiv.addEventListener('click', async () => {
                 const accountData = await loadAccountDetails(account.id);
                 if (accountData) {
-                    displayAccountDetails(accountData, accountDetailsDiv);
-                    accountDetailsDiv.style.display = accountDetailsDiv.style.display === 'none' ? 'block' : 'none';
+                    displayAccountDetails(accountData, account.id, accountDiv);
                 }
             });
-
             typeDiv.appendChild(accountDiv);
         });
 
@@ -89,8 +78,7 @@ async function loadAccountDetails(accountId) {
     return accountDoc.exists() ? accountDoc.data() : null;
 }
 
-function displayAccountDetails(accountData, accountDetailsDiv) {
-    accountDetailsDiv.innerHTML = '';
+function displayAccountDetails(accountData, accountId, accountDiv) {
     const labels = {
         cardLimit: 'Kart Limiti',
         availableLimit: 'Kullanılabilir Limit',
@@ -119,22 +107,42 @@ function displayAccountDetails(accountData, accountDetailsDiv) {
         targetDate: 'En Yakın Ödeme Yapılacak Hedef Tarih'
     };
 
-    const orderedKeys = [
-        'accountName', 'accountType', 'openingDate', 'currency', 
-        'cardLimit', 'availableLimit', 'currentSpending', 'pendingAmountAtOpening', 
-        'previousStatementBalance', 'statementDate', 'paymentDueDate', 'installments',
-        'loanAmount', 'loanInterestRate', 'fundRate', 'taxRate', 'totalTerm', 'remainingTerm', 'installmentAmount',
-        'initialBalance', 'overdraftLimit', 'overdraftInterestRate',
-        'targetAmount', 'targetDate', 'uid'
-    ];
-
-    orderedKeys.forEach(key => {
-        if (accountData[key] !== undefined) {
+    const accountInfo = document.createElement('div');
+    accountInfo.classList.add('account-info');
+    for (const key in accountData) {
+        if (accountData.hasOwnProperty(key)) {
             const p = document.createElement('p');
             p.textContent = `${labels[key] || key}: ${accountData[key]}`;
-            accountDetailsDiv.appendChild(p);
+            accountInfo.appendChild(p);
         }
-    });
+    }
+
+    const accountDetailsDiv = document.createElement('div');
+    accountDetailsDiv.classList.add('account-details');
+    accountDetailsDiv.appendChild(accountInfo);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.id = 'deleteAccountButton';
+    deleteButton.textContent = 'Hesabı Sil';
+    deleteButton.addEventListener('click', deleteAccount);
+    accountDetailsDiv.appendChild(deleteButton);
+
+    const editButton = document.createElement('button');
+    editButton.type = 'button';
+    editButton.id = 'editAccountButton';
+    editButton.textContent = 'Hesabı Düzenle';
+    editButton.addEventListener('click', editAccount);
+    accountDetailsDiv.appendChild(editButton);
+
+    const cancelButton = document.createElement('button');
+    cancelButton.type = 'button';
+    cancelButton.id = 'cancelEditButton';
+    cancelButton.textContent = 'Vazgeç';
+    cancelButton.addEventListener('click', resetForm);
+    accountDetailsDiv.appendChild(cancelButton);
+
+    accountDiv.appendChild(accountDetailsDiv);
 }
 
 async function deleteAccount() {
@@ -208,18 +216,6 @@ async function handleFormSubmit(e) {
     e.preventDefault();
 
     const formMode = document.getElementById('accountForm').dataset.mode;
-    const accountName = document.getElementById('accountName').value;
-
-    // Aynı adla hesap olup olmadığını kontrol et
-    const user = await checkAuth();
-    const q = query(collection(db, "accounts"), where("uid", "==", user.uid), where("accountName", "==", accountName));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty && formMode !== 'edit') {
-        showMessage('Aynı adla başka bir hesap oluşturulamaz.');
-        return;
-    }
-
     const accountData = getFormData();
 
     if (formMode === 'edit') {
