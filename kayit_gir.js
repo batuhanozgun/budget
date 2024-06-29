@@ -201,17 +201,3 @@ function showMessage(message) {
         messageDiv.remove();
     }, 3000);
 }
-
-document.getElementById('kaynakHesap').addEventListener('change', async () => {
-    const kaynakHesap = document.getElementById('kaynakHesap').value;
-    const hedefHesapDiv = document.getElementById('hedefHesapDiv');
-    const taksitBilgileri = document.getElementById('taksitBilgileri');
-
-    if (kaynakHesap === 'krediKarti') {
-        hedefHesapDiv.style.display = 'none';
-        taksitBilgileri.style.display = 'block';
-    } else {
-        hedefHesapDiv.style.display = 'block';
-        taksitBilgileri.style.display = 'none';
-    }
-});
