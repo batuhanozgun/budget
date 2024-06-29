@@ -1,5 +1,5 @@
-import { auth, db } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { auth, db, doc, getDoc } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth, getCurrentUser } from './auth.js';
 import { getNakitFields, getNakitValues, getNakitLabels } from './nakit.js';
 import { getBankaFields, getBankaValues, getBankaLabels } from './banka.js';
