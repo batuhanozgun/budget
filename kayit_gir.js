@@ -128,11 +128,11 @@ async function saveTransaction(uid) {
     const taksitTutar = document.getElementById('taksitTutar').value;
     const islemTarihi = document.getElementById('islemTarihi').value;
 
-    // Gelir ve Gider Tipine Göre Tutarın Pozitif veya Negatif Olması
-    if (kayitTipi === 'Gider') {
-        tutar = -Math.abs(tutar); // Tutarı negatif yap
-    } else if (kayitTipi === 'Gelir') {
-        tutar = Math.abs(tutar); // Tutarı pozitif yap
+    // Kayıt Tipi ID'sine göre "Gider" olup olmadığını kontrol et
+    const kayitTipiDoc = await getDoc(doc(db, 'kayitTipleri', kayitTipi));
+    const kayitTipiData = kayitTipiDoc.data();
+    if (kayitTipiData.name === 'Gider') {
+        tutar = -Math.abs(tutar); // Gider ise tutarı negatif yap
     }
 
     try {
@@ -181,27 +181,15 @@ async function saveTransaction(uid) {
 
 document.getElementById('kaynakHesap').addEventListener('change', () => {
     const kaynakHesap = document.getElementById('kaynakHesap').value;
-    const hedefHesapLabel = document.getElementById('hedefHesapLabel');
-    const hedefHesap = document.getElementById('hedefHesap');
-    const taksitAdediLabel = document.getElementById('taksitAdediLabel');
-    const taksitAdedi = document.getElementById('taksitAdedi');
-    const taksitTutarLabel = document.getElementById('taksitTutarLabel');
-    const taksitTutar = document.getElementById('taksitTutar');
+    const hedefHesapDiv = document.getElementById('hedefHesapDiv');
+    const taksitBilgileri = document.getElementById('taksitBilgileri');
 
     if (kaynakHesap === 'krediKarti') {
-        hedefHesapLabel.style.display = 'none';
-        hedefHesap.style.display = 'none';
-        taksitAdediLabel.style.display = 'block';
-        taksitAdedi.style.display = 'block';
-        taksitTutarLabel.style.display = 'block';
-        taksitTutar.style.display = 'block';
+        hedefHesapDiv.style.display = 'none';
+        taksitBilgileri.style.display = 'block';
     } else {
-        hedefHesapLabel.style.display = 'block';
-        hedefHesap.style.display = 'block';
-        taksitAdediLabel.style.display = 'none';
-        taksitAdedi.style.display = 'none';
-        taksitTutarLabel.style.display = 'none';
-        taksitTutar.style.display = 'none';
+        hedefHesapDiv.style.display = 'block';
+        taksitBilgileri.style.display = 'none';
     }
 });
 
