@@ -103,7 +103,3 @@ function getFormData() {
         accountType,
         ...dynamicFields
     };
-}
-
-// Export functions
-export { handleFormSubmit, handleDeleteAccount };
