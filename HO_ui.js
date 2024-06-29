@@ -39,3 +39,54 @@ export function updateDynamicFields() {
     document.getElementById('currency').disabled = false;
     document.querySelector('button[type="submit"]').disabled = false;
 }
+
+export function getFormData() {
+    const accountName = document.getElementById('accountName').value;
+    const openingDate = document.getElementById('openingDate').value;
+    const currency = document.getElementById('currency').value;
+    const accountType = document.getElementById('accountType').value;
+
+    let dynamicFields = {};
+    switch (accountType) {
+        case 'nakit':
+            dynamicFields = getNakitValues();
+            break;
+        case 'banka':
+            dynamicFields = getBankaValues();
+            break;
+        case 'kredi':
+            dynamicFields = getKrediValues();
+            break;
+        case 'krediKarti':
+            dynamicFields = getKrediKartiValues();
+            break;
+        case 'birikim':
+            dynamicFields = getBirikimValues();
+            break;
+    }
+
+    return {
+        accountName,
+        openingDate,
+        currency,
+        accountType,
+        ...dynamicFields
+    };
+}
+
+export function showMessage(message) {
+    const messageDiv = document.getElementById('message');
+    messageDiv.textContent = message;
+    messageDiv.style.display = 'block';
+    setTimeout(() => {
+        messageDiv.style.display = 'none';
+    }, 3000);
+}
+
+export function resetForm() {
+    document.getElementById('accountForm').reset();
+    document.getElementById('accountForm').dataset.mode = 'create';
+    document.getElementById('accountForm').dataset.accountId = '';
+    document.querySelector('.form-section h2').textContent = 'Hesap Oluştur';
+    document.querySelector('.form-section button[type="submit"]').textContent = 'Hesap Oluştur';
+}
