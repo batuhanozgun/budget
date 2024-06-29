@@ -68,7 +68,7 @@ export async function loadAccounts(user) {
             accountDiv.addEventListener('click', async () => {
                 const accountData = await loadAccountDetails(account.id);
                 if (accountData) {
-                    displayAccountDetails(accountData, account.id, accountDiv);
+                    displayAccountDetails(accountData, account.id);
                 }
             });
             typeDiv.appendChild(accountDiv);
@@ -83,14 +83,17 @@ export async function loadAccountDetails(accountId) {
     return accountDoc.exists() ? accountDoc.data() : null;
 }
 
-export function displayAccountDetails(accountData, accountId, accountDiv) {
-    const existingDetailsDiv = accountDiv.querySelector('.account-details');
-    if (existingDetailsDiv) {
-        existingDetailsDiv.remove(); // Remove the existing details div if it exists
-    }
+export function displayAccountDetails(accountData, accountId) {
+    const accountDiv = document.querySelector(`div[data-account-id="${accountId}"]`);
+    let accountDetailsDiv = accountDiv.querySelector('.account-details');
 
-    const accountDetailsDiv = document.createElement('div');
-    accountDetailsDiv.classList.add('account-details');
+    if (!accountDetailsDiv) {
+        accountDetailsDiv = document.createElement('div');
+        accountDetailsDiv.classList.add('account-details');
+        accountDiv.appendChild(accountDetailsDiv);
+    } else {
+        accountDetailsDiv.innerHTML = ''; // Clear existing details
+    }
 
     const labels = {
         cardLimit: 'Kart Limiti',
@@ -120,36 +123,15 @@ export function displayAccountDetails(accountData, accountId, accountDiv) {
         targetDate: 'En Yakın Ödeme Yapılacak Hedef Tarih'
     };
 
-    const sortedKeys = [
-        'accountName',
-        'accountType',
-        'openingDate',
-        'currency',
-        'cardLimit',
-        'availableLimit',
-        'currentSpending',
-        'pendingAmountAtOpening',
-        'previousStatementBalance',
-        'statementDate',
-        'paymentDueDate',
-        'installments',
-        'loanAmount',
-        'loanInterestRate',
-        'fundRate',
-        'taxRate',
-        'totalTerm',
-        'remainingTerm',
-        'installmentAmount',
-        'initialBalance',
-        'overdraftLimit',
-        'overdraftInterestRate',
-        'targetAmount',
-        'targetDate',
-        'uid'
+    const orderedKeys = [
+        'accountName', 'accountType', 'openingDate', 'currency', 'initialBalance', 'availableLimit', 'currentSpending',
+        'pendingAmountAtOpening', 'previousStatementBalance', 'statementDate', 'paymentDueDate', 'installments',
+        'cardLimit', 'loanAmount', 'loanInterestRate', 'fundRate', 'taxRate', 'totalTerm', 'remainingTerm',
+        'installmentAmount', 'overdraftLimit', 'overdraftInterestRate', 'targetAmount', 'targetDate', 'uid'
     ];
 
-    sortedKeys.forEach(key => {
-        if (accountData[key] !== undefined) {
+    orderedKeys.forEach(key => {
+        if (accountData.hasOwnProperty(key)) {
             const p = document.createElement('p');
             p.textContent = `${labels[key] || key}: ${accountData[key]}`;
             accountDetailsDiv.appendChild(p);
