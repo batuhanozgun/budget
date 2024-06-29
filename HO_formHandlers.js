@@ -103,3 +103,4 @@ function getFormData() {
         accountType,
         ...dynamicFields
     };
+  };
