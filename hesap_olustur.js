@@ -4,17 +4,8 @@ import { checkAuth, getCurrentUser } from './auth.js';
 import { getNakitFields, getNakitValues, getNakitLabels } from './nakit.js';
 import { getBankaFields, getBankaValues, getBankaLabels } from './banka.js';
 import { getKrediFields, getKrediValues, getKrediLabels } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues, getKrediKartiLabels, addInstallment, getInstallmentsData } from './krediKarti.js';
+import { getKrediKartiFields, getKrediKartiValues, addInstallment, getInstallmentsData, getKrediKartiLabels } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues, getBirikimLabels } from './birikim.js';
-
-const accountTypeLabels = {
-    'nakit': 'Nakit Hesapları',
-    'banka': 'Banka Hesapları',
-    'kredi': 'Kredi Hesapları',
-    'krediKarti': 'Kredi Kartları',
-    'birikim': 'Birikim Hesapları'
-    // Diğer hesap türlerini de ekleyebilirsiniz
-};
 
 document.addEventListener('DOMContentLoaded', async () => {
     const user = await checkAuth();
@@ -27,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
     document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
     document.getElementById('editAccountButton').addEventListener('click', editAccount);
-    document.getElementById('cancelEditButton').addEventListener('click', resetForm);
+    document.getElementById('cancelEditButton').addEventListener('click', resetForm); // Vazgeç butonu eklendi
 });
 
 async function loadAccounts(user) {
@@ -49,11 +40,16 @@ async function loadAccounts(user) {
         if (!accountsByType[data.accountType]) {
             accountsByType[data.accountType] = [];
         }
-        accountsByType[data.accountType].push({
-            id: doc.id,
-            ...data
-        });
+        accountsByType[data.accountType].push({ id: doc.id, ...data });
     });
+
+    const accountTypeLabels = {
+        'nakit': 'Nakit Hesapları',
+        'banka': 'Banka Hesapları',
+        'kredi': 'Kredi Hesapları',
+        'krediKarti': 'Kredi Kartları',
+        'birikim': 'Birikim Hesapları'
+    };
 
     for (const [type, accounts] of Object.entries(accountsByType)) {
         const typeDiv = document.createElement('div');
