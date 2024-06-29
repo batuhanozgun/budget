@@ -52,14 +52,27 @@ button:hover {
     background-color: #00172e;
 }
 
-#accountList {
+#accountGroups {
     list-style: none;
     padding: 0;
 }
 
-#accountList li {
+.account-type-group {
+    margin-bottom: 20px;
+}
+
+.account-type-group h3 {
+    background-color: #002147;
+    color: #FFF;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 0;
+}
+
+.account-item {
     background-color: #002147; /* styles.css dosyasındaki renk */
     padding: 10px;
+    margin-top: 5px;
     margin-bottom: 5px;
     border-radius: 5px;
     cursor: pointer;
@@ -67,7 +80,7 @@ button:hover {
     color: #FFF;
 }
 
-#accountList li:hover {
+.account-item:hover {
     background-color: #00172e; /* styles.css dosyasındaki hover rengi */
 }
 
@@ -88,12 +101,4 @@ button:hover {
     color: #3c763d;
     border: 1px solid #d6e9c6;
     border-radius: 4px;
-}
-
-/* Yeni CSS kodları */
-.installment-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
 }
