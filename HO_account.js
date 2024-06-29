@@ -65,11 +65,10 @@ export async function loadAccounts(user) {
             const accountDiv = document.createElement('div');
             accountDiv.classList.add('account-item');
             accountDiv.textContent = account.accountName;
-            accountDiv.setAttribute('data-account-id', account.id);
             accountDiv.addEventListener('click', async () => {
                 const accountData = await loadAccountDetails(account.id);
                 if (accountData) {
-                    displayAccountDetails(accountData, account.id);
+                    displayAccountDetails(accountData, account.id, accountDiv);
                 }
             });
             typeDiv.appendChild(accountDiv);
@@ -84,9 +83,15 @@ export async function loadAccountDetails(accountId) {
     return accountDoc.exists() ? accountDoc.data() : null;
 }
 
-export function displayAccountDetails(accountData, accountId) {
-    const accountInfo = document.getElementById('accountInfo');
-    accountInfo.innerHTML = '';
+export function displayAccountDetails(accountData, accountId, accountDiv) {
+    const existingDetailsDiv = accountDiv.querySelector('.account-details');
+    if (existingDetailsDiv) {
+        existingDetailsDiv.remove(); // Remove the existing details div if it exists
+    }
+
+    const accountDetailsDiv = document.createElement('div');
+    accountDetailsDiv.classList.add('account-details');
+
     const labels = {
         cardLimit: 'Kart Limiti',
         availableLimit: 'Kullanılabilir Limit',
@@ -115,26 +120,43 @@ export function displayAccountDetails(accountData, accountId) {
         targetDate: 'En Yakın Ödeme Yapılacak Hedef Tarih'
     };
 
-    const orderedKeys = [
-        'accountName', 'accountType', 'openingDate', 'currency', 'cardLimit', 'availableLimit', 'currentSpending',
-        'pendingAmountAtOpening', 'previousStatementBalance', 'statementDate', 'paymentDueDate', 'installments',
-        'loanAmount', 'loanInterestRate', 'fundRate', 'taxRate', 'totalTerm', 'remainingTerm', 'installmentAmount',
-        'initialBalance', 'overdraftLimit', 'overdraftInterestRate', 'targetAmount', 'targetDate', 'uid'
+    const sortedKeys = [
+        'accountName',
+        'accountType',
+        'openingDate',
+        'currency',
+        'cardLimit',
+        'availableLimit',
+        'currentSpending',
+        'pendingAmountAtOpening',
+        'previousStatementBalance',
+        'statementDate',
+        'paymentDueDate',
+        'installments',
+        'loanAmount',
+        'loanInterestRate',
+        'fundRate',
+        'taxRate',
+        'totalTerm',
+        'remainingTerm',
+        'installmentAmount',
+        'initialBalance',
+        'overdraftLimit',
+        'overdraftInterestRate',
+        'targetAmount',
+        'targetDate',
+        'uid'
     ];
 
-    orderedKeys.forEach(key => {
-        if (accountData.hasOwnProperty(key)) {
+    sortedKeys.forEach(key => {
+        if (accountData[key] !== undefined) {
             const p = document.createElement('p');
             p.textContent = `${labels[key] || key}: ${accountData[key]}`;
-            accountInfo.appendChild(p);
+            accountDetailsDiv.appendChild(p);
         }
     });
 
     // Append the details right below the clicked account item
-    const accountDiv = document.querySelector(`[data-account-id="${accountId}"]`);
-    const accountDetailsDiv = document.createElement('div');
-    accountDetailsDiv.id = 'accountDetails';
-    accountDetailsDiv.appendChild(accountInfo);
     accountDiv.insertAdjacentElement('afterend', accountDetailsDiv);
 
     document.getElementById('deleteAccountButton').dataset.accountId = accountId;
