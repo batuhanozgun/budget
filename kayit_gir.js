@@ -179,26 +179,39 @@ async function saveTransaction(uid) {
     }
 }
 
-function showMessage(message, type) {
-    const messageDiv = document.getElementById('message');
-    messageDiv.textContent = message;
-    messageDiv.className = `message ${type}`;
-    messageDiv.style.display = 'block';
-    setTimeout(() => {
-        messageDiv.style.display = 'none';
-    }, 5000);
-}
-
 document.getElementById('kaynakHesap').addEventListener('change', () => {
     const kaynakHesap = document.getElementById('kaynakHesap').value;
-    const hedefHesapDiv = document.getElementById('hedefHesapDiv');
-    const taksitBilgileri = document.getElementById('taksitBilgileri');
+    const hedefHesapLabel = document.getElementById('hedefHesapLabel');
+    const hedefHesap = document.getElementById('hedefHesap');
+    const taksitAdediLabel = document.getElementById('taksitAdediLabel');
+    const taksitAdedi = document.getElementById('taksitAdedi');
+    const taksitTutarLabel = document.getElementById('taksitTutarLabel');
+    const taksitTutar = document.getElementById('taksitTutar');
 
     if (kaynakHesap === 'krediKarti') {
-        hedefHesapDiv.style.display = 'none';
-        taksitBilgileri.style.display = 'block';
+        hedefHesapLabel.style.display = 'none';
+        hedefHesap.style.display = 'none';
+        taksitAdediLabel.style.display = 'block';
+        taksitAdedi.style.display = 'block';
+        taksitTutarLabel.style.display = 'block';
+        taksitTutar.style.display = 'block';
     } else {
-        hedefHesapDiv.style.display = 'block';
-        taksitBilgileri.style.display = 'none';
+        hedefHesapLabel.style.display = 'block';
+        hedefHesap.style.display = 'block';
+        taksitAdediLabel.style.display = 'none';
+        taksitAdedi.style.display = 'none';
+        taksitTutarLabel.style.display = 'none';
+        taksitTutar.style.display = 'none';
     }
 });
+
+function showMessage(message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}`;
+    messageDiv.textContent = message;
+    document.body.appendChild(messageDiv);
+
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 3000);
+}
