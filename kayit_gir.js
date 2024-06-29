@@ -86,104 +86,6 @@ async function loadSubCategories(uid) {
     }
 }
 
-async function saveTransaction(uid) {
-    const kayitTipi = document.getElementById('kayitTipi').value;
-    const kayitYonu = document.getElementById('kayitYonu').value;
-    const kaynakHesap = document.getElementById('kaynakHesap').value;
-    const kategori = document.getElementById('kategori').value;
-    const altKategori = document.getElementById('altKategori').value;
-    const hedefHesap = document.getElementById('hedefHesap').value;
-    const tutar = document.getElementById('tutar').value;
-    const taksitAdedi = document.getElementById('taksitAdedi').value;
-    const taksitTutar = document.getElementById('taksitTutar').value;
-    const islemTarihi = document.getElementById('islemTarihi').value;
-
-    try {
-        if (document.getElementById('kaynakHesap').value === 'krediKarti') {
-            for (let i = 0; i < taksitAdedi; i++) {
-                const taksitTarihi = new Date(islemTarihi);
-                taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
-
-                await addDoc(collection(db, 'transactions'), {
-                    userId: uid,
-                    kayitTipi: kayitTipi,
-                    kayitYonu: kayitYonu,
-                    kaynakHesap: kaynakHesap,
-                    kategori: kategori,
-                    altKategori: altKategori,
-                    hedefHesap: hedefHesap,
-                    tutar: taksitTutar,
-                    islemTarihi: taksitTarihi,
-                    date: new Date()
-                });
-            }
-        } else {
-            await addDoc(collection(db, 'transactions'), {
-                userId: uid,
-                kayitTipi: kayitTipi,
-                kayitYonu: kayitYonu,
-                kaynakHesap: kaynakHesap,
-                kategori: kategori,
-                altKategori: altKategori,
-                hedefHesap: hedefHesap,
-                tutar: tutar,
-                islemTarihi: islemTarihi,
-                date: new Date()
-            });
-        }
-        document.getElementById('transactionForm').reset();
-        alert('Kayıt başarıyla eklendi.');
-    } catch (error) {
-        console.error('Hata:', error);
-        alert('Kayıt eklenirken bir hata oluştu.');
-    }
-}
-
-document.getElementById('kayitYonu').addEventListener('change', () => {
-    const kayitYonu = document.getElementById('kayitYonu').value;
-    const hedefHesapLabel = document.getElementById('hedefHesapLabel');
-    const hedefHesap = document.getElementById('hedefHesap');
-    const taksitAdediLabel = document.getElementById('taksitAdediLabel');
-    const taksitAdedi = document.getElementById('taksitAdedi');
-    const taksitTutarLabel = document.getElementById('taksitTutarLabel');
-    const taksitTutar = document.getElementById('taksitTutar');
-
-    if (kayitYonu === 'Hesaplar Arası Kayıt') {
-        hedefHesapLabel.style.display = 'block';
-        hedefHesap.style.display = 'block';
-        taksitAdediLabel.style.display = 'none';
-        taksitAdedi.style.display = 'none';
-        taksitTutarLabel.style.display = 'none';
-        taksitTutar.style.display = 'none';
-    } else if (document.getElementById('kaynakHesap').value === 'krediKarti') {
-        hedefHesapLabel.style.display = 'none';
-        hedefHesap.style.display = 'none';
-        taksitAdediLabel.style.display = 'block';
-        taksitAdedi.style.display = 'block';
-        taksitTutarLabel.style.display = 'block';
-        taksitTutar.style.display = 'block';
-    } else {
-        hedefHesapLabel.style.display = 'none';
-        hedefHesap.style.display = 'none';
-        taksitAdediLabel.style.display = 'none';
-        taksitAdedi.style.display = 'none';
-        taksitTutarLabel.style.display = 'none';
-        taksitTutar.style.display = 'none';
-    }
-});
-
-document.getElementById('taksitAdedi').addEventListener('input', () => {
-    const taksitAdedi = document.getElementById('taksitAdedi').value;
-    const tutar = document.getElementById('tutar').value;
-    const taksitTutar = document.getElementById('taksitTutar');
-
-    if (taksitAdedi && tutar) {
-        taksitTutar.value = (tutar / taksitAdedi).toFixed(2);
-    } else {
-        taksitTutar.value = '';
-    }
-});
-
 async function loadKayitTipleri() {
     const kayitTipiSelect = document.getElementById('kayitTipi');
     kayitTipiSelect.innerHTML = '<option value="">Seçiniz</option>';
@@ -213,3 +115,85 @@ async function loadKayitYonleri() {
         kayitYonuSelect.appendChild(option);
     });
 }
+
+async function saveTransaction(uid) {
+    const kayitTipi = document.getElementById('kayitTipi').value;
+    const kayitYonu = document.getElementById('kayitYonu').value;
+    const kaynakHesap = document.getElementById('kaynakHesap').value;
+    const kategori = document.getElementById('kategori').value;
+    const altKategori = document.getElementById('altKategori').value;
+    const hedefHesap = document.getElementById('hedefHesap').value;
+    const tutar = document.getElementById('tutar').value;
+    const taksitAdedi = document.getElementById('taksitAdedi').value;
+    const taksitTutar = document.getElementById('taksitTutar').value;
+    const islemTarihi = document.getElementById('islemTarihi').value;
+
+    try {
+        if (document.getElementById('kaynakHesap').value === 'krediKarti' && taksitAdedi > 0) {
+            for (let i = 0; i < taksitAdedi; i++) {
+                const taksitTarihi = new Date(islemTarihi);
+                taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
+                await addDoc(collection(db, 'transactions'), {
+                    userId: uid,
+                    kayitTipi: kayitTipi,
+                    kayitYonu: kayitYonu,
+                    kaynakHesap: kaynakHesap,
+                    kategori: kategori,
+                    altKategori: altKategori,
+                    hedefHesap: hedefHesap,
+                    tutar: taksitTutar,
+                    taksitAdedi: taksitAdedi,
+                    taksitTutar: taksitTutar,
+                    islemTarihi: taksitTarihi,
+                    date: new Date()
+                });
+            }
+        } else {
+            await addDoc(collection(db, 'transactions'), {
+                userId: uid,
+                kayitTipi: kayitTipi,
+                kayitYonu: kayitYonu,
+                kaynakHesap: kaynakHesap,
+                kategori: kategori,
+                altKategori: altKategori,
+                hedefHesap: hedefHesap,
+                tutar: tutar,
+                taksitAdedi: taksitAdedi,
+                taksitTutar: taksitTutar,
+                islemTarihi: islemTarihi,
+                date: new Date()
+            });
+        }
+        document.getElementById('transactionForm').reset();
+        alert('Kayıt başarıyla eklendi.');
+    } catch (error) {
+        console.error('Hata:', error);
+        alert('Kayıt eklenirken bir hata oluştu.');
+    }
+}
+
+document.getElementById('kaynakHesap').addEventListener('change', () => {
+    const kaynakHesap = document.getElementById('kaynakHesap').value;
+    const hedefHesapLabel = document.getElementById('hedefHesapLabel');
+    const hedefHesap = document.getElementById('hedefHesap');
+    const taksitAdediLabel = document.getElementById('taksitAdediLabel');
+    const taksitAdedi = document.getElementById('taksitAdedi');
+    const taksitTutarLabel = document.getElementById('taksitTutarLabel');
+    const taksitTutar = document.getElementById('taksitTutar');
+
+    if (kaynakHesap === 'krediKarti') {
+        hedefHesapLabel.style.display = 'none';
+        hedefHesap.style.display = 'none';
+        taksitAdediLabel.style.display = 'block';
+        taksitAdedi.style.display = 'block';
+        taksitTutarLabel.style.display = 'block';
+        taksitTutar.style.display = 'block';
+    } else {
+        hedefHesapLabel.style.display = 'block';
+        hedefHesap.style.display = 'block';
+        taksitAdediLabel.style.display = 'none';
+        taksitAdedi.style.display = 'none';
+        taksitTutarLabel.style.display = 'none';
+        taksitTutar.style.display = 'none';
+    }
+});
