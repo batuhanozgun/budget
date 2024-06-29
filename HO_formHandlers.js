@@ -49,7 +49,7 @@ export async function handleFormSubmit(e) {
     }
 }
 
-async function handleDeleteAccount() {
+export async function handleDeleteAccount() {
     const accountId = this.dataset.accountId;
     if (!accountId) return;
 
