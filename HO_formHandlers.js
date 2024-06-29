@@ -2,7 +2,7 @@ import { checkAuth } from './auth.js';
 import { updateAccount, deleteAccountById, addAccount, checkDuplicateAccountName, loadAccounts } from './HO_account.js';
 import { showMessage, resetForm, displayAccountDetails, loadAccountDetails } from './HO_ui.js';
 
-// handleFormSubmit işlevi tanımı
+// handleFormSubmit function
 export async function handleFormSubmit(e) {
     e.preventDefault();
 
@@ -50,7 +50,7 @@ export async function handleFormSubmit(e) {
     }
 }
 
-// handleDeleteAccount işlevi tanımı
+// handleDeleteAccount function
 export async function handleDeleteAccount() {
     const accountId = this.dataset.accountId;
     if (!accountId) return;
@@ -105,5 +105,5 @@ function getFormData() {
     };
 }
 
-// İşlevleri dışa aktar
+// Export functions
 export { handleFormSubmit, handleDeleteAccount };
