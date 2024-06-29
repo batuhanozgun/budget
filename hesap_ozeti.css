@@ -1,116 +1,99 @@
 body {
-    font-size: 14px; /* Varsayılan yazı boyutu */
-    background-color: #F0F0F0; /* Genel arka plan rengi */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    background-color: #FFF; /* Beyaz zemin */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    overflow-x: auto; /* Yatay taşmayı önlemek için */
-    max-width: 600px; /* Maksimum genişliği artırdık */
-    width: 100%;
-    margin-bottom: 20px; /* Tablolar arasında boşluk */
-}
-
-.table-container {
-    overflow-x: auto; /* Yatay taşmayı önlemek için */
-    width: 100%;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse; /* Sınırları birleştir */
-}
-
-th, td {
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #CCC; /* Hücre sınırları */
-}
-
-th {
-    position: sticky;
-    top: 0;
-    background-color: #002147; /* Başlık arka plan rengi - Lacivert */
-    color: #FFF; /* Başlık yazı rengi - Beyaz */
-    z-index: 2;
-}
-
-.font-control-buttons {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    display: flex;
-    gap: 10px;
-}
-
-.font-control-buttons button {
-    padding: 5px 10px;
     font-size: 14px;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 5px;
-}
-
-.action-buttons button {
-    padding: 5px 10px;
-    font-size: 12px;
-}
-
-/* Loading overlay stilini ekleyelim */
-.loading-overlay {
-    display: none; /* Başlangıçta gizli */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Yarı şeffaf siyah arka plan */
+    background-color: #F0F0F0;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Üstte görünmesi için */
+    height: 100vh;
+    margin: 0;
 }
 
-.loading-container {
+.container {
     display: flex;
-    flex-direction: column; /* Dikey hizalama için */
-    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: 1200px;
+    width: 100%;
     padding: 20px;
-    background-color: rgba(255, 255, 255, 0.9); /* Hafif şeffaf beyaz arka plan */
+    box-sizing: border-box;
+}
+
+.box {
+    background-color: #FFF;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex: 1;
 }
 
-.loading-spinner {
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #3498db; /* Blue */
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 2s linear infinite;
+h2, h3 {
+    margin-top: 0;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+form {
+    display: flex;
+    flex-direction: column;
 }
 
-.loading-text {
-    color: #333; /* Daha koyu yazı rengi */
-    font-size: 20px;
-    margin-top: 10px; /* Spinner ile text arasında boşluk */
-    text-align: center;
+label, input, select, button {
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px;
+    background-color: #002147;
+    color: #FFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #00172e;
+}
+
+#accountList {
+    list-style: none;
+    padding: 0;
+}
+
+#accountList li {
+    background-color: #002147; /* styles.css dosyasındaki renk */
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    color: #FFF;
+}
+
+#accountList li:hover {
+    background-color: #00172e; /* styles.css dosyasındaki hover rengi */
+}
+
+#accountDetails {
+    margin-top: 20px;
+}
+
+#accountDetails p {
+    margin: 0;
+    padding: 5px 0;
+}
+
+.message {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+    border-radius: 4px;
+}
+
+/* Yeni CSS kodları */
+.installment-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 }
