@@ -1,10 +1,10 @@
-import { auth, db, doc, getDoc } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { auth, db } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth, getCurrentUser } from './auth.js';
 import { getNakitFields, getNakitValues, getNakitLabels } from './nakit.js';
 import { getBankaFields, getBankaValues, getBankaLabels } from './banka.js';
 import { getKrediFields, getKrediValues, getKrediLabels } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues, addInstallment, getInstallmentsData, getKrediKartiLabels } from './krediKarti.js';
+import { getKrediKartiFields, getKrediKartiValues, getKrediKartiLabels, addInstallment, getInstallmentsData } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues, getBirikimLabels } from './birikim.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
     document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
     document.getElementById('editAccountButton').addEventListener('click', editAccount);
-    document.getElementById('cancelEditButton').addEventListener('click', resetForm); // Vazgeç butonu eklendi
+    document.getElementById('cancelEditButton').addEventListener('click', resetForm);
 });
 
 async function loadAccounts(user) {
@@ -40,7 +40,7 @@ async function loadAccounts(user) {
         if (!accountsByType[data.accountType]) {
             accountsByType[data.accountType] = [];
         }
-        accountsByType[data.accountType].push({ id: doc.id, ...data });
+        accountsByType[data.accountType].push({ ...data, id: doc.id });
     });
 
     const accountTypeLabels = {
@@ -84,10 +84,38 @@ async function loadAccountDetails(accountId) {
 function displayAccountDetails(accountData, accountId) {
     const accountInfo = document.getElementById('accountInfo');
     accountInfo.innerHTML = '';
+    const labels = {
+        cardLimit: 'Kart Limiti',
+        availableLimit: 'Kullanılabilir Limit',
+        currentSpending: 'Dönem İçi Harcama',
+        pendingAmountAtOpening: 'Hesap Açılışındaki Bekleyen Tutar',
+        previousStatementBalance: 'Bir Önceki Ekstreden Kalan Tutar',
+        statementDate: 'En Yakın Ekstre Kesim Tarihi',
+        paymentDueDate: 'En Yakın Son Ödeme Tarihi',
+        installments: 'Gelecek Dönem Taksitler',
+        currency: 'Para Birimi',
+        accountType: 'Hesap Türü',
+        accountName: 'Hesap Adı',
+        openingDate: 'Açılış Tarihi',
+        uid: 'Kullanıcı ID',
+        loanAmount: 'Kredi Tutarı',
+        loanInterestRate: 'Faiz Oranı',
+        fundRate: 'Fon Oranı',
+        taxRate: 'Vergi Oranı',
+        totalTerm: 'Toplam Vade',
+        remainingTerm: 'Kalan Vade',
+        installmentAmount: 'Taksit Tutarı',
+        initialBalance: 'Başlangıç Bakiyesi',
+        overdraftLimit: 'KMH Limiti',
+        overdraftInterestRate: 'KMH Faizi',
+        targetAmount: 'Düzenli Ödenen Tutar',
+        targetDate: 'En Yakın Ödeme Yapılacak Hedef Tarih'
+    };
+
     for (const key in accountData) {
         if (accountData.hasOwnProperty(key)) {
             const p = document.createElement('p');
-            p.textContent = `${key}: ${accountData[key]}`;
+            p.textContent = `${labels[key] || key}: ${accountData[key]}`;
             accountInfo.appendChild(p);
         }
     }
