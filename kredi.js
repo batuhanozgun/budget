@@ -28,3 +28,15 @@ export function getKrediValues() {
         installmentAmount: parseFloat(document.getElementById('installmentAmount').value).toFixed(2)
     };
 }
+
+export function getKrediLabels() {
+    return {
+        loanAmount: "Kredi Tutarı",
+        loanInterestRate: "Faiz Oranı (%)",
+        fundRate: "Fon Oranı (%)",
+        taxRate: "Vergi Oranı (%)",
+        totalTerm: "Toplam Vade",
+        remainingTerm: "Kalan Vade",
+        installmentAmount: "Taksit Tutarı"
+    };
+}
