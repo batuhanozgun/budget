@@ -16,3 +16,11 @@ export function getBankaValues() {
         overdraftInterestRate: parseFloat(document.getElementById('overdraftInterestRate').value).toFixed(2)
     };
 }
+
+export function getBankaLabels() {
+    return {
+        initialBalance: "Başlangıç Bakiyesi",
+        overdraftLimit: "KMH Limiti",
+        overdraftInterestRate: "KMH Faizi (%)"
+    };
+}
