@@ -76,4 +76,5 @@ export function displayAccountDetails(accountData, accountDiv) {
     document.getElementById('editAccountButton').dataset.accountId = accountData.id;
 }
 
-export { loadAccountDetails, displayAccountDetails };
+// Tekrar eden export ifadesini kaldırıyoruz
+// export { loadAccountDetails, displayAccountDetails };
