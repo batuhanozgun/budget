@@ -1,6 +1,6 @@
-import { checkDuplicateAccountName, addAccount, updateAccount, deleteAccountById, loadAccounts, loadAccountDetails, displayAccountDetails } from './HO_account.js';
-import { resetForm, showMessage } from './HO_ui.js';
 import { checkAuth } from './auth.js';
+import { updateAccount, deleteAccountById, addAccount, checkDuplicateAccountName, loadAccounts } from './HO_account.js';
+import { showMessage, resetForm, displayAccountDetails, loadAccountDetails } from './HO_ui.js';
 
 export async function handleFormSubmit(e) {
     e.preventDefault();
@@ -11,7 +11,7 @@ export async function handleFormSubmit(e) {
 
     if (!user) {
         console.error('Kullanıcı oturumu açık değil.');
-        window.location.href = 'login.html'; // Kullanıcı oturum açmamışsa login sayfasına yönlendir
+        window.location.href = 'login.html';
         return;
     }
 
@@ -31,13 +31,14 @@ export async function handleFormSubmit(e) {
         }
     } else {
         try {
-            if (await checkDuplicateAccountName(user.uid, accountData.accountName)) {
-                showMessage('Bu hesap adıyla zaten bir hesap var.');
+            const isDuplicate = await checkDuplicateAccountName(user.uid, accountData.accountName);
+            if (isDuplicate) {
+                showMessage('Aynı isimde bir hesap zaten mevcut.');
                 return;
             }
 
-            const accountId = await addAccount(user, accountData);
-            console.log("Document written with ID: ", accountId);
+            const docRef = await addAccount(user, accountData);
+            console.log("Document written with ID: ", docRef);
             loadAccounts(user);
             showMessage('Hesap başarıyla oluşturuldu.');
             resetForm();
@@ -47,3 +48,60 @@ export async function handleFormSubmit(e) {
         }
     }
 }
+
+export async function handleDeleteAccount() {
+    const accountId = this.dataset.accountId;
+    if (!accountId) return;
+
+    try {
+        await deleteAccountById(accountId);
+        console.log('Hesap başarıyla silindi.');
+        document.getElementById('accountDetails').style.display = 'none';
+        const user = await checkAuth();
+        if (user) {
+            loadAccounts(user);
+        }
+        showMessage('Hesap başarıyla silindi.');
+        resetForm();
+    } catch (e) {
+        console.error('Hesap silinirken hata oluştu:', e);
+        showMessage('Hesap silinirken hata oluştu.');
+    }
+}
+
+function getFormData() {
+    const accountName = document.getElementById('accountName').value;
+    const openingDate = document.getElementById('openingDate').value;
+    const currency = document.getElementById('currency').value;
+    const accountType = document.getElementById('accountType').value;
+
+    let dynamicFields = {};
+    switch (accountType) {
+        case 'nakit':
+            dynamicFields = getNakitValues();
+            break;
+        case 'banka':
+            dynamicFields = getBankaValues();
+            break;
+        case 'kredi':
+            dynamicFields = getKrediValues();
+            break;
+        case 'krediKarti':
+            dynamicFields = getKrediKartiValues();
+            break;
+        case 'birikim':
+            dynamicFields = getBirikimValues();
+            break;
+    }
+
+    return {
+        accountName,
+        openingDate,
+        currency,
+        accountType,
+        ...dynamicFields
+    };
+}
+
+// İşlevleri dışa aktar
+export { handleFormSubmit, handleDeleteAccount, handleEditAccount, resetForm };
