@@ -2,7 +2,7 @@ import { auth, db } from './firebaseConfig.js';
 import { checkAuth } from './auth.js';
 import { loadAccounts, loadAccountDetails, displayAccountDetails } from './HO_account.js';
 import { handleFormSubmit, handleDeleteAccount, handleEditAccount, resetForm } from './HO_formHandlers.js';
-import { updateDynamicFields, addInstallment } from './HO_ui.js';
+import { updateDynamicFields } from './HO_ui.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const user = await checkAuth();
