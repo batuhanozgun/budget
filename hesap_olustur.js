@@ -1,11 +1,11 @@
 import { auth, db } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth, getCurrentUser } from './auth.js';
-import { getNakitFields, getNakitValues } from './nakit.js';
-import { getBankaFields, getBankaValues } from './banka.js';
-import { getKrediFields, getKrediValues } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues, addInstallment } from './krediKarti.js';
-import { getBirikimFields, getBirikimValues } from './birikim.js';
+import { getNakitFields, getNakitValues, getNakitLabels } from './nakit.js';
+import { getBankaFields, getBankaValues, getBankaLabels } from './banka.js';
+import { getKrediFields, getKrediValues, getKrediLabels } from './kredi.js';
+import { getKrediKartiFields, getKrediKartiValues, addInstallment, getInstallmentsData } from './krediKarti.js';
+import { getBirikimFields, getBirikimValues, getBirikimLabels } from './birikim.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const user = await checkAuth();
@@ -15,8 +15,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('accountType').addEventListener('change', updateDynamicFields);
     document.getElementById('accountForm').addEventListener('submit', handleFormSubmit);
+    document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
     document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
     document.getElementById('editAccountButton').addEventListener('click', editAccount);
+    document.getElementById('cancelEditButton').addEventListener('click', cancelEdit);
 });
 
 async function loadAccounts(user) {
@@ -28,19 +30,68 @@ async function loadAccounts(user) {
 
     const q = query(collection(db, "accounts"), where("uid", "==", user.uid));
     const querySnapshot = await getDocs(q);
-    const accountList = document.getElementById('accountList');
-    accountList.innerHTML = '';
+
+    const accountListContainer = document.getElementById('accountListContainer');
+    accountListContainer.innerHTML = '';
+
+    const accountsByType = {};
+
     querySnapshot.forEach((doc) => {
-        const li = document.createElement('li');
-        li.textContent = `${doc.data().accountName} - ${doc.data().accountType}`;
-        li.addEventListener('click', async () => {
-            const accountData = await loadAccountDetails(doc.id);
-            if (accountData) {
-                displayAccountDetails(accountData, doc.id);
-            }
+        const data = doc.data();
+        if (!accountsByType[data.accountType]) {
+            accountsByType[data.accountType] = [];
+        }
+        accountsByType[data.accountType].push({
+            id: doc.id,
+            name: data.accountName,
+            type: data.accountType
         });
-        accountList.appendChild(li);
     });
+
+    for (const type in accountsByType) {
+        const typeHeader = document.createElement('h3');
+        typeHeader.textContent = getAccountTypeLabel(type);
+        accountListContainer.appendChild(typeHeader);
+
+        const ul = document.createElement('ul');
+        accountsByType[type].forEach(account => {
+            const li = document.createElement('li');
+            li.textContent = account.name;
+            li.addEventListener('click', async () => {
+                const accountData = await loadAccountDetails(account.id);
+                if (accountData) {
+                    displayAccountDetails(accountData, account.id);
+                }
+            });
+            ul.appendChild(li);
+        });
+        accountListContainer.appendChild(ul);
+    }
+}
+
+function getAccountTypeLabel(accountType) {
+    switch (accountType) {
+        case 'nakit':
+            return 'Nakit (Cüzdan/Kumbara/Çekmece)';
+        case 'banka':
+            return 'Banka Hesabı';
+        case 'kredi':
+            return 'Kredi Hesabı';
+        case 'krediKarti':
+            return 'Kredi Kartı';
+        case 'birikim':
+            return 'Birikim Hesabı';
+        case 'yatırım':
+            return 'Yatırım Hesabı';
+        case 'borcVerilen':
+            return 'Borc Verilenler Hesabı';
+        case 'borcAlınan':
+            return 'Borc Alınanlar Hesabı';
+        case 'harçlık':
+            return 'Harçlık Verilen Hesap (Çocuk)';
+        default:
+            return accountType;
+    }
 }
 
 async function loadAccountDetails(accountId) {
@@ -51,16 +102,36 @@ async function loadAccountDetails(accountId) {
 function displayAccountDetails(accountData, accountId) {
     const accountInfo = document.getElementById('accountInfo');
     accountInfo.innerHTML = '';
+
+    const labels = getLabelsForAccountType(accountData.accountType);
+
     for (const key in accountData) {
         if (accountData.hasOwnProperty(key)) {
             const p = document.createElement('p');
-            p.textContent = `${key}: ${accountData[key]}`;
+            const label = labels[key] || key;
+            p.textContent = `${label}: ${accountData[key]}`;
             accountInfo.appendChild(p);
         }
     }
+
     document.getElementById('accountDetails').style.display = 'block';
     document.getElementById('deleteAccountButton').dataset.accountId = accountId;
     document.getElementById('editAccountButton').dataset.accountId = accountId;
+}
+
+function getLabelsForAccountType(accountType) {
+    switch (accountType) {
+        case 'nakit':
+            return getNakitLabels();
+        case 'banka':
+            return getBankaLabels();
+        case 'kredi':
+            return getKrediLabels();
+        case 'birikim':
+            return getBirikimLabels();
+        default:
+            return {};
+    }
 }
 
 async function deleteAccount() {
@@ -129,17 +200,8 @@ async function editAccount() {
     document.querySelector('.form-section h2').textContent = 'Hesabı Düzenle';
     document.querySelector('.form-section button[type="submit"]').textContent = 'Güncelle';
 
-    // Vazgeç tuşu ekleyin
-    let cancelButton = document.getElementById('cancelEditButton');
-    if (!cancelButton) {
-        cancelButton = document.createElement('button');
-        cancelButton.id = 'cancelEditButton';
-        cancelButton.type = 'button';
-        cancelButton.textContent = 'Vazgeç';
-        cancelButton.addEventListener('click', resetForm);
-        document.querySelector('.form-section').appendChild(cancelButton);
-    }
-    cancelButton.style.display = 'inline-block';
+    const cancelButton = document.getElementById('cancelEditButton');
+    cancelButton.style.display = 'block';
 }
 
 async function handleFormSubmit(e) {
@@ -190,9 +252,11 @@ async function handleFormSubmit(e) {
 function updateDynamicFields() {
     const accountType = document.getElementById('accountType').value;
     const dynamicFields = document.getElementById('dynamicFields');
+    const futureInstallmentsSection = document.getElementById('futureInstallmentsSection');
     dynamicFields.innerHTML = '';
-    let fields = '';
+    futureInstallmentsSection.style.display = 'none'; // Hide by default
 
+    let fields = '';
     switch (accountType) {
         case 'nakit':
             fields = getNakitFields();
@@ -205,6 +269,7 @@ function updateDynamicFields() {
             break;
         case 'krediKarti':
             fields = getKrediKartiFields();
+            futureInstallmentsSection.style.display = 'block'; // Show future installments section
             break;
         case 'birikim':
             fields = getBirikimFields();
@@ -212,13 +277,6 @@ function updateDynamicFields() {
     }
 
     dynamicFields.innerHTML = fields;
-
-    if (accountType === 'krediKarti') {
-        document.getElementById('futureInstallmentsSection').style.display = 'block';
-        document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
-    } else {
-        document.getElementById('futureInstallmentsSection').style.display = 'none';
-    }
 
     // Enable form fields after account type is selected
     document.getElementById('accountName').disabled = false;
@@ -288,3 +346,8 @@ window.addInstallment = addInstallment;
 window.deleteAccount = deleteAccount;
 window.editAccount = editAccount;
 window.resetForm = resetForm;
+
+function cancelEdit() {
+    resetForm();
+    document.getElementById('accountDetails').style.display = 'none';
+}
