@@ -8,7 +8,8 @@ export function getBirikimFields() {
 }
 
 export function getBirikimValues() {
-    const targetAmount = parseFloat(document.getElementById('targetAmount').value).toFixed(2);
-    const targetDate = document.getElementById('targetDate').value;
-    return { targetAmount, targetDate };
+    return {
+        targetAmount: parseFloat(document.getElementById('targetAmount').value).toFixed(2),
+        targetDate: document.getElementById('targetDate').value
+    };
 }
