@@ -194,7 +194,7 @@ async function loadKayitTipleri() {
     querySnapshot.forEach((doc) => {
         const option = document.createElement('option');
         option.value = doc.id;
-        option.textContent = `${doc.data().name} (Sıra: ${doc.data().line})`;
+        option.textContent = doc.data().name;
         kayitTipiSelect.appendChild(option);
     });
 }
@@ -209,7 +209,7 @@ async function loadKayitYonleri() {
     querySnapshot.forEach((doc) => {
         const option = document.createElement('option');
         option.value = doc.id;
-        option.textContent = `${doc.data().name} (Sıra: ${doc.data().line})`;
+        option.textContent = doc.data().name;
         kayitYonuSelect.appendChild(option);
     });
 }
