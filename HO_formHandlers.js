@@ -106,4 +106,4 @@ function getFormData() {
 }
 
 // İşlevleri dışa aktar
-export { handleFormSubmit, handleDeleteAccount, resetForm };
+export { handleFormSubmit, handleDeleteAccount };
