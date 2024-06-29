@@ -53,26 +53,27 @@ button:hover {
 }
 
 #accountGroups {
-    list-style: none;
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .account-type-group {
-    margin-bottom: 20px;
+    background-color: #FFF;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
 }
 
-.account-type-group h3 {
-    background-color: #002147;
-    color: #FFF;
-    padding: 10px;
-    border-radius: 5px;
-    margin: 0;
+.account-type-title {
+    font-weight: bold;
+    color: #002147;
+    margin-bottom: 10px;
 }
 
 .account-item {
-    background-color: #002147; /* styles.css dosyasındaki renk */
+    background-color: #002147;
     padding: 10px;
-    margin-top: 5px;
     margin-bottom: 5px;
     border-radius: 5px;
     cursor: pointer;
@@ -81,7 +82,7 @@ button:hover {
 }
 
 .account-item:hover {
-    background-color: #00172e; /* styles.css dosyasındaki hover rengi */
+    background-color: #00172e;
 }
 
 #accountDetails {
