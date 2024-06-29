@@ -1,109 +1,118 @@
 import { checkAuth } from './auth.js';
-import { getFormData, resetForm, showMessage } from './HO_ui.js';
-import { loadAccounts, addAccount, updateAccount, deleteAccountById } from './HO_account.js';
+import { showMessage, loadAccounts, resetForm } from './HO_ui.js';
+import { addAccount, updateAccount, deleteAccountById, checkDuplicateAccountName } from './HO_account.js';
 
-export async function handleFormSubmit(e) {
+document.addEventListener('DOMContentLoaded', async () => {
+    const user = await checkAuth();
+    if (user) {
+        loadAccounts(user);
+    }
+
+    document.getElementById('accountType').addEventListener('change', updateDynamicFields);
+    document.getElementById('accountForm').addEventListener('submit', handleFormSubmit);
+    document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
+    document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
+    document.getElementById('editAccountButton').addEventListener('click', editAccount);
+    document.getElementById('cancelEditButton').addEventListener('click', resetForm);
+});
+
+async function handleFormSubmit(e) {
     e.preventDefault();
 
     const formMode = document.getElementById('accountForm').dataset.mode;
     const accountData = getFormData();
-    const user = await checkAuth();
 
-    if (!user) {
-        console.error('Kullanıcı oturumu açık değil.');
-        window.location.href = 'login.html';
+    const duplicateCheck = await checkDuplicateAccountName(accountData.accountName);
+    if (duplicateCheck) {
+        showMessage('Aynı isimde bir hesap zaten mevcut.');
         return;
     }
 
-    try {
-        if (formMode === 'edit') {
-            const accountId = document.getElementById('accountForm').dataset.accountId;
-            await updateAccount(accountId, accountData);
-            showMessage('Hesap başarıyla güncellendi.');
-        } else {
-            await addAccount(user.uid, accountData);
-            showMessage('Hesap başarıyla oluşturuldu.');
-        }
-        loadAccounts(user);
-        resetForm();
-    } catch (e) {
-        console.error('Hata oluştu:', e);
-        showMessage('İşlem sırasında bir hata oluştu.');
+    const user = await checkAuth();
+    if (!user) {
+        return;
     }
+
+    if (formMode === 'edit') {
+        const accountId = document.getElementById('accountForm').dataset.accountId;
+        await updateAccount(accountId, accountData);
+        showMessage('Hesap başarıyla güncellendi.');
+    } else {
+        await addAccount(user.uid, accountData);
+        showMessage('Hesap başarıyla oluşturuldu.');
+    }
+
+    loadAccounts(user);
+    resetForm();
 }
 
-export function handleDeleteAccount() {
-    const accountId = this.dataset.accountId;
-    if (!accountId) return;
+function updateDynamicFields() {
+    const accountType = document.getElementById('accountType').value;
+    const dynamicFields = document.getElementById('dynamicFields');
+    const futureInstallmentsSection = document.getElementById('futureInstallmentsSection');
+    dynamicFields.innerHTML = '';
+    futureInstallmentsSection.style.display = 'none';
 
-    if (confirm('Bu hesabı silmek istediğinize emin misiniz?')) {
-        deleteAccountById(accountId).then(() => {
-            showMessage('Hesap başarıyla silindi.');
-            resetForm();
-            checkAuth().then(user => {
-                if (user) {
-                    loadAccounts(user);
-                }
-            });
-        }).catch(e => {
-            console.error('Hesap silinirken hata oluştu:', e);
-            showMessage('Hesap silinirken hata oluştu.');
-        });
-    }
-}
-
-export function handleEditAccount() {
-    const accountId = this.dataset.accountId;
-    if (!accountId) return;
-
-    loadAccountDetails(accountId).then(accountData => {
-        if (!accountData) return;
-
-        document.getElementById('accountName').value = accountData.accountName;
-        document.getElementById('accountType').value = accountData.accountType;
-        document.getElementById('openingDate').value = accountData.openingDate;
-        document.getElementById('currency').value = accountData.currency;
-
-        // Load dynamic fields
-        const accountType = accountData.accountType;
-        updateDynamicFields();
-        for (const key in accountData) {
-            if (accountData.hasOwnProperty(key)) {
-                const input = document.getElementById(key);
-                if (input) {
-                    input.value = accountData[key];
-                }
-            }
-        }
-
-        // Show future installments if account type is credit card
-        if (accountType === 'krediKarti') {
-            const futureInstallmentsSection = document.getElementById('futureInstallmentsSection');
+    let fields = '';
+    switch (accountType) {
+        case 'nakit':
+            fields = getNakitFields();
+            break;
+        case 'banka':
+            fields = getBankaFields();
+            break;
+        case 'kredi':
+            fields = getKrediFields();
+            break;
+        case 'krediKarti':
+            fields = getKrediKartiFields();
             futureInstallmentsSection.style.display = 'block';
-            const installmentsContainer = document.getElementById('installmentsContainer');
-            installmentsContainer.innerHTML = '';
-            const installments = accountData.installments || [];
-            installments.forEach(installment => {
-                addInstallment();
-                const lastInstallment = installmentsContainer.lastElementChild;
-                lastInstallment.querySelector('.installmentMonth').value = installment.month;
-                lastInstallment.querySelector('.installmentYear').value = installment.year;
-                lastInstallment.querySelector('.installmentAmount').value = installment.amount;
-            });
-        }
+            break;
+        case 'birikim':
+            fields = getBirikimFields();
+            break;
+    }
 
-        // Form submit eventini güncelleme için ayarla
-        document.getElementById('accountForm').dataset.mode = 'edit';
-        document.getElementById('accountForm').dataset.accountId = accountId;
-        document.querySelector('.form-section h2').textContent = 'Hesabı Düzenle';
-        document.querySelector('.form-section button[type="submit"]').textContent = 'Güncelle';
-    });
+    dynamicFields.innerHTML = fields;
+
+    document.getElementById('accountName').disabled = false;
+    document.getElementById('openingDate').disabled = false;
+    document.getElementById('currency').disabled = false;
+    document.querySelector('button[type="submit"]').disabled = false;
 }
 
-export function resetForm() {
-    document.getElementById('accountForm').reset();
-    document.getElementById('accountForm').dataset.mode = 'create';
-    document.getElementById('accountForm').dataset.accountId = '';
-    document.querySelector('.form-section h2').textContent = 'Hesap Oluştur';
-    document.querySelector('.form-section button[type="submit"]').textContent = 'Hesap Oluştur';
+function getFormData() {
+    const accountName = document.getElementById('accountName').value;
+    const openingDate = document.getElementById('openingDate').value;
+    const currency = document.getElementById('currency').value;
+    const accountType = document.getElementById('accountType').value;
+
+    let dynamicFields = {};
+    switch (accountType) {
+        case 'nakit':
+            dynamicFields = getNakitValues();
+            break;
+        case 'banka':
+            dynamicFields = getBankaValues();
+            break;
+        case 'kredi':
+            dynamicFields = getKrediValues();
+            break;
+        case 'krediKarti':
+            dynamicFields = getKrediKartiValues();
+            break;
+        case 'birikim':
+            dynamicFields = getBirikimValues();
+            break;
+    }
+
+    return {
+        accountName,
+        openingDate,
+        currency,
+        accountType,
+        ...dynamicFields
+    };
 }
+
+export { handleFormSubmit, updateDynamicFields };
