@@ -26,7 +26,6 @@ onAuthStateChanged(auth, (user) => {
             e.preventDefault();
             saveTransaction(user.uid);
         });
-        document.getElementById('kayitYonu').addEventListener('change', toggleHedefHesapVisibility);
     } else {
         // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
         window.location.href = 'login.html';
@@ -115,6 +114,19 @@ async function loadKayitYonleri() {
         option.textContent = doc.data().name;
         kayitYonuSelect.appendChild(option);
     });
+
+    kayitYonuSelect.addEventListener('change', async () => {
+        const selectedKayitYonu = kayitYonuSelect.value;
+        const kayitYonuDoc = await getDoc(doc(db, 'kayitYonleri', selectedKayitYonu));
+        const kayitYonuData = kayitYonuDoc.data();
+
+        const hedefHesapDiv = document.getElementById('hedefHesapDiv');
+        if (kayitYonuData.name === 'Harcama') {
+            hedefHesapDiv.style.display = 'none';
+        } else {
+            hedefHesapDiv.style.display = 'block';
+        }
+    });
 }
 
 async function saveTransaction(uid) {
@@ -180,47 +192,26 @@ async function saveTransaction(uid) {
     }
 }
 
-function toggleHedefHesapVisibility() {
-    const kayitYonu = document.getElementById('kayitYonu').value;
-    const hedefHesapDiv = document.getElementById('hedefHesapDiv');
-    if (kayitYonu === 'Harcama') {
-        hedefHesapDiv.style.display = 'none';
-    } else {
-        hedefHesapDiv.style.display = 'block';
-    }
-}
-
 function showMessage(message) {
-    const messageBox = document.getElementById('messageBox');
-    messageBox.textContent = message;
-    messageBox.style.display = 'block';
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = message;
+    messageDiv.classList.add('message');
+    document.body.appendChild(messageDiv);
     setTimeout(() => {
-        messageBox.style.display = 'none';
+        messageDiv.remove();
     }, 3000);
 }
 
-document.getElementById('kaynakHesap').addEventListener('change', () => {
+document.getElementById('kaynakHesap').addEventListener('change', async () => {
     const kaynakHesap = document.getElementById('kaynakHesap').value;
-    const hedefHesapLabel = document.getElementById('hedefHesapLabel');
-    const hedefHesap = document.getElementById('hedefHesap');
-    const taksitAdediLabel = document.getElementById('taksitAdediLabel');
-    const taksitAdedi = document.getElementById('taksitAdedi');
-    const taksitTutarLabel = document.getElementById('taksitTutarLabel');
-    const taksitTutar = document.getElementById('taksitTutar');
+    const hedefHesapDiv = document.getElementById('hedefHesapDiv');
+    const taksitBilgileri = document.getElementById('taksitBilgileri');
 
     if (kaynakHesap === 'krediKarti') {
-        hedefHesapLabel.style.display = 'none';
-        hedefHesap.style.display = 'none';
-        taksitAdediLabel.style.display = 'block';
-        taksitAdedi.style.display = 'block';
-        taksitTutarLabel.style.display = 'block';
-        taksitTutar.style.display = 'block';
+        hedefHesapDiv.style.display = 'none';
+        taksitBilgileri.style.display = 'block';
     } else {
-        hedefHesapLabel.style.display = 'block';
-        hedefHesap.style.display = 'block';
-        taksitAdediLabel.style.display = 'none';
-        taksitAdedi.style.display = 'none';
-        taksitTutarLabel.style.display = 'none';
-        taksitTutar.style.display = 'none';
+        hedefHesapDiv.style.display = 'block';
+        taksitBilgileri.style.display = 'none';
     }
 });
