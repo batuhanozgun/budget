@@ -9,7 +9,6 @@
 <body>
     <div class="container">
         <h2>Kayıt Gir</h2>
-        <div id="message" class="message"></div> <!-- Geri bildirim mesajları için alan -->
         <form id="transactionForm">
             <label for="kayitTipi">Kayıt Tipi:</label>
             <select id="kayitTipi" required>
@@ -61,6 +60,7 @@
             
             <button type="submit">Kaydet</button>
         </form>
+        <div id="messageBox" style="display: none;"></div>
     </div>
 
     <script type="module" src="kayit_gir.js"></script>
