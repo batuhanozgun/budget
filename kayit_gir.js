@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, query, where } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
 // Firebase yapılandırmanızı buraya ekleyin
@@ -48,18 +48,6 @@ async function loadAccounts(uid) {
         accountSelect.appendChild(option);
         targetAccountSelect.appendChild(option.cloneNode(true));
     });
-
-    accountSelect.addEventListener('change', () => {
-        const selectedAccount = accountSelect.options[accountSelect.selectedIndex];
-        if (selectedAccount && selectedAccount.value) {
-            const accountData = querySnapshot.docs.find(doc => doc.id === selectedAccount.value).data();
-            if (accountData.accountType === 'krediKarti') {
-                document.getElementById('taksitBilgileri').style.display = 'block';
-            } else {
-                document.getElementById('taksitBilgileri').style.display = 'none';
-            }
-        }
-    });
 }
 
 async function loadCategories(uid) {
@@ -107,14 +95,15 @@ async function saveTransaction(uid) {
     const hedefHesap = document.getElementById('hedefHesap').value;
     const tutar = document.getElementById('tutar').value;
     const taksitAdedi = document.getElementById('taksitAdedi').value;
+    const taksitTutar = document.getElementById('taksitTutar').value;
     const islemTarihi = document.getElementById('islemTarihi').value;
 
     try {
-        if (taksitAdedi && taksitAdedi > 1) {
-            const taksitTutar = (tutar / taksitAdedi).toFixed(2);
+        if (document.getElementById('kaynakHesap').value === 'krediKarti') {
             for (let i = 0; i < taksitAdedi; i++) {
                 const taksitTarihi = new Date(islemTarihi);
                 taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
+
                 await addDoc(collection(db, 'transactions'), {
                     userId: uid,
                     kayitTipi: kayitTipi,
@@ -124,7 +113,6 @@ async function saveTransaction(uid) {
                     altKategori: altKategori,
                     hedefHesap: hedefHesap,
                     tutar: taksitTutar,
-                    taksitAdedi: taksitAdedi,
                     islemTarihi: taksitTarihi,
                     date: new Date()
                 });
@@ -206,7 +194,7 @@ async function loadKayitTipleri() {
     querySnapshot.forEach((doc) => {
         const option = document.createElement('option');
         option.value = doc.id;
-        option.textContent = doc.data().name;
+        option.textContent = `${doc.data().name} (Sıra: ${doc.data().line})`;
         kayitTipiSelect.appendChild(option);
     });
 }
@@ -221,7 +209,7 @@ async function loadKayitYonleri() {
     querySnapshot.forEach((doc) => {
         const option = document.createElement('option');
         option.value = doc.id;
-        option.textContent = doc.data().name;
+        option.textContent = `${doc.data().name} (Sıra: ${doc.data().line})`;
         kayitYonuSelect.appendChild(option);
     });
 }
