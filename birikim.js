@@ -13,3 +13,10 @@ export function getBirikimValues() {
         targetDate: document.getElementById('targetDate').value
     };
 }
+
+export function getBirikimLabels() {
+    return {
+        targetAmount: "Düzenli Ödenen Tutar",
+        targetDate: "En Yakın Ödeme Yapılacak Hedef Tarih"
+    };
+}
