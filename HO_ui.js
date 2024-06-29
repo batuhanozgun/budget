@@ -1,21 +1,10 @@
-export function showMessage(message) {
-    const messageDiv = document.getElementById('message');
-    messageDiv.textContent = message;
-    messageDiv.style.display = 'block';
-    setTimeout(() => {
-        messageDiv.style.display = 'none';
-    }, 3000);
-}
+import { getNakitFields, getNakitValues, getNakitLabels } from './nakit.js';
+import { getBankaFields, getBankaValues, getBankaLabels } from './banka.js';
+import { getKrediFields, getKrediValues, getKrediLabels } from './kredi.js';
+import { getKrediKartiFields, getKrediKartiValues, getKrediKartiLabels, addInstallment, getInstallmentsData } from './krediKarti.js';
+import { getBirikimFields, getBirikimValues, getBirikimLabels } from './birikim.js';
 
-export function resetForm() {
-    document.getElementById('accountForm').reset();
-    document.getElementById('accountForm').dataset.mode = 'create';
-    document.getElementById('accountForm').dataset.accountId = '';
-    document.querySelector('.form-section h2').textContent = 'Hesap Oluştur';
-    document.querySelector('.form-section button[type="submit"]').textContent = 'Hesap Oluştur';
-}
-
-export function updateDynamicFields() {
+function updateDynamicFields() {
     const accountType = document.getElementById('accountType').value;
     const dynamicFields = document.getElementById('dynamicFields');
     const futureInstallmentsSection = document.getElementById('futureInstallmentsSection');
@@ -50,3 +39,5 @@ export function updateDynamicFields() {
     document.getElementById('currency').disabled = false;
     document.querySelector('button[type="submit"]').disabled = false;
 }
+
+export { updateDynamicFields, addInstallment };
