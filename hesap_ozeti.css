@@ -90,10 +90,30 @@ button:hover {
     border-radius: 4px;
 }
 
-/* Yeni CSS kodları */
-.installment-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+/* Hesap Grupları */
+.account-type-group {
+    margin-bottom: 20px;
+}
+
+.account-type-title {
+    font-weight: bold;
+    background-color: #002147;
+    color: #FFF;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.account-item {
+    background-color: #FFF;
+    color: #002147;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #002147;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.account-item:hover {
+    background-color: #002147;
+    color: #FFF;
 }
