@@ -1,10 +1,10 @@
 import { auth, db } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, where, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth, getCurrentUser } from './auth.js';
 import { getNakitFields, getNakitValues, getNakitLabels } from './nakit.js';
 import { getBankaFields, getBankaValues, getBankaLabels } from './banka.js';
 import { getKrediFields, getKrediValues, getKrediLabels } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues, getKrediKartiLabels, addInstallment, getInstallmentsData } from './krediKarti.js';
+import { getKrediKartiFields, getKrediKartiValues, addInstallment, getInstallmentsData, getKrediKartiLabels } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues, getBirikimLabels } from './birikim.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -18,17 +18,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
     document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
     document.getElementById('editAccountButton').addEventListener('click', editAccount);
-    document.getElementById('cancelEditButton').addEventListener('click', resetForm); // Vazgeç butonunu ekle
+    document.getElementById('cancelEditButton').addEventListener('click', resetForm);
 });
-
-const accountTypeLabels = {
-    'nakit': 'Nakit Hesapları',
-    'banka': 'Banka Hesapları',
-    'kredi': 'Kredi Hesapları',
-    'krediKarti': 'Kredi Kartları',
-    'birikim': 'Birikim Hesapları',
-    // Diğer hesap türlerini de ekleyin
-};
 
 async function loadAccounts(user) {
     if (!user) {
@@ -40,7 +31,7 @@ async function loadAccounts(user) {
     const q = query(collection(db, "accounts"), where("uid", "==", user.uid));
     const querySnapshot = await getDocs(q);
     const accountListContainer = document.getElementById('accountListContainer');
-    accountListContainer.innerHTML = '';
+    accountListContainer.innerHTML = ''; // Reset the content
 
     const accountsByType = {};
 
@@ -53,23 +44,33 @@ async function loadAccounts(user) {
     });
 
     for (const [type, accounts] of Object.entries(accountsByType)) {
-        const accountTypeDiv = document.createElement('div');
-        accountTypeDiv.classList.add('account-type-section');
-
-        const accountTypeLabel = document.createElement('h3');
-        accountTypeLabel.textContent = accountTypeLabels[type] || type;
-        accountTypeDiv.appendChild(accountTypeLabel);
-
+        const typeDiv = document.createElement('div');
+        typeDiv.classList.add('account-type-group');
+        
+        const typeHeader = document.createElement('h3');
+        typeHeader.textContent = accountTypeLabels[type] || type;
+        typeDiv.appendChild(typeHeader);
+        
         accounts.forEach(account => {
             const accountDiv = document.createElement('div');
             accountDiv.classList.add('account-item');
             accountDiv.textContent = account.accountName;
-            accountDiv.addEventListener('click', () => displayAccountDetails(account, account.id));
-            accountTypeDiv.appendChild(accountDiv);
+            accountDiv.addEventListener('click', async () => {
+                const accountData = await loadAccountDetails(account.id);
+                if (accountData) {
+                    displayAccountDetails(accountData, account.id);
+                }
+            });
+            typeDiv.appendChild(accountDiv);
         });
 
-        accountListContainer.appendChild(accountTypeDiv);
+        accountListContainer.appendChild(typeDiv);
     }
+}
+
+async function loadAccountDetails(accountId) {
+    const accountDoc = await getDoc(doc(db, 'accounts', accountId));
+    return accountDoc.exists() ? accountDoc.data() : null;
 }
 
 function displayAccountDetails(accountData, accountId) {
@@ -284,6 +285,8 @@ function resetForm() {
     document.getElementById('accountForm').dataset.accountId = '';
     document.querySelector('.form-section h2').textContent = 'Hesap Oluştur';
     document.querySelector('.form-section button[type="submit"]').textContent = 'Hesap Oluştur';
+    document.getElementById('dynamicFields').innerHTML = ''; // Clear dynamic fields
+    document.getElementById('futureInstallmentsSection').style.display = 'none'; // Hide future installments section
 }
 
 // İşlevleri global hale getirin
