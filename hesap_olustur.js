@@ -1,6 +1,6 @@
 import { auth, db } from './firebaseConfig.js';
 import { checkAuth } from './auth.js';
-import { loadAccounts, loadAccountDetails, displayAccountDetails } from './HO_account.js';
+import { loadAccounts, displayAccountDetails, loadAccountDetails } from './HO_account.js';
 import { handleFormSubmit, handleDeleteAccount } from './HO_formHandlers.js';
 import { updateDynamicFields, showMessage, addInstallment, resetForm } from './HO_ui.js';
 
