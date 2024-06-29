@@ -1,11 +1,20 @@
-import { auth, db } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, doc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { auth, db, doc, getDoc } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth, getCurrentUser } from './auth.js';
 import { getNakitFields, getNakitValues, getNakitLabels } from './nakit.js';
 import { getBankaFields, getBankaValues, getBankaLabels } from './banka.js';
 import { getKrediFields, getKrediValues, getKrediLabels } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues, addInstallment, getInstallmentsData, getKrediKartiLabels } from './krediKarti.js';
+import { getKrediKartiFields, getKrediKartiValues, getKrediKartiLabels, addInstallment, getInstallmentsData } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues, getBirikimLabels } from './birikim.js';
+
+const accountTypeLabels = {
+    'nakit': 'Nakit Hesapları',
+    'banka': 'Banka Hesapları',
+    'kredi': 'Kredi Hesapları',
+    'krediKarti': 'Kredi Kartları',
+    'birikim': 'Birikim Hesapları'
+    // Diğer hesap türlerini de ekleyebilirsiniz
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
     const user = await checkAuth();
@@ -31,7 +40,7 @@ async function loadAccounts(user) {
     const q = query(collection(db, "accounts"), where("uid", "==", user.uid));
     const querySnapshot = await getDocs(q);
     const accountListContainer = document.getElementById('accountListContainer');
-    accountListContainer.innerHTML = ''; // Reset the content
+    accountListContainer.innerHTML = '';
 
     const accountsByType = {};
 
@@ -40,17 +49,20 @@ async function loadAccounts(user) {
         if (!accountsByType[data.accountType]) {
             accountsByType[data.accountType] = [];
         }
-        accountsByType[data.accountType].push({ id: doc.id, ...data });
+        accountsByType[data.accountType].push({
+            id: doc.id,
+            ...data
+        });
     });
 
     for (const [type, accounts] of Object.entries(accountsByType)) {
         const typeDiv = document.createElement('div');
         typeDiv.classList.add('account-type-group');
-        
+
         const typeHeader = document.createElement('h3');
         typeHeader.textContent = accountTypeLabels[type] || type;
         typeDiv.appendChild(typeHeader);
-        
+
         accounts.forEach(account => {
             const accountDiv = document.createElement('div');
             accountDiv.classList.add('account-item');
@@ -285,8 +297,6 @@ function resetForm() {
     document.getElementById('accountForm').dataset.accountId = '';
     document.querySelector('.form-section h2').textContent = 'Hesap Oluştur';
     document.querySelector('.form-section button[type="submit"]').textContent = 'Hesap Oluştur';
-    document.getElementById('dynamicFields').innerHTML = ''; // Clear dynamic fields
-    document.getElementById('futureInstallmentsSection').style.display = 'none'; // Hide future installments section
 }
 
 // İşlevleri global hale getirin
