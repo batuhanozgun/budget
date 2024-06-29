@@ -172,33 +172,44 @@ async function saveTransaction(uid) {
             });
         }
         document.getElementById('transactionForm').reset();
-        showMessage('Kayıt başarıyla eklendi.', 'success');
+        showMessage('Kayıt başarıyla eklendi.');
     } catch (error) {
         console.error('Hata:', error);
-        showMessage('Kayıt eklenirken bir hata oluştu.', 'error');
+        showMessage('Kayıt eklenirken bir hata oluştu.');
     }
+}
+
+function showMessage(message) {
+    const messageBox = document.getElementById('messageBox');
+    messageBox.textContent = message;
+    messageBox.style.display = 'block';
+    setTimeout(() => {
+        messageBox.style.display = 'none';
+    }, 3000);
 }
 
 document.getElementById('kaynakHesap').addEventListener('change', () => {
     const kaynakHesap = document.getElementById('kaynakHesap').value;
-    const hedefHesapDiv = document.getElementById('hedefHesapDiv');
-    const taksitBilgileri = document.getElementById('taksitBilgileri');
+    const hedefHesapLabel = document.getElementById('hedefHesapLabel');
+    const hedefHesap = document.getElementById('hedefHesap');
+    const taksitAdediLabel = document.getElementById('taksitAdediLabel');
+    const taksitAdedi = document.getElementById('taksitAdedi');
+    const taksitTutarLabel = document.getElementById('taksitTutarLabel');
+    const taksitTutar = document.getElementById('taksitTutar');
 
     if (kaynakHesap === 'krediKarti') {
-        hedefHesapDiv.style.display = 'none';
-        taksitBilgileri.style.display = 'block';
+        hedefHesapLabel.style.display = 'none';
+        hedefHesap.style.display = 'none';
+        taksitAdediLabel.style.display = 'block';
+        taksitAdedi.style.display = 'block';
+        taksitTutarLabel.style.display = 'block';
+        taksitTutar.style.display = 'block';
     } else {
-        hedefHesapDiv.style.display = 'block';
-        taksitBilgileri.style.display = 'none';
+        hedefHesapLabel.style.display = 'block';
+        hedefHesap.style.display = 'block';
+        taksitAdediLabel.style.display = 'none';
+        taksitAdedi.style.display = 'none';
+        taksitTutarLabel.style.display = 'none';
+        taksitTutar.style.display = 'none';
     }
 });
-
-function showMessage(message, type) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${type}`;
-    messageDiv.textContent = message;
-    document.body.appendChild(messageDiv);
-    setTimeout(() => {
-        messageDiv.remove();
-    }, 3000);
-}
