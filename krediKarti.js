@@ -10,13 +10,14 @@ export function getKrediKartiFields() {
         <input type="number" step="0.01" id="pendingAmountAtOpening" name="pendingAmountAtOpening" required>
         <label for="previousStatementBalance">Bir Önceki Ekstreden Kalan Tutar:</label>
         <input type="number" step="0.01" id="previousStatementBalance" name="previousStatementBalance" required>
-        <label for="statementDate">Ekstre Kesim Tarihi:</label>
+        <label for="statementDate">En Yakın Ekstre Kesim Tarihi:</label>
         <input type="date" id="statementDate" name="statementDate" required>
-        <label for="paymentDueDate">Son Ödeme Tarihi:</label>
+        <label for="paymentDueDate">En Yakın Son Ödeme Tarihi:</label>
         <input type="date" id="paymentDueDate" name="paymentDueDate" required>
         <div id="futureInstallmentsSection">
             <h3>Gelecek Dönem Taksitler</h3>
             <div id="installmentsContainer"></div>
+            <button type="button" id="addInstallmentButton">Taksit Ekle</button>
         </div>
     `;
 }
@@ -36,39 +37,42 @@ export function getKrediKartiValues() {
 
 export function addInstallment() {
     const container = document.getElementById('installmentsContainer');
-    const installmentDiv = document.createElement('div');
-    installmentDiv.classList.add('installment');
-    
-    installmentDiv.innerHTML = `
-        <label for="installmentMonth">Ay:</label>
-        <input type="number" class="installmentMonth" name="installmentMonth" min="1" max="12" required>
-        <label for="installmentYear">Yıl:</label>
-        <input type="number" class="installmentYear" name="installmentYear" min="2023" required>
-        <label for="installmentAmount">Tutar:</label>
-        <input type="number" class="installmentAmount" name="installmentAmount" required>
+    const div = document.createElement('div');
+    div.classList.add('installment-item');
+    div.innerHTML = `
+        <select class="installmentMonth">
+            <option value="01">Ocak</option>
+            <option value="02">Şubat</option>
+            <option value="03">Mart</option>
+            <option value="04">Nisan</option>
+            <option value="05">Mayıs</option>
+            <option value="06">Haziran</option>
+            <option value="07">Temmuz</option>
+            <option value="08">Ağustos</option>
+            <option value="09">Eylül</option>
+            <option value="10">Ekim</option>
+            <option value="11">Kasım</option>
+            <option value="12">Aralık</option>
+        </select>
+        <input type="number" class="installmentYear" placeholder="Yıl" required>
+        <input type="number" class="installmentAmount" placeholder="Tutar" required>
         <button type="button" class="removeInstallmentButton">Kaldır</button>
     `;
+    container.appendChild(div);
 
-    installmentDiv.querySelector('.removeInstallmentButton').addEventListener('click', () => {
-        container.removeChild(installmentDiv);
+    div.querySelector('.removeInstallmentButton').addEventListener('click', () => {
+        div.remove();
     });
-
-    container.appendChild(installmentDiv);
 }
 
 export function getInstallmentsData() {
+    const container = document.getElementById('installmentsContainer');
     const installments = [];
-    const installmentDivs = document.querySelectorAll('.installment');
-
-    installmentDivs.forEach(div => {
-        const month = div.querySelector('.installmentMonth').value;
-        const year = div.querySelector('.installmentYear').value;
-        const amount = div.querySelector('.installmentAmount').value;
-
-        if (month && year && amount) {
-            installments.push({ month, year, amount });
-        }
+    container.querySelectorAll('.installment-item').forEach(item => {
+        const month = item.querySelector('.installmentMonth').value;
+        const year = item.querySelector('.installmentYear').value;
+        const amount = item.querySelector('.installmentAmount').value;
+        installments.push({ month, year, amount });
     });
-
     return installments;
 }
