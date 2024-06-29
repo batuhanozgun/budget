@@ -41,15 +41,13 @@ export function addInstallment() {
     installmentDiv.classList.add('installment');
     
     installmentDiv.innerHTML = `
-        <div class="installment-item">
-            <label for="installmentMonth">Ay:</label>
-            <input type="number" class="installmentMonth" name="installmentMonth" min="1" max="12" required>
-            <label for="installmentYear">Yıl:</label>
-            <input type="number" class="installmentYear" name="installmentYear" min="2023" required>
-            <label for="installmentAmount">Tutar:</label>
-            <input type="number" class="installmentAmount" name="installmentAmount" required>
-            <button type="button" class="removeInstallmentButton">Kaldır</button>
-        </div>
+        <label for="installmentMonth">Ay:</label>
+        <input type="number" class="installmentMonth" name="installmentMonth" min="1" max="12" required>
+        <label for="installmentYear">Yıl:</label>
+        <input type="number" class="installmentYear" name="installmentYear" min="2023" required>
+        <label for="installmentAmount">Tutar:</label>
+        <input type="number" class="installmentAmount" name="installmentAmount" required>
+        <button type="button" class="removeInstallmentButton">Kaldır</button>
     `;
 
     installmentDiv.querySelector('.removeInstallmentButton').addEventListener('click', () => {
@@ -74,4 +72,17 @@ export function getInstallmentsData() {
     });
 
     return installments;
+}
+
+export function getKrediKartiLabels() {
+    return {
+        cardLimit: "Kart Limiti",
+        availableLimit: "Kullanılabilir Limit (Kalan Limit)",
+        currentSpending: "Dönem İçi Harcama",
+        pendingAmountAtOpening: "Hesap Açılışındaki Bekleyen Tutar",
+        previousStatementBalance: "Bir Önceki Ekstreden Kalan Tutar",
+        statementDate: "En Yakın Ekstre Kesim Tarihi",
+        paymentDueDate: "En Yakın Son Ödeme Tarihi",
+        installments: "Gelecek Dönem Taksitler"
+    };
 }
