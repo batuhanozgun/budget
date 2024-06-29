@@ -179,11 +179,9 @@ async function handleFormSubmit(e) {
 function updateDynamicFields() {
     const accountType = document.getElementById('accountType').value;
     const dynamicFields = document.getElementById('dynamicFields');
-    const futureInstallmentsSection = document.getElementById('futureInstallmentsSection');
     dynamicFields.innerHTML = '';
-    futureInstallmentsSection.style.display = 'none'; // Hide by default
-
     let fields = '';
+
     switch (accountType) {
         case 'nakit':
             fields = getNakitFields();
@@ -196,7 +194,6 @@ function updateDynamicFields() {
             break;
         case 'krediKarti':
             fields = getKrediKartiFields();
-            futureInstallmentsSection.style.display = 'block'; // Show future installments section
             break;
         case 'birikim':
             fields = getBirikimFields();
@@ -204,6 +201,13 @@ function updateDynamicFields() {
     }
 
     dynamicFields.innerHTML = fields;
+
+    if (accountType === 'krediKarti') {
+        document.getElementById('futureInstallmentsSection').style.display = 'block';
+        document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
+    } else {
+        document.getElementById('futureInstallmentsSection').style.display = 'none';
+    }
 
     // Enable form fields after account type is selected
     document.getElementById('accountName').disabled = false;
