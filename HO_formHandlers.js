@@ -1,47 +1,50 @@
+import { checkDuplicateAccountName, addAccount, updateAccount, deleteAccountById, loadAccounts, loadAccountDetails } from './HO_account.js';
+import { resetForm, showMessage } from './HO_ui.js';
 import { checkAuth } from './auth.js';
-import { addAccount, updateAccount, deleteAccountById, checkDuplicateAccountName, loadAccounts } from './HO_account.js';
-import { showMessage, resetForm } from './HO_ui.js';
 
 export async function handleFormSubmit(e) {
     e.preventDefault();
 
     const formMode = document.getElementById('accountForm').dataset.mode;
     const accountData = getFormData();
-    const user = await checkAuth();
-
-    if (!user) {
-        console.error('Kullanıcı oturumu açık değil.');
-        window.location.href = 'login.html';
-        return;
-    }
 
     if (formMode === 'edit') {
         const accountId = document.getElementById('accountForm').dataset.accountId;
         try {
             await updateAccount(accountId, accountData);
             console.log('Hesap başarıyla güncellendi.');
+            document.getElementById('accountForm').dataset.mode = 'create';
+            document.getElementById('accountForm').dataset.accountId = '';
+            const user = await checkAuth();
+            if (user) {
+                loadAccounts(user);
+            }
             showMessage('Hesap başarıyla güncellendi.');
-            loadAccounts(user);
             resetForm();
         } catch (e) {
             console.error('Hesap güncellenirken hata oluştu:', e);
             showMessage('Hesap güncellenirken hata oluştu.');
         }
     } else {
-        const isDuplicate = await checkDuplicateAccountName(user.uid, accountData.accountName);
-        if (isDuplicate) {
-            showMessage('Bu isimde bir hesap zaten var.');
-            return;
-        }
-
         try {
-            await addAccount(user, accountData);
-            console.log('Hesap başarıyla oluşturuldu.');
-            showMessage('Hesap başarıyla oluşturuldu.');
+            const user = await checkAuth();
+            if (!user) {
+                return;
+            }
+
+            const duplicate = await checkDuplicateAccountName(user.uid, accountData.accountName);
+            if (duplicate) {
+                showMessage('Bu isimde bir hesap zaten mevcut.');
+                return;
+            }
+
+            const docRef = await addAccount(user, accountData);
+            console.log("Document written with ID: ", docRef.id);
             loadAccounts(user);
+            showMessage('Hesap başarıyla oluşturuldu.');
             resetForm();
         } catch (e) {
-            console.error('Hesap oluşturulurken hata oluştu:', e);
+            console.error("Error adding document: ", e);
             showMessage('Hesap oluşturulurken hata oluştu.');
         }
     }
@@ -54,11 +57,12 @@ export async function handleDeleteAccount() {
     try {
         await deleteAccountById(accountId);
         console.log('Hesap başarıyla silindi.');
-        showMessage('Hesap başarıyla silindi.');
+        document.getElementById('accountDetails').style.display = 'none';
         const user = await checkAuth();
         if (user) {
             loadAccounts(user);
         }
+        showMessage('Hesap başarıyla silindi.');
         resetForm();
     } catch (e) {
         console.error('Hesap silinirken hata oluştu:', e);
