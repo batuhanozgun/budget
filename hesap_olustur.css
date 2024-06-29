@@ -90,26 +90,10 @@ button:hover {
     border-radius: 4px;
 }
 
+/* Yeni CSS kodları */
 .installment-item {
     display: flex;
+    align-items: center;
     gap: 10px;
     margin-bottom: 10px;
-}
-
-.installment-item select,
-.installment-item input {
-    flex: 1;
-}
-
-.removeInstallmentButton {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.removeInstallmentButton:hover {
-    background-color: #c0392b;
 }
