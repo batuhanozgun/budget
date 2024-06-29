@@ -21,6 +21,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('cancelEditButton').addEventListener('click', resetForm); // Vazgeç tuşu
 });
 
+const accountTypeLabels = {
+    'nakit': 'Nakit Hesapları',
+    'banka': 'Banka Hesapları',
+    'kredi': 'Kredi Hesapları',
+    'krediKarti': 'Kredi Kartları',
+    'birikim': 'Birikim Hesapları',
+    // Diğer hesap türlerini de ekleyin
+};
+
+
 async function loadAccounts(user) {
     if (!user) {
         console.error('Kullanıcı oturumu açık değil.');
