@@ -84,7 +84,12 @@ async function loadAccountDetails(accountId) {
 function displayAccountDetails(accountData, accountId) {
     const accountInfo = document.getElementById('accountInfo');
     accountInfo.innerHTML = '';
+
     const labels = {
+        accountName: 'Hesap Adı',
+        accountType: 'Hesap Türü',
+        openingDate: 'Açılış Tarihi',
+        currency: 'Para Birimi',
         cardLimit: 'Kart Limiti',
         availableLimit: 'Kullanılabilir Limit',
         currentSpending: 'Dönem İçi Harcama',
@@ -93,11 +98,6 @@ function displayAccountDetails(accountData, accountId) {
         statementDate: 'En Yakın Ekstre Kesim Tarihi',
         paymentDueDate: 'En Yakın Son Ödeme Tarihi',
         installments: 'Gelecek Dönem Taksitler',
-        currency: 'Para Birimi',
-        accountType: 'Hesap Türü',
-        accountName: 'Hesap Adı',
-        openingDate: 'Açılış Tarihi',
-        uid: 'Kullanıcı ID',
         loanAmount: 'Kredi Tutarı',
         loanInterestRate: 'Faiz Oranı',
         fundRate: 'Fon Oranı',
@@ -112,13 +112,23 @@ function displayAccountDetails(accountData, accountId) {
         targetDate: 'En Yakın Ödeme Yapılacak Hedef Tarih'
     };
 
-    for (const key in accountData) {
-        if (accountData.hasOwnProperty(key)) {
+    const orderedKeys = [
+        'accountName', 'accountType', 'openingDate', 'currency', 
+        'cardLimit', 'availableLimit', 'currentSpending', 'pendingAmountAtOpening', 
+        'previousStatementBalance', 'statementDate', 'paymentDueDate', 
+        'installments', 'loanAmount', 'loanInterestRate', 'fundRate', 'taxRate', 
+        'totalTerm', 'remainingTerm', 'installmentAmount', 'initialBalance', 
+        'overdraftLimit', 'overdraftInterestRate', 'targetAmount', 'targetDate'
+    ];
+
+    orderedKeys.forEach(key => {
+        if (accountData[key] !== undefined) {
             const p = document.createElement('p');
             p.textContent = `${labels[key] || key}: ${accountData[key]}`;
             accountInfo.appendChild(p);
         }
-    }
+    });
+
     document.getElementById('accountDetails').style.display = 'block';
     document.getElementById('deleteAccountButton').dataset.accountId = accountId;
     document.getElementById('editAccountButton').dataset.accountId = accountId;
