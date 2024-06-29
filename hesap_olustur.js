@@ -4,7 +4,7 @@ import { checkAuth, getCurrentUser } from './auth.js';
 import { getNakitFields, getNakitValues, getNakitLabels } from './nakit.js';
 import { getBankaFields, getBankaValues, getBankaLabels } from './banka.js';
 import { getKrediFields, getKrediValues, getKrediLabels } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues, addInstallment, getInstallmentsData, getKrediKartiLabels } from './krediKarti.js';
+import { getKrediKartiFields, getKrediKartiValues, getKrediKartiLabels, addInstallment, getInstallmentsData } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues, getBirikimLabels } from './birikim.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
     document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
     document.getElementById('editAccountButton').addEventListener('click', editAccount);
-    document.getElementById('cancelEditButton').addEventListener('click', resetForm); // Vazgeç tuşu
+    document.getElementById('cancelEditButton').addEventListener('click', resetForm); // Vazgeç butonunu ekle
 });
 
 const accountTypeLabels = {
@@ -30,7 +30,6 @@ const accountTypeLabels = {
     // Diğer hesap türlerini de ekleyin
 };
 
-
 async function loadAccounts(user) {
     if (!user) {
         console.error('Kullanıcı oturumu açık değil.');
@@ -40,8 +39,8 @@ async function loadAccounts(user) {
 
     const q = query(collection(db, "accounts"), where("uid", "==", user.uid));
     const querySnapshot = await getDocs(q);
-    const accountGroups = document.getElementById('accountGroups');
-    accountGroups.innerHTML = '';
+    const accountListContainer = document.getElementById('accountListContainer');
+    accountListContainer.innerHTML = '';
 
     const accountsByType = {};
 
@@ -54,34 +53,23 @@ async function loadAccounts(user) {
     });
 
     for (const [type, accounts] of Object.entries(accountsByType)) {
-        const groupDiv = document.createElement('div');
-        groupDiv.classList.add('account-type-group');
+        const accountTypeDiv = document.createElement('div');
+        accountTypeDiv.classList.add('account-type-section');
 
-        const title = document.createElement('div');
-        title.classList.add('account-type-title');
-        title.textContent = type; // Hesap türünü grup başlığı olarak göster
-        groupDiv.appendChild(title);
+        const accountTypeLabel = document.createElement('h3');
+        accountTypeLabel.textContent = accountTypeLabels[type] || type;
+        accountTypeDiv.appendChild(accountTypeLabel);
 
         accounts.forEach(account => {
             const accountDiv = document.createElement('div');
             accountDiv.classList.add('account-item');
             accountDiv.textContent = account.accountName;
-            accountDiv.addEventListener('click', async () => {
-                const accountData = await loadAccountDetails(account.id);
-                if (accountData) {
-                    displayAccountDetails(accountData, account.id);
-                }
-            });
-            groupDiv.appendChild(accountDiv);
+            accountDiv.addEventListener('click', () => displayAccountDetails(account, account.id));
+            accountTypeDiv.appendChild(accountDiv);
         });
 
-        accountGroups.appendChild(groupDiv);
+        accountListContainer.appendChild(accountTypeDiv);
     }
-}
-
-async function loadAccountDetails(accountId) {
-    const accountDoc = await getDoc(doc(db, 'accounts', accountId));
-    return accountDoc.exists() ? accountDoc.data() : null;
 }
 
 function displayAccountDetails(accountData, accountId) {
@@ -231,6 +219,7 @@ function updateDynamicFields() {
             break;
         case 'krediKarti':
             fields = getKrediKartiFields();
+            futureInstallmentsSection.style.display = 'block'; // Show future installments section
             break;
         case 'birikim':
             fields = getBirikimFields();
