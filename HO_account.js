@@ -23,8 +23,6 @@ export async function deleteAccountById(accountId) {
     await deleteDoc(doc(db, 'accounts', accountId));
 }
 
-// Eklenen fonksiyonlar
-
 export async function loadAccounts(user) {
     if (!user) {
         console.error('Kullanıcı oturumu açık değil.');
@@ -67,6 +65,7 @@ export async function loadAccounts(user) {
             const accountDiv = document.createElement('div');
             accountDiv.classList.add('account-item');
             accountDiv.textContent = account.accountName;
+            accountDiv.setAttribute('data-account-id', account.id);
             accountDiv.addEventListener('click', async () => {
                 const accountData = await loadAccountDetails(account.id);
                 if (accountData) {
