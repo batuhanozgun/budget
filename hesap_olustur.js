@@ -61,9 +61,14 @@ async function loadAccounts(user) {
             accountDiv.classList.add('account-item');
             accountDiv.textContent = account.accountName;
             accountDiv.addEventListener('click', async () => {
-                const accountData = await loadAccountDetails(account.id);
-                if (accountData) {
-                    displayAccountDetails(accountData, account.id, accountDiv);
+                const existingDetails = accountDiv.querySelector('.account-details');
+                if (existingDetails) {
+                    accountDiv.removeChild(existingDetails);
+                } else {
+                    const accountData = await loadAccountDetails(account.id);
+                    if (accountData) {
+                        displayAccountDetails(accountData, account.id, accountDiv);
+                    }
                 }
             });
             typeDiv.appendChild(accountDiv);
