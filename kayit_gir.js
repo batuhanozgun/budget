@@ -123,13 +123,21 @@ async function saveTransaction(uid) {
     const kategori = document.getElementById('kategori').value;
     const altKategori = document.getElementById('altKategori').value;
     const hedefHesap = document.getElementById('hedefHesap').value;
-    const tutar = document.getElementById('tutar').value;
+    const tutarElement = document.getElementById('tutar');
     const taksitAdedi = document.getElementById('taksitAdedi').value;
     const taksitTutar = document.getElementById('taksitTutar').value;
     const islemTarihi = document.getElementById('islemTarihi').value;
 
+    // Tutarı güncelleme işlemi
+    let tutar = parseFloat(tutarElement.value);
+    if (kayitTipi === 'Gider') {
+        tutar = -Math.abs(tutar);
+    } else if (kayitTipi === 'Gelir') {
+        tutar = Math.abs(tutar);
+    }
+
     try {
-        if (document.getElementById('kaynakHesap').value === 'krediKarti' && taksitAdedi > 0) {
+        if (kaynakHesap === 'krediKarti' && taksitAdedi > 0) {
             for (let i = 0; i < taksitAdedi; i++) {
                 const taksitTarihi = new Date(islemTarihi);
                 taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
