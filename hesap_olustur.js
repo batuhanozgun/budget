@@ -4,7 +4,7 @@ import { checkAuth, getCurrentUser } from './auth.js';
 import { getNakitFields, getNakitValues } from './nakit.js';
 import { getBankaFields, getBankaValues } from './banka.js';
 import { getKrediFields, getKrediValues } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues, addInstallment, getInstallmentsData } from './krediKarti.js';
+import { getKrediKartiFields, getKrediKartiValues, addInstallment } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues } from './birikim.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('accountType').addEventListener('change', updateDynamicFields);
     document.getElementById('accountForm').addEventListener('submit', handleFormSubmit);
-    document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
     document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
     document.getElementById('editAccountButton').addEventListener('click', editAccount);
 });
@@ -129,6 +128,18 @@ async function editAccount() {
     document.getElementById('accountForm').dataset.accountId = accountId;
     document.querySelector('.form-section h2').textContent = 'Hesabı Düzenle';
     document.querySelector('.form-section button[type="submit"]').textContent = 'Güncelle';
+
+    // Vazgeç tuşu ekleyin
+    let cancelButton = document.getElementById('cancelEditButton');
+    if (!cancelButton) {
+        cancelButton = document.createElement('button');
+        cancelButton.id = 'cancelEditButton';
+        cancelButton.type = 'button';
+        cancelButton.textContent = 'Vazgeç';
+        cancelButton.addEventListener('click', resetForm);
+        document.querySelector('.form-section').appendChild(cancelButton);
+    }
+    cancelButton.style.display = 'inline-block';
 }
 
 async function handleFormSubmit(e) {
@@ -265,6 +276,7 @@ function resetForm() {
     document.getElementById('accountForm').dataset.accountId = '';
     document.querySelector('.form-section h2').textContent = 'Hesap Oluştur';
     document.querySelector('.form-section button[type="submit"]').textContent = 'Hesap Oluştur';
+    document.getElementById('cancelEditButton').style.display = 'none';
 }
 
 // İşlevleri global hale getirin
