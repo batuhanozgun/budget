@@ -26,6 +26,7 @@ onAuthStateChanged(auth, (user) => {
             e.preventDefault();
             saveTransaction(user.uid);
         });
+        document.getElementById('kayitYonu').addEventListener('change', toggleHedefHesapVisibility);
     } else {
         // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
         window.location.href = 'login.html';
@@ -176,6 +177,16 @@ async function saveTransaction(uid) {
     } catch (error) {
         console.error('Hata:', error);
         showMessage('Kayıt eklenirken bir hata oluştu.');
+    }
+}
+
+function toggleHedefHesapVisibility() {
+    const kayitYonu = document.getElementById('kayitYonu').value;
+    const hedefHesapDiv = document.getElementById('hedefHesapDiv');
+    if (kayitYonu === 'Harcama') {
+        hedefHesapDiv.style.display = 'none';
+    } else {
+        hedefHesapDiv.style.display = 'block';
     }
 }
 
