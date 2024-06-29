@@ -1,10 +1,10 @@
-import { auth, db, doc, getDoc } from './firebaseConfig.js';
+import { auth, db } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth, getCurrentUser } from './auth.js';
 import { getNakitFields, getNakitValues, getNakitLabels } from './nakit.js';
 import { getBankaFields, getBankaValues, getBankaLabels } from './banka.js';
 import { getKrediFields, getKrediValues, getKrediLabels } from './kredi.js';
-import { getKrediKartiFields, getKrediKartiValues, addInstallment, getInstallmentsData } from './krediKarti.js';
+import { getKrediKartiFields, getKrediKartiValues, addInstallment, getInstallmentsData, getKrediKartiLabels } from './krediKarti.js';
 import { getBirikimFields, getBirikimValues, getBirikimLabels } from './birikim.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('addInstallmentButton').addEventListener('click', addInstallment);
     document.getElementById('deleteAccountButton').addEventListener('click', deleteAccount);
     document.getElementById('editAccountButton').addEventListener('click', editAccount);
-    document.getElementById('cancelEditButton').addEventListener('click', cancelEdit);
+    document.getElementById('cancelEditButton').addEventListener('click', resetForm); // Vazgeç tuşu
 });
 
 async function loadAccounts(user) {
@@ -30,9 +30,8 @@ async function loadAccounts(user) {
 
     const q = query(collection(db, "accounts"), where("uid", "==", user.uid));
     const querySnapshot = await getDocs(q);
-
-    const accountListContainer = document.getElementById('accountListContainer');
-    accountListContainer.innerHTML = '';
+    const accountGroups = document.getElementById('accountGroups');
+    accountGroups.innerHTML = '';
 
     const accountsByType = {};
 
@@ -41,56 +40,32 @@ async function loadAccounts(user) {
         if (!accountsByType[data.accountType]) {
             accountsByType[data.accountType] = [];
         }
-        accountsByType[data.accountType].push({
-            id: doc.id,
-            name: data.accountName,
-            type: data.accountType
-        });
+        accountsByType[data.accountType].push({ id: doc.id, ...data });
     });
 
-    for (const type in accountsByType) {
-        const typeHeader = document.createElement('h3');
-        typeHeader.textContent = getAccountTypeLabel(type);
-        accountListContainer.appendChild(typeHeader);
+    for (const [type, accounts] of Object.entries(accountsByType)) {
+        const groupDiv = document.createElement('div');
+        groupDiv.classList.add('account-type-group');
 
-        const ul = document.createElement('ul');
-        accountsByType[type].forEach(account => {
-            const li = document.createElement('li');
-            li.textContent = account.name;
-            li.addEventListener('click', async () => {
+        const title = document.createElement('div');
+        title.classList.add('account-type-title');
+        title.textContent = type; // Hesap türünü grup başlığı olarak göster
+        groupDiv.appendChild(title);
+
+        accounts.forEach(account => {
+            const accountDiv = document.createElement('div');
+            accountDiv.classList.add('account-item');
+            accountDiv.textContent = account.accountName;
+            accountDiv.addEventListener('click', async () => {
                 const accountData = await loadAccountDetails(account.id);
                 if (accountData) {
                     displayAccountDetails(accountData, account.id);
                 }
             });
-            ul.appendChild(li);
+            groupDiv.appendChild(accountDiv);
         });
-        accountListContainer.appendChild(ul);
-    }
-}
 
-function getAccountTypeLabel(accountType) {
-    switch (accountType) {
-        case 'nakit':
-            return 'Nakit (Cüzdan/Kumbara/Çekmece)';
-        case 'banka':
-            return 'Banka Hesabı';
-        case 'kredi':
-            return 'Kredi Hesabı';
-        case 'krediKarti':
-            return 'Kredi Kartı';
-        case 'birikim':
-            return 'Birikim Hesabı';
-        case 'yatırım':
-            return 'Yatırım Hesabı';
-        case 'borcVerilen':
-            return 'Borc Verilenler Hesabı';
-        case 'borcAlınan':
-            return 'Borc Alınanlar Hesabı';
-        case 'harçlık':
-            return 'Harçlık Verilen Hesap (Çocuk)';
-        default:
-            return accountType;
+        accountGroups.appendChild(groupDiv);
     }
 }
 
@@ -102,36 +77,16 @@ async function loadAccountDetails(accountId) {
 function displayAccountDetails(accountData, accountId) {
     const accountInfo = document.getElementById('accountInfo');
     accountInfo.innerHTML = '';
-
-    const labels = getLabelsForAccountType(accountData.accountType);
-
     for (const key in accountData) {
         if (accountData.hasOwnProperty(key)) {
             const p = document.createElement('p');
-            const label = labels[key] || key;
-            p.textContent = `${label}: ${accountData[key]}`;
+            p.textContent = `${key}: ${accountData[key]}`;
             accountInfo.appendChild(p);
         }
     }
-
     document.getElementById('accountDetails').style.display = 'block';
     document.getElementById('deleteAccountButton').dataset.accountId = accountId;
     document.getElementById('editAccountButton').dataset.accountId = accountId;
-}
-
-function getLabelsForAccountType(accountType) {
-    switch (accountType) {
-        case 'nakit':
-            return getNakitLabels();
-        case 'banka':
-            return getBankaLabels();
-        case 'kredi':
-            return getKrediLabels();
-        case 'birikim':
-            return getBirikimLabels();
-        default:
-            return {};
-    }
 }
 
 async function deleteAccount() {
@@ -199,9 +154,6 @@ async function editAccount() {
     document.getElementById('accountForm').dataset.accountId = accountId;
     document.querySelector('.form-section h2').textContent = 'Hesabı Düzenle';
     document.querySelector('.form-section button[type="submit"]').textContent = 'Güncelle';
-
-    const cancelButton = document.getElementById('cancelEditButton');
-    cancelButton.style.display = 'block';
 }
 
 async function handleFormSubmit(e) {
@@ -269,7 +221,6 @@ function updateDynamicFields() {
             break;
         case 'krediKarti':
             fields = getKrediKartiFields();
-            futureInstallmentsSection.style.display = 'block'; // Show future installments section
             break;
         case 'birikim':
             fields = getBirikimFields();
@@ -334,7 +285,6 @@ function resetForm() {
     document.getElementById('accountForm').dataset.accountId = '';
     document.querySelector('.form-section h2').textContent = 'Hesap Oluştur';
     document.querySelector('.form-section button[type="submit"]').textContent = 'Hesap Oluştur';
-    document.getElementById('cancelEditButton').style.display = 'none';
 }
 
 // İşlevleri global hale getirin
@@ -346,8 +296,3 @@ window.addInstallment = addInstallment;
 window.deleteAccount = deleteAccount;
 window.editAccount = editAccount;
 window.resetForm = resetForm;
-
-function cancelEdit() {
-    resetForm();
-    document.getElementById('accountDetails').style.display = 'none';
-}
