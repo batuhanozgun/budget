@@ -1,12 +1,8 @@
-import { checkAuth } from './auth.js';
-import { deleteDoc, doc, getDoc, getDocs, query, collection, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { getNakitLabels } from './nakit.js';
-import { getBankaLabels } from './banka.js';
-import { getKrediLabels } from './kredi.js';
-import { getKrediKartiLabels } from './krediKarti.js';
-import { getBirikimLabels } from './birikim.js';
+// HO_ui.js
+import { auth, db } from './firebaseConfig.js';
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-export function showMessage(message) {
+function showMessage(message) {
     const messageDiv = document.getElementById('message');
     messageDiv.textContent = message;
     messageDiv.style.display = 'block';
@@ -15,7 +11,7 @@ export function showMessage(message) {
     }, 3000);
 }
 
-export function resetForm() {
+function resetForm() {
     document.getElementById('accountForm').reset();
     document.getElementById('accountForm').dataset.mode = 'create';
     document.getElementById('accountForm').dataset.accountId = '';
@@ -23,7 +19,7 @@ export function resetForm() {
     document.querySelector('.form-section button[type="submit"]').textContent = 'Hesap Oluştur';
 }
 
-export async function loadAccounts(user) {
+async function loadAccounts(user) {
     if (!user) {
         console.error('Kullanıcı oturumu açık değil.');
         window.location.href = 'login.html'; // Kullanıcı oturum açmamışsa login sayfasına yönlendir
@@ -78,12 +74,12 @@ export async function loadAccounts(user) {
     }
 }
 
-export async function loadAccountDetails(accountId) {
+async function loadAccountDetails(accountId) {
     const accountDoc = await getDoc(doc(db, 'accounts', accountId));
     return accountDoc.exists() ? accountDoc.data() : null;
 }
 
-export function displayAccountDetails(accountData, accountId, accountDiv) {
+function displayAccountDetails(accountData, accountId, accountDiv) {
     const labels = {
         cardLimit: 'Kart Limiti',
         availableLimit: 'Kullanılabilir Limit',
@@ -112,8 +108,8 @@ export function displayAccountDetails(accountData, accountId, accountDiv) {
         targetDate: 'En Yakın Ödeme Yapılacak Hedef Tarih'
     };
 
-    // Reset previous details
-    const previousDetails = document.querySelector('.account-details');
+    // Remove previous details if any
+    const previousDetails = accountDiv.querySelector('.account-details');
     if (previousDetails) {
         previousDetails.remove();
     }
