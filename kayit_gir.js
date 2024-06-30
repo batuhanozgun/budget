@@ -42,10 +42,10 @@ function handleKaynakHesapChange() {
 }
 
 function handleTaksitVarMiChange() {
-    const taksitVarMiCheckbox = document.getElementById('taksitVarMi');
+    const taksitVarMiSelect = document.getElementById('taksitVarMi');
     const taksitBilgileri = document.getElementById('taksitBilgileri');
     
-    if (taksitVarMiCheckbox.checked) {
+    if (taksitVarMiSelect.value === 'evet') {
         taksitBilgileri.style.display = 'block';
     } else {
         taksitBilgileri.style.display = 'none';
