@@ -27,13 +27,23 @@ function handleKaynakHesapChange() {
     
     if (kaynakHesapSelect.value) {
         getDoc(doc(db, 'accounts', kaynakHesapSelect.value)).then((docSnapshot) => {
-            if (docSnapshot.exists() && docSnapshot.data().accountType === 'krediKarti') {
-                taksitSecenekleri.classList.remove('hidden');
-                taksitBilgileri.classList.add('hidden');
+            if (docSnapshot.exists()) {
+                console.log("Account type:", docSnapshot.data().accountType); // Debugging için ekledik
+                if (docSnapshot.data().accountType === 'krediKarti') {
+                    taksitSecenekleri.classList.remove('hidden');
+                    taksitBilgileri.classList.add('hidden');
+                } else {
+                    taksitSecenekleri.classList.add('hidden');
+                    taksitBilgileri.classList.add('hidden');
+                }
             } else {
                 taksitSecenekleri.classList.add('hidden');
                 taksitBilgileri.classList.add('hidden');
             }
+        }).catch((error) => {
+            console.error("Error fetching account data:", error);
+            taksitSecenekleri.classList.add('hidden');
+            taksitBilgileri.classList.add('hidden');
         });
     } else {
         taksitSecenekleri.classList.add('hidden');
