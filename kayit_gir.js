@@ -1,6 +1,6 @@
-import { app, auth, db } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
+import { app, auth, db, doc, getDoc } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -124,6 +124,7 @@ async function saveTransaction(uid) {
     const hedefHesap = document.getElementById('hedefHesap').value;
     let tutar = parseFloat(document.getElementById('tutar').value);
     const taksitAdedi = document.getElementById('taksitAdedi').value;
+    const taksitTutar = document.getElementById('taksitTutar').value;
     const islemTarihi = document.getElementById('islemTarihi').value;
 
     // Kayıt Tipi ID'sine göre "Gider" olup olmadığını kontrol et
@@ -134,7 +135,7 @@ async function saveTransaction(uid) {
     }
 
     try {
-        if (kaynakHesap.includes('krediKarti') && document.getElementById('taksitVarMi').checked) {
+        if (document.getElementById('kaynakHesap').value === 'krediKarti' && taksitAdedi > 0) {
             for (let i = 0; i < taksitAdedi; i++) {
                 const taksitTarihi = new Date(islemTarihi);
                 taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
@@ -146,8 +147,9 @@ async function saveTransaction(uid) {
                     kategori: kategori,
                     altKategori: altKategori,
                     hedefHesap: hedefHesap,
-                    tutar: (tutar / taksitAdedi).toFixed(2),
+                    tutar: taksitTutar,
                     taksitAdedi: taksitAdedi,
+                    taksitTutar: taksitTutar,
                     islemTarihi: taksitTarihi,
                     date: new Date()
                 });
@@ -163,6 +165,7 @@ async function saveTransaction(uid) {
                 hedefHesap: hedefHesap,
                 tutar: tutar,
                 taksitAdedi: taksitAdedi,
+                taksitTutar: taksitTutar,
                 islemTarihi: islemTarihi,
                 date: new Date()
             });
@@ -182,30 +185,4 @@ function showMessage(message) {
     setTimeout(() => {
         messageDiv.style.display = 'none';
     }, 3000);
-}
-
-document.getElementById('kaynakHesap').addEventListener('change', handleKaynakHesapChange);
-document.getElementById('taksitVarMi').addEventListener('change', handleTaksitVarMiChange);
-
-function handleKaynakHesapChange() {
-    const kaynakHesap = document.getElementById('kaynakHesap').value;
-    const taksitSecenekleri = document.getElementById('taksitSecenekleri');
-    const taksitBilgileri = document.getElementById('taksitBilgileri');
-
-    if (kaynakHesap && kaynakHesap !== '' && kaynakHesap.includes('krediKarti')) {
-        taksitSecenekleri.style.display = 'block';
-    } else {
-        taksitSecenekleri.style.display = 'none';
-        taksitBilgileri.style.display = 'none';
-        document.getElementById('taksitVarMi').checked = false;
-    }
-}
-
-function handleTaksitVarMiChange() {
-    const taksitBilgileri = document.getElementById('taksitBilgileri');
-    if (document.getElementById('taksitVarMi').checked) {
-        taksitBilgileri.style.display = 'block';
-    } else {
-        taksitBilgileri.style.display = 'none';
-    }
 }
