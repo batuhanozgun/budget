@@ -67,15 +67,10 @@ button:hover {
 
 /* Mesaj */
 .message {
-    background-color: #dff0d8;
-    color: #3c763d;
+    background-color: #4CAF50;
+    color: white;
     padding: 10px;
-    border: 1px solid #d6e9c6;
     border-radius: 5px;
-    margin-top: 10px;
     text-align: center;
-    display: none; /* Başlangıçta gizli */
-    position: absolute; /* Mesajın formun altında görünmesi için */
-    top: calc(100% + 10px); /* Kaydet tuşunun 10 px altında */
-    width: 100%; /* Mesajın genişliğini konteyner ile aynı yapalım */
+    margin-top: 10px;
 }
