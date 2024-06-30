@@ -28,16 +28,16 @@ function handleKaynakHesapChange() {
     if (kaynakHesapSelect.value) {
         getDoc(doc(db, 'accounts', kaynakHesapSelect.value)).then((docSnapshot) => {
             if (docSnapshot.exists() && docSnapshot.data().accountType === 'krediKarti') {
-                taksitSecenekleri.style.display = 'block';
-                taksitBilgileri.style.display = 'none';
+                taksitSecenekleri.classList.remove('hidden');
+                taksitBilgileri.classList.add('hidden');
             } else {
-                taksitSecenekleri.style.display = 'none';
-                taksitBilgileri.style.display = 'none';
+                taksitSecenekleri.classList.add('hidden');
+                taksitBilgileri.classList.add('hidden');
             }
         });
     } else {
-        taksitSecenekleri.style.display = 'none';
-        taksitBilgileri.style.display = 'none';
+        taksitSecenekleri.classList.add('hidden');
+        taksitBilgileri.classList.add('hidden');
     }
 }
 
@@ -46,9 +46,9 @@ function handleTaksitVarMiChange() {
     const taksitBilgileri = document.getElementById('taksitBilgileri');
     
     if (taksitVarMiSelect.value === 'evet') {
-        taksitBilgileri.style.display = 'block';
+        taksitBilgileri.classList.remove('hidden');
     } else {
-        taksitBilgileri.style.display = 'none';
+        taksitBilgileri.classList.add('hidden');
     }
 }
 
