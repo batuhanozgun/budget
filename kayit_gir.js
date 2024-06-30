@@ -119,8 +119,8 @@ async function loadKayitYonleri() {
         const selectedKayitYonu = kayitYonuSelect.value;
         const kayitYonuDoc = await getDoc(doc(db, 'kayitYonleri', selectedKayitYonu));
         const kayitYonuData = kayitYonuDoc.data();
-
         const hedefHesapDiv = document.getElementById('hedefHesapDiv');
+
         if (kayitYonuData.name === 'Harcama') {
             hedefHesapDiv.style.display = 'none';
         } else {
@@ -149,7 +149,7 @@ async function saveTransaction(uid) {
     }
 
     try {
-        if (kaynakHesap === 'krediKarti' && taksitAdedi > 0) {
+        if (document.getElementById('kaynakHesap').value === 'krediKarti' && taksitAdedi > 0) {
             for (let i = 0; i < taksitAdedi; i++) {
                 const taksitTarihi = new Date(islemTarihi);
                 taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
@@ -193,11 +193,10 @@ async function saveTransaction(uid) {
 }
 
 function showMessage(message) {
-    const messageDiv = document.createElement('div');
+    const messageDiv = document.getElementById('message');
     messageDiv.textContent = message;
-    messageDiv.classList.add('message');
-    document.body.appendChild(messageDiv);
+    messageDiv.style.display = 'block';
     setTimeout(() => {
-        messageDiv.remove();
+        messageDiv.style.display = 'none';
     }, 3000);
 }
