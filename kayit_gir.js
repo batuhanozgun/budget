@@ -1,5 +1,5 @@
-import { app, auth, db, doc, getDoc } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+import { app, auth, db } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
 onAuthStateChanged(auth, (user) => {
@@ -12,8 +12,6 @@ onAuthStateChanged(auth, (user) => {
             e.preventDefault();
             saveTransaction(user.uid);
         });
-        document.getElementById('kaynakHesap').addEventListener('change', handleKaynakHesapChange);
-        document.getElementById('taksitVarMi').addEventListener('change', handleTaksitVarMiChange);
     } else {
         // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
         window.location.href = 'login.html';
@@ -136,7 +134,7 @@ async function saveTransaction(uid) {
     }
 
     try {
-        if (document.getElementById('kaynakHesap').value === 'krediKarti' && document.getElementById('taksitVarMi').checked) {
+        if (kaynakHesap.includes('krediKarti') && document.getElementById('taksitVarMi').checked) {
             for (let i = 0; i < taksitAdedi; i++) {
                 const taksitTarihi = new Date(islemTarihi);
                 taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
@@ -186,6 +184,9 @@ function showMessage(message) {
     }, 3000);
 }
 
+document.getElementById('kaynakHesap').addEventListener('change', handleKaynakHesapChange);
+document.getElementById('taksitVarMi').addEventListener('change', handleTaksitVarMiChange);
+
 function handleKaynakHesapChange() {
     const kaynakHesap = document.getElementById('kaynakHesap').value;
     const taksitSecenekleri = document.getElementById('taksitSecenekleri');
@@ -201,10 +202,8 @@ function handleKaynakHesapChange() {
 }
 
 function handleTaksitVarMiChange() {
-    const taksitVarMi = document.getElementById('taksitVarMi').checked;
     const taksitBilgileri = document.getElementById('taksitBilgileri');
-
-    if (taksitVarMi) {
+    if (document.getElementById('taksitVarMi').checked) {
         taksitBilgileri.style.display = 'block';
     } else {
         taksitBilgileri.style.display = 'none';
