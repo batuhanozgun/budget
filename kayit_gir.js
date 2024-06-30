@@ -173,7 +173,6 @@ async function saveTransaction(uid) {
             for (let i = 0; i < taksitAdedi; i++) {
                 const taksitTarihi = new Date(islemTarihi);
                 taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
-                const taksitAciklama = `${i + 1}/${taksitAdedi} Taksit`;
                 await addDoc(collection(db, 'transactions'), {
                     userId: uid,
                     kayitTipi: kayitTipi,
@@ -185,9 +184,10 @@ async function saveTransaction(uid) {
                     tutar: taksitTutar,
                     taksitAdedi: taksitAdedi,
                     taksitTarihi: taksitTarihi,
-                    aciklama: taksitAciklama,
-                    detay: detay,
-                    date: new Date()
+                    taksitPlani: `${i + 1}/${taksitAdedi}`,
+                    islemTarihi: islemTarihi,
+                    createDate: new Date(),
+                    detay: detay
                 });
             }
         } else {
@@ -201,9 +201,11 @@ async function saveTransaction(uid) {
                 hedefHesap: hedefHesap,
                 tutar: tutar,
                 taksitAdedi: taksitAdedi,
-                islemTarihi: new Date(islemTarihi),
-                detay: detay,
-                date: new Date()
+                taksitTarihi: new Date(islemTarihi),
+                taksitPlani: `1/1`,
+                islemTarihi: islemTarihi,
+                createDate: new Date(),
+                detay: detay
             });
         }
         document.getElementById('transactionForm').reset();
