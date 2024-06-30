@@ -89,7 +89,7 @@ function displayTransactions(transactions) {
     $(document).ready(function() {
         $('#transactionsTable').DataTable({
             "paging": true,
-            "searching": true,
+            "searching": false, // Arama alanını kaldır
             "ordering": true,
             "info": true
         });
