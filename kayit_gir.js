@@ -28,7 +28,6 @@ function handleKaynakHesapChange() {
     if (kaynakHesapSelect.value) {
         getDoc(doc(db, 'accounts', kaynakHesapSelect.value)).then((docSnapshot) => {
             if (docSnapshot.exists()) {
-                console.log("Account type:", docSnapshot.data().accountType); // Debugging için ekledik
                 if (docSnapshot.data().accountType === 'krediKarti') {
                     taksitSecenekleri.classList.remove('hidden');
                     taksitBilgileri.classList.add('hidden');
@@ -165,9 +164,9 @@ async function saveTransaction(uid) {
     const kaynakHesap = document.getElementById('kaynakHesap').value;
     const kategori = document.getElementById('kategori').value;
     const altKategori = document.getElementById('altKategori').value;
-    const hedefHesap = document.getElementById('hedefHesap').value;
+    const hedefHesap = document.getElementById('hedefHesap').value || "-";
     let tutar = parseFloat(document.getElementById('tutar').value);
-    const taksitAdedi = parseInt(document.getElementById('taksitAdedi').value);
+    const taksitAdedi = parseInt(document.getElementById('taksitAdedi').value) || 1;
     const islemTarihi = document.getElementById('islemTarihi').value;
     const detay = document.getElementById('detay').value;
 
@@ -178,7 +177,7 @@ async function saveTransaction(uid) {
     }
 
     try {
-        if (document.getElementById('taksitVarMi').value === 'evet' && taksitAdedi > 0) {
+        if (document.getElementById('taksitVarMi').value === 'evet' && taksitAdedi > 1) {
             const taksitTutar = tutar / taksitAdedi;
             for (let i = 0; i < taksitAdedi; i++) {
                 const taksitTarihi = new Date(islemTarihi);
@@ -210,7 +209,7 @@ async function saveTransaction(uid) {
                 altKategori: altKategori,
                 hedefHesap: hedefHesap,
                 tutar: tutar,
-                taksitAdedi: taksitAdedi,
+                taksitAdedi: 1,
                 taksitTarihi: new Date(islemTarihi),
                 taksitPlani: `1/1`,
                 islemTarihi: islemTarihi,
