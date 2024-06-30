@@ -5,6 +5,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0; /* Tarayıcı varsayılan boşluklarını kaldır */
+    overflow: hidden; /* Sayfanın tamamının kaydırılmasını engelle */
 }
 
 .container {
@@ -13,14 +15,17 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
-    overflow-x: auto; /* Yatay taşmayı önlemek için */
-    max-width: 1600px; /* Maksimum genişliği artırdık */
+    max-width: 1200px; /* Maksimum genişliği artırdık */
     width: 100%;
+    height: calc(100vh - 60px); /* Yüksekliği hesapla (20px padding ve 20px margin için) */
+    display: flex;
+    flex-direction: column; /* Çocuk öğeleri dikeyde hizala */
 }
 
 .table-container {
-    overflow-x: auto; /* Yatay taşmayı önlemek için */
-    width: 100%;
+    overflow: auto; /* Hem yatay hem dikey taşmayı önlemek için */
+    flex-grow: 1; /* Konteynerin geri kalanını kapla */
+    margin-top: 20px; /* Üstten boşluk bırak */
 }
 
 table {
