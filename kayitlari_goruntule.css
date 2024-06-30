@@ -25,7 +25,8 @@ body {
 .table-container {
     overflow: auto; /* Hem yatay hem dikey taşmayı önlemek için */
     flex-grow: 1; /* Konteynerin geri kalanını kapla */
-    margin-top: 20px; /* Üstten boşluk bırak */
+    margin-top: 10px; /* Üstten boşluk bırak */
+    margin-bottom: 10px; /* Alttan boşluk bırak */
 }
 
 table {
