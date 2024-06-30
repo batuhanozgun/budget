@@ -63,6 +63,12 @@ function displayTransactions(transactions) {
         const row = document.createElement('tr');
 
         row.innerHTML = `
+            <td>
+                <div class="action-buttons">
+                    <button onclick="editTransaction('${transaction.id}')">Düzenle</button>
+                    <button onclick="deleteTransaction('${transaction.id}')">Sil</button>
+                </div>
+            </td>
             <td>${transaction.kayitTipi}</td>
             <td>${transaction.kayitYonu}</td>
             <td>${transaction.kaynakHesapName || transaction.kaynakHesap}</td>
@@ -74,12 +80,6 @@ function displayTransactions(transactions) {
             <td>${new Date(transaction.islemTarihi).toLocaleDateString()}</td>
             <td>${new Date(transaction.date.seconds * 1000).toLocaleDateString()}</td>
             <td>${transaction.detay || ''}</td>
-            <td>
-                <div class="action-buttons">
-                    <button onclick="editTransaction('${transaction.id}')">Düzenle</button>
-                    <button onclick="deleteTransaction('${transaction.id}')">Sil</button>
-                </div>
-            </td>
         `;
 
         tableBody.appendChild(row);
