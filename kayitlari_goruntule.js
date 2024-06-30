@@ -1,5 +1,5 @@
 import { app, auth, db, doc, getDoc } from './firebaseConfig.js';
-import { collection, query, getDocs, where, deleteDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { collection, query, getDocs, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
 onAuthStateChanged(auth, async (user) => {
@@ -157,45 +157,3 @@ window.changeFontSize = (increase) => {
         body.style.fontSize = (currentSize - 1) + 'px';
     }
 };
-
-// Yeni bir transaction kaydetme fonksiyonu
-async function saveTransaction(transactionData) {
-    try {
-        if (transactionData.taksitAdedi && transactionData.taksitAdedi > 1) {
-            // Taksitli işlem
-            for (let i = 0; i < transactionData.taksitAdedi; i++) {
-                const taksitTarihi = new Date(transactionData.islemTarihi);
-                taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
-                await addDoc(collection(db, 'transactions'), {
-                    ...transactionData,
-                    taksitTarihi: taksitTarihi,
-                    taksitPlani: `${i + 1}/${transactionData.taksitAdedi}`
-                });
-            }
-        } else {
-            // Tek seferlik işlem
-            await addDoc(collection(db, 'transactions'), transactionData);
-        }
-    } catch (error) {
-        console.error('Hata:', error);
-    }
-}
-
-// Örnek transaction kaydetme işlemi
-const exampleTransaction = {
-    userId: 'exampleUserId',
-    kayitTipi: 'Gider',
-    kayitYonu: 'Harcama Kaydı',
-    kaynakHesap: 'exampleAccount',
-    kategori: 'exampleCategory',
-    altKategori: 'exampleSubCategory',
-    hedefHesap: 'exampleTargetAccount',
-    tutar: 1000,
-    taksitAdedi: 3,
-    islemTarihi: new Date(),
-    createDate: new Date(),
-    detay: 'Örnek detay'
-};
-
-// Örnek transaction kaydet
-saveTransaction(exampleTransaction);
