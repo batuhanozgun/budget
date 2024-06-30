@@ -159,6 +159,7 @@ async function saveTransaction(uid) {
     let tutar = parseFloat(document.getElementById('tutar').value);
     const taksitAdedi = parseInt(document.getElementById('taksitAdedi').value);
     const islemTarihi = document.getElementById('islemTarihi').value;
+    const detay = document.getElementById('detay').value;
 
     const kayitTipiDoc = await getDoc(doc(db, 'kayitTipleri', kayitTipi));
     const kayitTipiData = kayitTipiDoc.data();
@@ -185,6 +186,7 @@ async function saveTransaction(uid) {
                     taksitAdedi: taksitAdedi,
                     taksitTarihi: taksitTarihi,
                     aciklama: taksitAciklama,
+                    detay: detay,
                     date: new Date()
                 });
             }
@@ -200,6 +202,7 @@ async function saveTransaction(uid) {
                 tutar: tutar,
                 taksitAdedi: taksitAdedi,
                 islemTarihi: new Date(islemTarihi),
+                detay: detay,
                 date: new Date()
             });
         }
