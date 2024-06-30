@@ -12,11 +12,45 @@ onAuthStateChanged(auth, (user) => {
             e.preventDefault();
             saveTransaction(user.uid);
         });
+
+        document.getElementById('kaynakHesap').addEventListener('change', handleKaynakHesapChange);
+        document.getElementById('taksitVarMi').addEventListener('change', handleTaksitVarMiChange);
     } else {
-        // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
         window.location.href = 'login.html';
     }
 });
+
+function handleKaynakHesapChange() {
+    const kaynakHesapSelect = document.getElementById('kaynakHesap');
+    const taksitSecenekleri = document.getElementById('taksitSecenekleri');
+    const taksitBilgileri = document.getElementById('taksitBilgileri');
+    
+    if (kaynakHesapSelect.value) {
+        getDoc(doc(db, 'accounts', kaynakHesapSelect.value)).then((docSnapshot) => {
+            if (docSnapshot.exists() && docSnapshot.data().accountType === 'krediKarti') {
+                taksitSecenekleri.style.display = 'block';
+                taksitBilgileri.style.display = 'none';
+            } else {
+                taksitSecenekleri.style.display = 'none';
+                taksitBilgileri.style.display = 'none';
+            }
+        });
+    } else {
+        taksitSecenekleri.style.display = 'none';
+        taksitBilgileri.style.display = 'none';
+    }
+}
+
+function handleTaksitVarMiChange() {
+    const taksitVarMiCheckbox = document.getElementById('taksitVarMi');
+    const taksitBilgileri = document.getElementById('taksitBilgileri');
+    
+    if (taksitVarMiCheckbox.checked) {
+        taksitBilgileri.style.display = 'block';
+    } else {
+        taksitBilgileri.style.display = 'none';
+    }
+}
 
 async function loadAccounts(uid) {
     const accountSelect = document.getElementById('kaynakHesap');
@@ -124,14 +158,12 @@ async function saveTransaction(uid) {
     const hedefHesap = document.getElementById('hedefHesap').value;
     let tutar = parseFloat(document.getElementById('tutar').value);
     const taksitAdedi = document.getElementById('taksitAdedi').value;
-    const taksitTutar = document.getElementById('taksitTutar').value;
     const islemTarihi = document.getElementById('islemTarihi').value;
 
-    // Kayıt Tipi ID'sine göre "Gider" olup olmadığını kontrol et
     const kayitTipiDoc = await getDoc(doc(db, 'kayitTipleri', kayitTipi));
     const kayitTipiData = kayitTipiDoc.data();
     if (kayitTipiData.name === 'Gider') {
-        tutar = -Math.abs(tutar); // Gider ise tutarı negatif yap
+        tutar = -Math.abs(tutar);
     }
 
     try {
@@ -147,9 +179,8 @@ async function saveTransaction(uid) {
                     kategori: kategori,
                     altKategori: altKategori,
                     hedefHesap: hedefHesap,
-                    tutar: taksitTutar,
+                    tutar: tutar / taksitAdedi,
                     taksitAdedi: taksitAdedi,
-                    taksitTutar: taksitTutar,
                     islemTarihi: taksitTarihi,
                     date: new Date()
                 });
@@ -165,7 +196,6 @@ async function saveTransaction(uid) {
                 hedefHesap: hedefHesap,
                 tutar: tutar,
                 taksitAdedi: taksitAdedi,
-                taksitTutar: taksitTutar,
                 islemTarihi: islemTarihi,
                 date: new Date()
             });
