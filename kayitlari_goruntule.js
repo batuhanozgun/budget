@@ -10,7 +10,6 @@ onAuthStateChanged(auth, async (user) => {
         hideLoading();
         displayTransactions(transactionsWithDetails);
     } else {
-        // Kullanıcı oturumu kapatıldıysa login sayfasına yönlendirin
         window.location.href = 'login.html';
     }
 });
@@ -84,6 +83,16 @@ function displayTransactions(transactions) {
         `;
 
         tableBody.appendChild(row);
+    });
+
+    // DataTables başlatma
+    $(document).ready(function() {
+        $('#transactionsTable').DataTable({
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true
+        });
     });
 }
 
