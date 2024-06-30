@@ -32,12 +32,16 @@ body {
 table {
     width: 100%;
     border-collapse: collapse; /* Sınırları birleştir */
+    table-layout: auto; /* Hücrelerin genişliği içeriğe göre belirlensin */
 }
 
 th, td {
     padding: 8px;
     text-align: left;
     border: 1px solid #CCC; /* Hücre sınırları */
+    white-space: nowrap; /* Metni tek satırda göster */
+    overflow: hidden; /* Taşan metni gizle */
+    text-overflow: ellipsis; /* Taşan metin için üç nokta kullan */
 }
 
 .font-control-buttons {
