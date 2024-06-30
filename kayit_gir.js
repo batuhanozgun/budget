@@ -157,7 +157,7 @@ async function saveTransaction(uid) {
     const altKategori = document.getElementById('altKategori').value;
     const hedefHesap = document.getElementById('hedefHesap').value;
     let tutar = parseFloat(document.getElementById('tutar').value);
-    const taksitAdedi = document.getElementById('taksitAdedi').value;
+    const taksitAdedi = parseInt(document.getElementById('taksitAdedi').value);
     const islemTarihi = document.getElementById('islemTarihi').value;
 
     const kayitTipiDoc = await getDoc(doc(db, 'kayitTipleri', kayitTipi));
@@ -167,10 +167,12 @@ async function saveTransaction(uid) {
     }
 
     try {
-        if (document.getElementById('kaynakHesap').value === 'krediKarti' && taksitAdedi > 0) {
+        if (document.getElementById('taksitVarMi').value === 'evet' && taksitAdedi > 0) {
+            const taksitTutar = tutar / taksitAdedi;
             for (let i = 0; i < taksitAdedi; i++) {
                 const taksitTarihi = new Date(islemTarihi);
                 taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
+                const taksitAciklama = `${i + 1}/${taksitAdedi} Taksit`;
                 await addDoc(collection(db, 'transactions'), {
                     userId: uid,
                     kayitTipi: kayitTipi,
@@ -179,9 +181,10 @@ async function saveTransaction(uid) {
                     kategori: kategori,
                     altKategori: altKategori,
                     hedefHesap: hedefHesap,
-                    tutar: tutar / taksitAdedi,
+                    tutar: taksitTutar,
                     taksitAdedi: taksitAdedi,
-                    islemTarihi: taksitTarihi,
+                    taksitTarihi: taksitTarihi,
+                    aciklama: taksitAciklama,
                     date: new Date()
                 });
             }
@@ -196,7 +199,7 @@ async function saveTransaction(uid) {
                 hedefHesap: hedefHesap,
                 tutar: tutar,
                 taksitAdedi: taksitAdedi,
-                islemTarihi: islemTarihi,
+                islemTarihi: new Date(islemTarihi),
                 date: new Date()
             });
         }
