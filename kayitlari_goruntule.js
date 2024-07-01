@@ -32,11 +32,13 @@ async function addDetailsToTransactions(transactions) {
                 transaction.kaynakHesapName = kaynakHesapDoc.data().accountName;
             }
         }
-        if (transaction.hedefHesap) {
+        if (transaction.hedefHesap && transaction.hedefHesap !== "-") {
             const hedefHesapDoc = await getDoc(doc(db, 'accounts', transaction.hedefHesap));
             if (hedefHesapDoc.exists()) {
                 transaction.hedefHesapName = hedefHesapDoc.data().accountName;
             }
+        } else {
+            transaction.hedefHesapName = "-";
         }
         if (transaction.kategori) {
             const kategoriDoc = await getDoc(doc(db, 'categories', transaction.kategori));
@@ -78,7 +80,7 @@ function displayTransactions(transactions) {
             <td>${transaction.tutar}</td>
             <td>${transaction.taksitAdedi || ''}</td>
             <td>${new Date(transaction.islemTarihi).toLocaleDateString()}</td>
-            <td>${new Date(transaction.date.seconds * 1000).toLocaleDateString()}</td>
+            <td>${new Date(transaction.createDate.seconds * 1000).toLocaleDateString()}</td>
             <td>${transaction.detay || ''}</td>
         `;
 
