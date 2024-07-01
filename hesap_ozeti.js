@@ -22,7 +22,7 @@ async function getTransactions(uid) {
         transactions.push(data);
 
         // Eğer kredi kartı harcamasıysa ve taksit adedi 1'den fazlaysa, taksit verilerini çek
-        if (data.kayitTipi === 'creditcard' && data.taksitAdedi > 1) {
+        if (data.kayitTipi === 'krediKarti' && data.taksitAdedi > 1) {
             const installmentsSnapshot = await getDocs(collection(db, `transactions/${doc.id}/creditcardInstallments`));
             for (const installmentDoc of installmentsSnapshot.docs) {
                 const installmentData = installmentDoc.data();
@@ -35,6 +35,14 @@ async function getTransactions(uid) {
         }
     }
     return transactions;
+}
+
+function getDateFromTransaction(transaction) {
+    const { taksitTarihi, islemTarihi, kayitTipi, taksitAdedi } = transaction;
+    if (kayitTipi === 'krediKarti' && taksitAdedi > 1 && taksitTarihi) {
+        return getDateFromTimestamp(taksitTarihi);
+    }
+    return getDateFromTimestamp(islemTarihi);
 }
 
 function getDateFromTimestamp(timestamp) {
@@ -51,11 +59,11 @@ async function displayAccountBalances(transactions) {
     const datesSet = new Set();
 
     for (const transaction of transactions) {
-        const { kaynakHesap, tutar, islemTarihi, taksitTarihi } = transaction;
-        const date = getDateFromTimestamp(taksitTarihi || islemTarihi);
+        const { kaynakHesap, tutar } = transaction;
+        const date = getDateFromTransaction(transaction);
         const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
-        console.log(`Tarih: ${yearMonth}`);  // Tarihleri kontrol etmek için ekledik
+        console.log(`Tarih: ${yearMonth}, Tutar: ${tutar}`);  // Tarihleri kontrol etmek için ekledik
 
         if (!accountBalances[kaynakHesap]) {
             accountBalances[kaynakHesap] = {};
