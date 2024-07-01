@@ -34,7 +34,7 @@ async function displayAccountBalances(transactions) {
     for (const transaction of transactions) {
         const { kaynakHesap, tutar, islemTarihi, taksitTarihi } = transaction;
         const date = new Date(taksitTarihi || islemTarihi);
-        const yearMonth = `${date.getFullYear()}-${date.getMonth() + 1}`;
+        const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
         if (!accountBalances[kaynakHesap]) {
             accountBalances[kaynakHesap] = {};
