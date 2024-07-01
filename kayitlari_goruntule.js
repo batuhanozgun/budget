@@ -83,16 +83,17 @@ function displayTransactions(transactions) {
                     <button onclick="deleteTransaction('${transaction.id}')">Sil</button>
                 </div>
             </td>
+            <td>${new Date(transaction.createDate.seconds * 1000).toLocaleDateString()}</td>
             <td>${transaction.kayitTipiName || transaction.kayitTipi}</td>
             <td>${transaction.kayitYonuName || transaction.kayitYonu}</td>
             <td>${transaction.kaynakHesapName || transaction.kaynakHesap}</td>
             <td>${transaction.kategoriName || transaction.kategori}</td>
             <td>${transaction.altKategoriName || transaction.altKategori}</td>
             <td>${transaction.hedefHesapName || transaction.hedefHesap}</td>
-            <td>${transaction.tutar}</td>
-            <td>${transaction.taksitAdedi || ''}</td>
             <td>${new Date(transaction.islemTarihi).toLocaleDateString()}</td>
-            <td>${new Date(transaction.createDate.seconds * 1000).toLocaleDateString()}</td>
+            <td>${transaction.taksitPlani || ''}</td>
+            <td>${new Date(transaction.taksitTarihi.seconds * 1000).toLocaleDateString()}</td>
+            <td>${transaction.tutar}</td>
             <td>${transaction.detay || ''}</td>
         `;
 
