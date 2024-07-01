@@ -19,13 +19,13 @@ async function getTransactions(uid) {
     const transactions = [];
     for (const doc of transactionsSnapshot.docs) {
         const data = doc.data();
-
+        
         // Hesap bilgisini çekmek için accounts tablosunu kontrol et
         const accountDoc = await getDoc(doc(db, `accounts/${data.kaynakHesap}`));
         const accountData = accountDoc.exists() ? accountDoc.data() : null;
 
         // Eğer hesap kredi kartı hesabıysa ve taksit adedi 1'den fazlaysa, taksit verilerini çek
-        if (accountData && accountData.kayitTipi === 'krediKarti' && data.taksitAdedi > 1) {
+        if (accountData && accountData.accountType === 'krediKarti' && data.taksitAdedi > 1) {
             const installmentsSnapshot = await getDocs(collection(db, `transactions/${doc.id}/creditcardInstallments`));
             for (const installmentDoc of installmentsSnapshot.docs) {
                 const installmentData = installmentDoc.data();
