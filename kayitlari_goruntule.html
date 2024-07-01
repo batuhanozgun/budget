@@ -6,9 +6,9 @@
     <title>Kayıtları Görüntüle</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="kayitlari_goruntule.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css"> <!-- DataTables CSS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery -->
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script> <!-- DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <script type="module" src="kayitlari_goruntule.js"></script>
 </head>
 <body>
@@ -26,7 +26,7 @@
         <h2>Kayıtları Görüntüle</h2>
         <input type="text" id="searchInput" placeholder="Ara...">
         <div class="table-container">
-            <table id="transactionsTable">
+            <table id="transactionsTable" class="display">
                 <thead>
                     <tr>
                         <th>İşlemler</th>
