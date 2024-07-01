@@ -116,7 +116,19 @@ function displayTransactions(transactions) {
                     "next": "Sonraki"
                 }
             },
-            "dom": '<"top"l>rt<"bottom"ip><"clear">'
+            "dom": 'lfrtip', // DataTables bileşenlerinin yerleşimi
+            "initComplete": function () {
+                // DataTables bileşenlerini manuel olarak yerleştir
+                const dataTableWrapper = document.querySelector('.dataTables_wrapper');
+                const dataTableLength = dataTableWrapper.querySelector('.dataTables_length');
+                const dataTableInfo = dataTableWrapper.querySelector('.dataTables_info');
+                const dataTablePaginate = dataTableWrapper.querySelector('.dataTables_paginate');
+                const container = document.querySelector('.container');
+
+                container.insertBefore(dataTableLength, container.querySelector('.table-container'));
+                container.appendChild(dataTableInfo);
+                container.appendChild(dataTablePaginate);
+            }
         });
     });
 }
