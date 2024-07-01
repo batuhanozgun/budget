@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = await checkAuth();
     if (user) {
         const transactions = await getTransactions(user.uid);
+        console.log(transactions);  // Verileri kontrol etmek için konsola yazdır
         await displayAccountBalances(transactions);
         await displayCategoryBalances(transactions);
     }
