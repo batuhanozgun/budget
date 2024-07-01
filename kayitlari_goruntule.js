@@ -105,7 +105,18 @@ function displayTransactions(transactions) {
             "paging": true,
             "searching": false, // Arama alanını kaldır
             "ordering": true,
-            "info": true
+            "info": true,
+            "language": {
+                "lengthMenu": "Gösterilen Kayıt Sayısı _MENU_",
+                "info": "Z kayıdın x ile y arası gösteriliyor",
+                "infoEmpty": "Kayıt bulunamadı",
+                "infoFiltered": "(toplam _MAX_ kayıt filtrelendi)",
+                "paginate": {
+                    "previous": "Önceki",
+                    "next": "Sonraki"
+                }
+            },
+            "dom": '<"top"i>rt<"bottom"flp><"clear">'
         });
     });
 }
