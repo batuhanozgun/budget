@@ -2,6 +2,8 @@ import { app, auth, db, doc, getDoc } from './firebaseConfig.js';
 import { collection, query, getDocs, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
+let dataTable;  // DataTable referansı için değişken tanımla
+
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         showLoading();
@@ -100,12 +102,11 @@ function displayTransactions(transactions) {
         tableBody.appendChild(row);
     });
 
-    // DataTable'ı yeniden başlatma
-    if ($.fn.DataTable.isDataTable('#transactionsTable')) {
-        $('#transactionsTable').DataTable().destroy();
+    if (dataTable) {
+        dataTable.clear().destroy();  // DataTable'i temizle ve yok et
     }
 
-    $('#transactionsTable').DataTable({
+    dataTable = $('#transactionsTable').DataTable({
         "paging": true,
         "searching": false, // Arama alanını kaldır
         "ordering": true,
