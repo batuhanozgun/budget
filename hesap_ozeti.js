@@ -117,7 +117,7 @@ async function displayPivotTable(pivotData) {
     });
 
     // Sort dates in descending order
-    const sortedDates = Object.keys(pivotData).sort((a, b) => new Date(b) - new Date(a));
+    const sortedDates = Object.keys(pivotData).sort((a, b) => new Date(a) - new Date(b));
 
     // Add data rows to table body
     for (const yearMonth of sortedDates) {
