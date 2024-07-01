@@ -37,14 +37,6 @@ async function getTransactions(uid) {
     return transactions;
 }
 
-function getDateFromTransaction(transaction) {
-    const { taksitTarihi, islemTarihi, kayitTipi, taksitAdedi } = transaction;
-    if (kayitTipi === 'krediKarti' && taksitAdedi > 1 && taksitTarihi) {
-        return getDateFromTimestamp(taksitTarihi);
-    }
-    return getDateFromTimestamp(islemTarihi);
-}
-
 function getDateFromTimestamp(timestamp) {
     if (timestamp instanceof Timestamp) {
         return timestamp.toDate();
@@ -58,9 +50,12 @@ async function displayTransactions(transactions) {
 
     // Add headers to table head
     const headerRow = summaryTableHead.rows[0];
-    const dateTh = document.createElement('th');
-    dateTh.textContent = "Tarih";
-    headerRow.appendChild(dateTh);
+    const islemDateTh = document.createElement('th');
+    islemDateTh.textContent = "İşlem Tarihi";
+    headerRow.appendChild(islemDateTh);
+    const taksitDateTh = document.createElement('th');
+    taksitDateTh.textContent = "Taksit Tarihi";
+    headerRow.appendChild(taksitDateTh);
     const amountTh = document.createElement('th');
     amountTh.textContent = "Tutar";
     headerRow.appendChild(amountTh);
@@ -74,13 +69,17 @@ async function displayTransactions(transactions) {
     // Add transactions to table body
     for (const transaction of transactions) {
         const row = summaryTableBody.insertRow();
-        const dateCell = row.insertCell(0);
-        const amountCell = row.insertCell(1);
-        const accountCell = row.insertCell(2);
-        const typeCell = row.insertCell(3);
+        const islemDateCell = row.insertCell(0);
+        const taksitDateCell = row.insertCell(1);
+        const amountCell = row.insertCell(2);
+        const accountCell = row.insertCell(3);
+        const typeCell = row.insertCell(4);
 
-        const date = getDateFromTransaction(transaction);
-        dateCell.textContent = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const islemDate = getDateFromTimestamp(transaction.islemTarihi);
+        const taksitDate = transaction.taksitTarihi ? getDateFromTimestamp(transaction.taksitTarihi) : '';
+
+        islemDateCell.textContent = `${islemDate.getFullYear()}-${String(islemDate.getMonth() + 1).padStart(2, '0')}`;
+        taksitDateCell.textContent = taksitDate ? `${taksitDate.getFullYear()}-${String(taksitDate.getMonth() + 1).padStart(2, '0')}` : 'N/A';
         amountCell.textContent = formatNumber(transaction.tutar);
         accountCell.textContent = transaction.kaynakHesap;
         typeCell.textContent = transaction.kayitTipi;
