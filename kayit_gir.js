@@ -158,6 +158,12 @@ async function loadKayitYonleri() {
     });
 }
 
+function getDateWithoutTime(dateString) {
+    const date = new Date(dateString);
+    date.setHours(0, 0, 0, 0);
+    return date;
+}
+
 async function saveTransaction(uid) {
     const kayitTipi = document.getElementById('kayitTipi').value;
     const kayitYonu = document.getElementById('kayitYonu').value;
@@ -167,7 +173,7 @@ async function saveTransaction(uid) {
     const hedefHesap = document.getElementById('hedefHesap').value || "-";
     let tutar = parseFloat(document.getElementById('tutar').value);
     const taksitAdedi = parseInt(document.getElementById('taksitAdedi').value) || 1;
-    const islemTarihi = document.getElementById('islemTarihi').value;
+    const islemTarihi = getDateWithoutTime(document.getElementById('islemTarihi').value);
     const detay = document.getElementById('detay').value;
 
     const kayitTipiDoc = await getDoc(doc(db, 'kayitTipleri', kayitTipi));
@@ -187,7 +193,7 @@ async function saveTransaction(uid) {
             hedefHesap: hedefHesap,
             tutar: tutar,
             taksitAdedi: taksitAdedi,
-            islemTarihi: new Date(islemTarihi),
+            islemTarihi: islemTarihi,
             createDate: new Date(),
             detay: detay
         });
@@ -197,6 +203,7 @@ async function saveTransaction(uid) {
             for (let i = 0; i < taksitAdedi; i++) {
                 const taksitTarihi = new Date(islemTarihi);
                 taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
+                taksitTarihi.setHours(0, 0, 0, 0);  // Saat bilgisini sıfırla
                 await addDoc(collection(db, `transactions/${mainTransactionRef.id}/creditcardInstallments`), {
                     tutar: taksitTutar,
                     taksitTarihi: taksitTarihi,
