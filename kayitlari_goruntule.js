@@ -146,28 +146,28 @@ window.deleteTransaction = async (transactionId) => {
 };
 
 window.editTransaction = async (transactionId) => {
-    const transaction = await getDoc(doc(db, 'transactions', transactionId));
-    if (transaction.exists()) {
-        const transactionData = transaction.data();
-        document.getElementById('editKayitTipi').value = transactionData.kayitTipi;
-        document.getElementById('editKayitYonu').value = transactionData.kayitYonu;
-        document.getElementById('editKaynakHesap').value = transactionData.kaynakHesap;
-        document.getElementById('editKategori').value = transactionData.kategori;
-        document.getElementById('editAltKategori').value = transactionData.altKategori;
-        document.getElementById('editHedefHesap').value = transactionData.hedefHesap;
-        document.getElementById('editTutar').value = transactionData.tutar;
-        document.getElementById('editTaksitAdedi').value = transactionData.taksitAdedi;
-        document.getElementById('editIslemTarihi').value = transactionData.islemTarihi;
-        document.getElementById('editDetay').value = transactionData.detay;
-        document.getElementById('editTransactionId').value = transactionId;
-        
-        document.getElementById('editTransactionModal').style.display = 'block';
-    }
+    const transactionDoc = await getDoc(doc(db, 'transactions', transactionId));
+    const transactionData = transactionDoc.data();
+
+    document.getElementById('editKayitTipi').value = transactionData.kayitTipi;
+    document.getElementById('editKayitYonu').value = transactionData.kayitYonu;
+    document.getElementById('editKaynakHesap').value = transactionData.kaynakHesap;
+    document.getElementById('editKategori').value = transactionData.kategori;
+    document.getElementById('editAltKategori').value = transactionData.altKategori;
+    document.getElementById('editHedefHesap').value = transactionData.hedefHesap;
+    document.getElementById('editTutar').value = transactionData.tutar;
+    document.getElementById('editIslemTarihi').value = new Date(transactionData.islemTarihi.seconds * 1000).toISOString().split('T')[0];
+    document.getElementById('editTaksitAdedi').value = transactionData.taksitAdedi;
+    document.getElementById('editDetay').value = transactionData.detay;
+    document.getElementById('editTransactionModal').style.display = 'block';
+    document.getElementById('editTransactionForm').dataset.id = transactionId;
 };
 
 document.getElementById('editTransactionForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const transactionId = document.getElementById('editTransactionId').value;
+    showLoading();
+
+    const transactionId = e.target.dataset.id;
     const updatedTransaction = {
         kayitTipi: document.getElementById('editKayitTipi').value,
         kayitYonu: document.getElementById('editKayitYonu').value,
@@ -176,18 +176,19 @@ document.getElementById('editTransactionForm').addEventListener('submit', async 
         altKategori: document.getElementById('editAltKategori').value,
         hedefHesap: document.getElementById('editHedefHesap').value,
         tutar: parseFloat(document.getElementById('editTutar').value),
+        islemTarihi: new Date(document.getElementById('editIslemTarihi').value),
         taksitAdedi: parseInt(document.getElementById('editTaksitAdedi').value),
-        islemTarihi: document.getElementById('editIslemTarihi').value,
         detay: document.getElementById('editDetay').value
     };
 
-    showLoading();
     await updateDoc(doc(db, 'transactions', transactionId), updatedTransaction);
+    document.getElementById('editTransactionModal').style.display = 'none';
+
     const transactions = await getTransactions(auth.currentUser.uid);
     const transactionsWithDetails = await addDetailsToTransactions(transactions);
     hideLoading();
-    displayTransactions(transactionsWithDetails);
-    document.getElementById('editTransactionModal').style.display = 'none';
+    $('#transactionsTable').DataTable().destroy(); // DataTable'ı yok et
+    displayTransactions(transactionsWithDetails); // Güncellenmiş verilerle tekrar oluştur
 });
 
 function showLoading() {
@@ -208,6 +209,7 @@ window.changeFontSize = (increase) => {
     }
 };
 
+// Kayıt Tipi ve Kayıt Yönü yükleme fonksiyonları
 async function loadKayitTipleri() {
     const kayitTipiSelect = document.getElementById('editKayitTipi');
     kayitTipiSelect.innerHTML = '<option value="">Seçiniz</option>';
