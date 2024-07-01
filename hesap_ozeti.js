@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const transactions = await getTransactions(user.uid);
         console.log(transactions);  // Verileri kontrol etmek için konsola yazdır
         await displayAccountBalances(transactions);
-        await displayCategoryBalances(transactions);
     }
     hideLoadingOverlay();
 });
@@ -36,6 +35,8 @@ async function displayAccountBalances(transactions) {
         const { kaynakHesap, tutar, islemTarihi, taksitTarihi } = transaction;
         const date = new Date(taksitTarihi || islemTarihi);
         const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+        console.log(`Tarih: ${yearMonth}`);  // Tarihleri kontrol etmek için ekledik
 
         if (!accountBalances[kaynakHesap]) {
             accountBalances[kaynakHesap] = {};
@@ -69,30 +70,6 @@ async function displayAccountBalances(transactions) {
             const balanceCell = row.insertCell();
             balanceCell.textContent = formatNumber(accountBalances[accountId][date] || 0);
         }
-    }
-}
-
-async function displayCategoryBalances(transactions) {
-    const summaryTableBody = document.getElementById('categoryBalancesTable').getElementsByTagName('tbody')[0];
-    const categoryBalances = {};
-
-    for (const transaction of transactions) {
-        const { kategori, tutar } = transaction;
-        if (!categoryBalances[kategori]) {
-            categoryBalances[kategori] = 0;
-        }
-        categoryBalances[kategori] += parseFloat(tutar);
-    }
-
-    for (const categoryId of Object.keys(categoryBalances)) {
-        const categoryDoc = await getDoc(doc(db, 'categories', categoryId));
-        const categoryName = categoryDoc.exists() ? categoryDoc.data().name : 'Unknown Category';
-        const row = summaryTableBody.insertRow();
-        const categoryNameCell = row.insertCell(0);
-        const balanceCell = row.insertCell(1);
-
-        categoryNameCell.textContent = categoryName;
-        balanceCell.textContent = formatNumber(categoryBalances[categoryId]);
     }
 }
 
