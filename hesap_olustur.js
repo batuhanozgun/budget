@@ -115,11 +115,25 @@ function displayAccountDetails(accountData, accountId, accountDiv) {
     const accountInfo = document.createElement('div');
     accountInfo.classList.add('account-info');
     for (const key in accountData) {
-        if (accountData.hasOwnProperty(key)) {
+        if (accountData.hasOwnProperty(key) && key !== 'installments') {
             const p = document.createElement('p');
             p.textContent = `${labels[key] || key}: ${accountData[key]}`;
             accountInfo.appendChild(p);
         }
+    }
+
+    if (accountData.installments && Array.isArray(accountData.installments)) {
+        const installmentsHeader = document.createElement('h4');
+        installmentsHeader.textContent = labels.installments;
+        accountInfo.appendChild(installmentsHeader);
+
+        const installmentsList = document.createElement('ul');
+        accountData.installments.forEach(installment => {
+            const installmentItem = document.createElement('li');
+            installmentItem.textContent = `Tutar: ${installment.amount}, Ay: ${installment.month}, Yıl: ${installment.year}`;
+            installmentsList.appendChild(installmentItem);
+        });
+        accountInfo.appendChild(installmentsList);
     }
 
     const accountDetailsDiv = document.createElement('div');
