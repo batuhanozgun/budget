@@ -14,10 +14,10 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
+    margin: 70px auto; /* Yukarıdan ve aşağıdan 70px margin ekledik */
     max-width: 1200px; /* Maksimum genişliği artırdık */
     width: 100%;
-    height: calc(100vh - 60px); /* Yüksekliği hesapla (20px padding ve 20px margin için) */
+    height: calc(100vh - 140px); /* Yüksekliği hesapla (70px yukarıdan ve aşağıdan margin için) */
     display: flex;
     flex-direction: column; /* Çocuk öğeleri dikeyde hizala */
 }
