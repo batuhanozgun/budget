@@ -103,7 +103,7 @@ function initializeDataTable(transactions) {
             transaction.kategoriName || transaction.kategori,
             transaction.altKategoriName || transaction.altKategori,
             transaction.hedefHesapName || transaction.hedefHesap,
-            new Date(transaction.islemTarihi).toLocaleDateString(),
+            transaction.islemTarihi ? new Date(transaction.islemTarihi.seconds * 1000).toLocaleDateString() : '', // Güncellenmiş satır
             installment.taksitPlani || '',
             installment.taksitTarihi ? new Date(installment.taksitTarihi.seconds * 1000).toLocaleDateString() : '', // Güncellenmiş satır
             installment.tutar,
