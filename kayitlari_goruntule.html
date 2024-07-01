@@ -47,6 +47,42 @@
                 </tbody>
             </table>
         </div>
+        <!-- Düzenleme Formu Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <form id="editForm">
+                    <label for="editKayitTipi">Kayıt Tipi:</label>
+                    <select id="editKayitTipi" required></select>
+
+                    <label for="editKayitYonu">Kayıt Yönü:</label>
+                    <select id="editKayitYonu" required></select>
+
+                    <label for="editKaynakHesap">Kaynak Hesap:</label>
+                    <select id="editKaynakHesap" required></select>
+
+                    <label for="editKategori">Kategori:</label>
+                    <select id="editKategori" required></select>
+
+                    <label for="editAltKategori">Alt Kategori:</label>
+                    <select id="editAltKategori"></select>
+
+                    <label for="editHedefHesap">Hedef Hesap:</label>
+                    <select id="editHedefHesap"></select>
+
+                    <label for="editTutar">Tutar:</label>
+                    <input type="number" id="editTutar" required>
+
+                    <label for="editIslemTarihi">İşlem Tarihi:</label>
+                    <input type="date" id="editIslemTarihi" required>
+
+                    <label for="editDetay">Detay:</label>
+                    <textarea id="editDetay"></textarea>
+
+                    <button type="submit">Kaydet</button>
+                </form>
+            </div>
+        </div>
     </div>
     <!-- jQuery ve DataTables JS ekleyelim -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
