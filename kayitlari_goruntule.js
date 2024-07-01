@@ -103,7 +103,7 @@ function displayTransactions(transactions) {
     $(document).ready(function() {
         $('#transactionsTable').DataTable({
             "paging": true,
-            "searching": false, // Arama alanını kaldır
+            "searching": true, // Arama alanını göster
             "ordering": true,
             "info": true,
             "language": {
@@ -120,8 +120,6 @@ function displayTransactions(transactions) {
         });
     });
 }
-
-document.getElementById('searchInput').addEventListener('input', filterTransactions);
 
 function filterTransactions() {
     const searchText = document.getElementById('searchInput').value.toLowerCase();
