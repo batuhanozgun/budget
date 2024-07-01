@@ -103,38 +103,38 @@ function initializeDataTable(transactions) {
     });
 
     if ($.fn.dataTable.isDataTable('#transactionsTable')) {
-        $('#transactionsTable').DataTable().clear().destroy();  // DataTable'i temizle ve yok et
-    }
+        $('#transactionsTable').DataTable().clear().rows.add(transactions).draw();  // DataTable'i temizle ve yeni verileri ekle
+    } else {
+        dataTable = $('#transactionsTable').DataTable({
+            "paging": true,
+            "searching": false, // Arama alanını kaldır
+            "ordering": true,
+            "info": true,
+            "language": {
+                "lengthMenu": "Gösterilen Kayıt Sayısı _MENU_",
+                "info": "_TOTAL_ kaydın _START_ ile _END_ arası gösteriliyor",
+                "infoEmpty": "Kayıt bulunamadı",
+                "infoFiltered": "(toplam _MAX_ kayıt filtrelendi)",
+                "paginate": {
+                    "previous": "Önceki",
+                    "next": "Sonraki"
+                }
+            },
+            "dom": 'lfrtip', // DataTables bileşenlerinin yerleşimi
+            "initComplete": function () {
+                // DataTables bileşenlerini manuel olarak yerleştir
+                const dataTableWrapper = document.querySelector('.dataTables_wrapper');
+                const dataTableLength = dataTableWrapper.querySelector('.dataTables_length');
+                const dataTableInfo = dataTableWrapper.querySelector('.dataTables_info');
+                const dataTablePaginate = dataTableWrapper.querySelector('.dataTables_paginate');
+                const container = document.querySelector('.container');
 
-    dataTable = $('#transactionsTable').DataTable({
-        "paging": true,
-        "searching": false, // Arama alanını kaldır
-        "ordering": true,
-        "info": true,
-        "language": {
-            "lengthMenu": "Gösterilen Kayıt Sayısı _MENU_",
-            "info": "_TOTAL_ kaydın _START_ ile _END_ arası gösteriliyor",
-            "infoEmpty": "Kayıt bulunamadı",
-            "infoFiltered": "(toplam _MAX_ kayıt filtrelendi)",
-            "paginate": {
-                "previous": "Önceki",
-                "next": "Sonraki"
+                container.insertBefore(dataTableLength, container.querySelector('.table-container'));
+                container.appendChild(dataTableInfo);
+                container.appendChild(dataTablePaginate);
             }
-        },
-        "dom": 'lfrtip', // DataTables bileşenlerinin yerleşimi
-        "initComplete": function () {
-            // DataTables bileşenlerini manuel olarak yerleştir
-            const dataTableWrapper = document.querySelector('.dataTables_wrapper');
-            const dataTableLength = dataTableWrapper.querySelector('.dataTables_length');
-            const dataTableInfo = dataTableWrapper.querySelector('.dataTables_info');
-            const dataTablePaginate = dataTableWrapper.querySelector('.dataTables_paginate');
-            const container = document.querySelector('.container');
-
-            container.insertBefore(dataTableLength, container.querySelector('.table-container'));
-            container.appendChild(dataTableInfo);
-            container.appendChild(dataTablePaginate);
-        }
-    });
+        });
+    }
 }
 
 window.deleteTransaction = async (transactionId) => {
@@ -144,7 +144,7 @@ window.deleteTransaction = async (transactionId) => {
         const transactions = await getTransactions(auth.currentUser.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
         hideLoading();
-        initializeDataTable(transactionsWithDetails);  // DataTable'i yeniden başlat
+        initializeDataTable(transactionsWithDetails);  // DataTable'i güncelle
     }
 };
 
@@ -158,7 +158,7 @@ window.editTransaction = async (transactionId) => {
         const transactions = await getTransactions(auth.currentUser.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
         hideLoading();
-        initializeDataTable(transactionsWithDetails);  // DataTable'i yeniden başlat
+        initializeDataTable(transactionsWithDetails);  // DataTable'i güncelle
     }
 };
 
