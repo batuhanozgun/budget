@@ -69,7 +69,6 @@ th, td {
 
 /* DataTables ayarları */
 .dataTables_wrapper .dataTables_length, 
-.dataTables_wrapper .dataTables_filter, 
 .dataTables_wrapper .dataTables_info, 
 .dataTables_wrapper .dataTables_paginate {
     padding: 10px;
@@ -79,7 +78,6 @@ th, td {
 }
 
 .dataTables_length, 
-.dataTables_filter, 
 .dataTables_info, 
 .dataTables_paginate {
     padding: 10px;
