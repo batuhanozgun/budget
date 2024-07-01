@@ -100,37 +100,39 @@ function displayTransactions(transactions) {
         tableBody.appendChild(row);
     });
 
-    // DataTables başlatma
-    $(document).ready(function() {
-        $('#transactionsTable').DataTable({
-            "paging": true,
-            "searching": false, // Arama alanını kaldır
-            "ordering": true,
-            "info": true,
-            "language": {
-                "lengthMenu": "Gösterilen Kayıt Sayısı _MENU_",
-                "info": "_TOTAL_ kaydın _START_ ile _END_ arası gösteriliyor",
-                "infoEmpty": "Kayıt bulunamadı",
-                "infoFiltered": "(toplam _MAX_ kayıt filtrelendi)",
-                "paginate": {
-                    "previous": "Önceki",
-                    "next": "Sonraki"
-                }
-            },
-            "dom": 'lfrtip', // DataTables bileşenlerinin yerleşimi
-            "initComplete": function () {
-                // DataTables bileşenlerini manuel olarak yerleştir
-                const dataTableWrapper = document.querySelector('.dataTables_wrapper');
-                const dataTableLength = dataTableWrapper.querySelector('.dataTables_length');
-                const dataTableInfo = dataTableWrapper.querySelector('.dataTables_info');
-                const dataTablePaginate = dataTableWrapper.querySelector('.dataTables_paginate');
-                const container = document.querySelector('.container');
+    // DataTable'ı yeniden başlatma
+    if ($.fn.DataTable.isDataTable('#transactionsTable')) {
+        $('#transactionsTable').DataTable().destroy();
+    }
 
-                container.insertBefore(dataTableLength, container.querySelector('.table-container'));
-                container.appendChild(dataTableInfo);
-                container.appendChild(dataTablePaginate);
+    $('#transactionsTable').DataTable({
+        "paging": true,
+        "searching": false, // Arama alanını kaldır
+        "ordering": true,
+        "info": true,
+        "language": {
+            "lengthMenu": "Gösterilen Kayıt Sayısı _MENU_",
+            "info": "_TOTAL_ kaydın _START_ ile _END_ arası gösteriliyor",
+            "infoEmpty": "Kayıt bulunamadı",
+            "infoFiltered": "(toplam _MAX_ kayıt filtrelendi)",
+            "paginate": {
+                "previous": "Önceki",
+                "next": "Sonraki"
             }
-        });
+        },
+        "dom": 'lfrtip', // DataTables bileşenlerinin yerleşimi
+        "initComplete": function () {
+            // DataTables bileşenlerini manuel olarak yerleştir
+            const dataTableWrapper = document.querySelector('.dataTables_wrapper');
+            const dataTableLength = dataTableWrapper.querySelector('.dataTables_length');
+            const dataTableInfo = dataTableWrapper.querySelector('.dataTables_info');
+            const dataTablePaginate = dataTableWrapper.querySelector('.dataTables_paginate');
+            const container = document.querySelector('.container');
+
+            container.insertBefore(dataTableLength, container.querySelector('.table-container'));
+            container.appendChild(dataTableInfo);
+            container.appendChild(dataTablePaginate);
+        }
     });
 }
 
