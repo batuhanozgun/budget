@@ -17,12 +17,5 @@ async function loadUsers() {
     });
 }
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        loadUsers();
-    } else {
-        window.location.href = 'login.html';
-    }
-});
-
+// İşlevi dışa aktar
 export { loadUsers };
