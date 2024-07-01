@@ -72,56 +72,62 @@ async function addDetailsToTransactions(transactions) {
 }
 
 function initializeDataTable(transactions) {
-    const tableBody = document.getElementById('transactionsTableBody');
-    tableBody.innerHTML = '';  // Tablodaki önceki verileri temizle
-
-    transactions.forEach(transaction => {
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-            <td>
-                <div class="action-buttons">
-                    <button onclick="editTransaction('${transaction.id}')">Düzenle</button>
-                    <button onclick="deleteTransaction('${transaction.id}')">Sil</button>
-                </div>
-            </td>
-            <td>${new Date(transaction.createDate.seconds * 1000).toLocaleDateString()}</td>
-            <td>${transaction.kayitTipiName || transaction.kayitTipi}</td>
-            <td>${transaction.kayitYonuName || transaction.kayitYonu}</td>
-            <td>${transaction.kaynakHesapName || transaction.kaynakHesap}</td>
-            <td>${transaction.kategoriName || transaction.kategori}</td>
-            <td>${transaction.altKategoriName || transaction.altKategori}</td>
-            <td>${transaction.hedefHesapName || transaction.hedefHesap}</td>
-            <td>${new Date(transaction.islemTarihi).toLocaleDateString()}</td>
-            <td>${transaction.taksitPlani || ''}</td>
-            <td>${new Date(transaction.taksitTarihi.seconds * 1000).toLocaleDateString()}</td>
-            <td>${transaction.tutar}</td>
-            <td>${transaction.detay || ''}</td>
-        `;
-
-        tableBody.appendChild(row);
-    });
+    const tableData = transactions.map(transaction => [
+        `<div class="action-buttons">
+            <button onclick="editTransaction('${transaction.id}')">Düzenle</button>
+            <button onclick="deleteTransaction('${transaction.id}')">Sil</button>
+         </div>`,
+        new Date(transaction.createDate.seconds * 1000).toLocaleDateString(),
+        transaction.kayitTipiName || transaction.kayitTipi,
+        transaction.kayitYonuName || transaction.kayitYonu,
+        transaction.kaynakHesapName || transaction.kaynakHesap,
+        transaction.kategoriName || transaction.kategori,
+        transaction.altKategoriName || transaction.altKategori,
+        transaction.hedefHesapName || transaction.hedefHesap,
+        new Date(transaction.islemTarihi).toLocaleDateString(),
+        transaction.taksitPlani || '',
+        new Date(transaction.taksitTarihi.seconds * 1000).toLocaleDateString(),
+        transaction.tutar,
+        transaction.detay || ''
+    ]);
 
     if ($.fn.dataTable.isDataTable('#transactionsTable')) {
-        $('#transactionsTable').DataTable().clear().rows.add(transactions).draw();  // DataTable'i temizle ve yeni verileri ekle
+        const dataTable = $('#transactionsTable').DataTable();
+        dataTable.clear().rows.add(tableData).draw();  // DataTable'i temizle ve yeni verileri ekle
     } else {
         dataTable = $('#transactionsTable').DataTable({
-            "paging": true,
-            "searching": false, // Arama alanını kaldır
-            "ordering": true,
-            "info": true,
-            "language": {
-                "lengthMenu": "Gösterilen Kayıt Sayısı _MENU_",
-                "info": "_TOTAL_ kaydın _START_ ile _END_ arası gösteriliyor",
-                "infoEmpty": "Kayıt bulunamadı",
-                "infoFiltered": "(toplam _MAX_ kayıt filtrelendi)",
-                "paginate": {
-                    "previous": "Önceki",
-                    "next": "Sonraki"
+            data: tableData,
+            columns: [
+                { title: "İşlemler" },
+                { title: "Oluşturma Tarihi" },
+                { title: "Kayıt Tipi" },
+                { title: "Kayıt Yönü" },
+                { title: "Kaynak Hesap" },
+                { title: "Kategori" },
+                { title: "Alt Kategori" },
+                { title: "Hedef Hesap" },
+                { title: "İşlem Tarihi" },
+                { title: "Taksit Planı" },
+                { title: "Taksit Tarihi" },
+                { title: "Tutar" },
+                { title: "Detay" }
+            ],
+            paging: true,
+            searching: false, // Arama alanını kaldır
+            ordering: true,
+            info: true,
+            language: {
+                lengthMenu: "Gösterilen Kayıt Sayısı _MENU_",
+                info: "_TOTAL_ kaydın _START_ ile _END_ arası gösteriliyor",
+                infoEmpty: "Kayıt bulunamadı",
+                infoFiltered: "(toplam _MAX_ kayıt filtrelendi)",
+                paginate: {
+                    previous: "Önceki",
+                    next: "Sonraki"
                 }
             },
-            "dom": 'lfrtip', // DataTables bileşenlerinin yerleşimi
-            "initComplete": function () {
+            dom: 'lfrtip', // DataTables bileşenlerinin yerleşimi
+            initComplete: function () {
                 // DataTables bileşenlerini manuel olarak yerleştir
                 const dataTableWrapper = document.querySelector('.dataTables_wrapper');
                 const dataTableLength = dataTableWrapper.querySelector('.dataTables_length');
