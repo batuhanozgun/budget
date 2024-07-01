@@ -1,8 +1,6 @@
 import { app, auth, db, doc, getDoc } from './firebaseConfig.js';
-import { collection, query, getDocs, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { collection, query, getDocs, where, deleteDoc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-
-let editTransactionId = null;
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -11,7 +9,6 @@ onAuthStateChanged(auth, async (user) => {
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
         hideLoading();
         displayTransactions(transactionsWithDetails);
-        setupEditForm(user.uid);
     } else {
         window.location.href = 'login.html';
     }
@@ -149,35 +146,28 @@ window.deleteTransaction = async (transactionId) => {
 };
 
 window.editTransaction = async (transactionId) => {
-    editTransactionId = transactionId;
     const transaction = await getDoc(doc(db, 'transactions', transactionId));
-    const transactionData = transaction.data();
-
-    // Modal içindeki formu doldurma
-    document.getElementById('editKayitTipi').value = transactionData.kayitTipi;
-    document.getElementById('editKayitYonu').value = transactionData.kayitYonu;
-    document.getElementById('editKaynakHesap').value = transactionData.kaynakHesap;
-    document.getElementById('editKategori').value = transactionData.kategori;
-    document.getElementById('editAltKategori').value = transactionData.altKategori;
-    document.getElementById('editHedefHesap').value = transactionData.hedefHesap;
-    document.getElementById('editTutar').value = transactionData.tutar;
-    document.getElementById('editIslemTarihi').value = new Date(transactionData.islemTarihi.seconds * 1000).toISOString().split('T')[0];
-    document.getElementById('editDetay').value = transactionData.detay;
-
-    // Modalı göster
-    document.getElementById('editModal').style.display = 'block';
+    if (transaction.exists()) {
+        const transactionData = transaction.data();
+        document.getElementById('editKayitTipi').value = transactionData.kayitTipi;
+        document.getElementById('editKayitYonu').value = transactionData.kayitYonu;
+        document.getElementById('editKaynakHesap').value = transactionData.kaynakHesap;
+        document.getElementById('editKategori').value = transactionData.kategori;
+        document.getElementById('editAltKategori').value = transactionData.altKategori;
+        document.getElementById('editHedefHesap').value = transactionData.hedefHesap;
+        document.getElementById('editTutar').value = transactionData.tutar;
+        document.getElementById('editTaksitAdedi').value = transactionData.taksitAdedi;
+        document.getElementById('editIslemTarihi').value = transactionData.islemTarihi;
+        document.getElementById('editDetay').value = transactionData.detay;
+        document.getElementById('editTransactionId').value = transactionId;
+        
+        document.getElementById('editTransactionModal').style.display = 'block';
+    }
 };
 
-// Modalı kapatma
-document.querySelector('.close').onclick = function() {
-    document.getElementById('editModal').style.display = 'none';
-};
-
-// Form gönderildiğinde güncellemeyi kaydetme
-document.getElementById('editForm').onsubmit = async function(e) {
+document.getElementById('editTransactionForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    showLoading();
-
+    const transactionId = document.getElementById('editTransactionId').value;
     const updatedTransaction = {
         kayitTipi: document.getElementById('editKayitTipi').value,
         kayitYonu: document.getElementById('editKayitYonu').value,
@@ -186,18 +176,19 @@ document.getElementById('editForm').onsubmit = async function(e) {
         altKategori: document.getElementById('editAltKategori').value,
         hedefHesap: document.getElementById('editHedefHesap').value,
         tutar: parseFloat(document.getElementById('editTutar').value),
-        islemTarihi: new Date(document.getElementById('editIslemTarihi').value),
+        taksitAdedi: parseInt(document.getElementById('editTaksitAdedi').value),
+        islemTarihi: document.getElementById('editIslemTarihi').value,
         detay: document.getElementById('editDetay').value
     };
 
-    await updateDoc(doc(db, 'transactions', editTransactionId), updatedTransaction);
-
+    showLoading();
+    await updateDoc(doc(db, 'transactions', transactionId), updatedTransaction);
     const transactions = await getTransactions(auth.currentUser.uid);
     const transactionsWithDetails = await addDetailsToTransactions(transactions);
     hideLoading();
     displayTransactions(transactionsWithDetails);
-    document.getElementById('editModal').style.display = 'none';
-};
+    document.getElementById('editTransactionModal').style.display = 'none';
+});
 
 function showLoading() {
     document.querySelector('.loading-overlay').style.display = 'flex';
@@ -217,67 +208,8 @@ window.changeFontSize = (increase) => {
     }
 };
 
-function setupEditForm(uid) {
-    loadAccounts(uid, 'editKaynakHesap');
-    loadAccounts(uid, 'editHedefHesap');
-    loadCategories(uid, 'editKategori', 'editAltKategori');
-    loadKayitTipleri('editKayitTipi');
-    loadKayitYonleri('editKayitYonu');
-}
-
-async function loadAccounts(uid, elementId) {
-    const accountSelect = document.getElementById(elementId);
-    accountSelect.innerHTML = '<option value="">Seçiniz</option>';
-
-    const q = query(collection(db, 'accounts'), where("uid", "==", uid));
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((doc) => {
-        const option = document.createElement('option');
-        option.value = doc.id;
-        option.textContent = doc.data().accountName;
-        accountSelect.appendChild(option);
-    });
-}
-
-async function loadCategories(uid, categoryElementId, subCategoryElementId) {
-    const categorySelect = document.getElementById(categoryElementId);
-    categorySelect.innerHTML = '<option value="">Seçiniz</option>';
-
-    const q = query(collection(db, 'categories'), where("userId", "==", uid));
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((doc) => {
-        const option = document.createElement('option');
-        option.value = doc.id;
-        option.textContent = doc.data().name;
-        categorySelect.appendChild(option);
-    });
-
-    categorySelect.addEventListener('change', () => loadSubCategories(uid, categoryElementId, subCategoryElementId));
-}
-
-async function loadSubCategories(uid, categoryElementId, subCategoryElementId) {
-    const categorySelect = document.getElementById(categoryElementId);
-    const subCategorySelect = document.getElementById(subCategoryElementId);
-    subCategorySelect.innerHTML = '<option value="">Seçiniz</option>';
-
-    const selectedCategory = categorySelect.value;
-    if (selectedCategory) {
-        const q = query(collection(db, 'categories', selectedCategory, 'subcategories'), where("userId", "==", uid));
-        const querySnapshot = await getDocs(q);
-
-        querySnapshot.forEach((doc) => {
-            const option = document.createElement('option');
-            option.value = doc.id;
-            option.textContent = doc.data().name;
-            subCategorySelect.appendChild(option);
-        });
-    }
-}
-
-async function loadKayitTipleri(elementId) {
-    const kayitTipiSelect = document.getElementById(elementId);
+async function loadKayitTipleri() {
+    const kayitTipiSelect = document.getElementById('editKayitTipi');
     kayitTipiSelect.innerHTML = '<option value="">Seçiniz</option>';
 
     const q = query(collection(db, 'kayitTipleri'), orderBy('line'));
@@ -291,8 +223,8 @@ async function loadKayitTipleri(elementId) {
     });
 }
 
-async function loadKayitYonleri(elementId) {
-    const kayitYonuSelect = document.getElementById(elementId);
+async function loadKayitYonleri() {
+    const kayitYonuSelect = document.getElementById('editKayitYonu');
     kayitYonuSelect.innerHTML = '<option value="">Seçiniz</option>';
 
     const q = query(collection(db, 'kayitYonleri'), orderBy('line'));
@@ -304,17 +236,9 @@ async function loadKayitYonleri(elementId) {
         option.textContent = doc.data().name;
         kayitYonuSelect.appendChild(option);
     });
-
-    kayitYonuSelect.addEventListener('change', async () => {
-        const selectedKayitYonu = kayitYonuSelect.value;
-        const kayitYonuDoc = await getDoc(doc(db, 'kayitYonleri', selectedKayitYonu));
-        const kayitYonuData = kayitYonuDoc.data();
-        const hedefHesapDiv = document.getElementById('editHedefHesapDiv');
-
-        if (kayitYonuData.name === 'Harcama') {
-            hedefHesapDiv.style.display = 'none';
-        } else {
-            hedefHesapDiv.style.display = 'block';
-        }
-    });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadKayitTipleri();
+    loadKayitYonleri();
+});
