@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user) {
         const accountsCache = await loadAccountsCache();
         const transactions = await getTransactions(user.uid, accountsCache);
-        await displayTransactions(transactions, accountsCache);
+        const pivotData = pivotTransactions(transactions, accountsCache);
+        await displayPivotTable(pivotData);
     }
     hideLoadingOverlay();
 });
@@ -56,53 +57,80 @@ function getDateFromTimestamp(timestamp) {
     return new Date(timestamp);
 }
 
-async function displayTransactions(transactions, accountsCache) {
+function pivotTransactions(transactions, accountsCache) {
+    const pivotData = {};
+
+    for (const transaction of transactions) {
+        const date = getDateFromTransaction(transaction);
+        const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const accountName = accountsCache[transaction.kaynakHesap]?.accountName || 'Bilinmiyor';
+
+        if (!pivotData[yearMonth]) {
+            pivotData[yearMonth] = {};
+        }
+
+        if (!pivotData[yearMonth][accountName]) {
+            pivotData[yearMonth][accountName] = 0;
+        }
+
+        pivotData[yearMonth][accountName] += parseFloat(transaction.tutar);
+    }
+
+    return pivotData;
+}
+
+function getDateFromTransaction(transaction) {
+    const { taksitTarihi, islemTarihi } = transaction;
+    if (taksitTarihi) {
+        return getDateFromTimestamp(taksitTarihi);
+    }
+    return getDateFromTimestamp(islemTarihi);
+}
+
+async function displayPivotTable(pivotData) {
     const summaryTableHead = document.getElementById('accountBalancesTable').getElementsByTagName('thead')[0];
     const summaryTableBody = document.getElementById('accountBalancesTable').getElementsByTagName('tbody')[0];
 
+    // Clear existing headers and rows
+    summaryTableHead.innerHTML = '';
+    summaryTableBody.innerHTML = '';
+
     // Add headers to table head
-    const headerRow = summaryTableHead.rows[0];
-    const islemDateTh = document.createElement('th');
-    islemDateTh.textContent = "İşlem Tarihi";
-    headerRow.appendChild(islemDateTh);
-    const taksitDateTh = document.createElement('th');
-    taksitDateTh.textContent = "Taksit Tarihi";
-    headerRow.appendChild(taksitDateTh);
-    const amountTh = document.createElement('th');
-    amountTh.textContent = "Tutar";
-    headerRow.appendChild(amountTh);
-    const accountTh = document.createElement('th');
-    accountTh.textContent = "Hesap Adı";
-    headerRow.appendChild(accountTh);
-    const typeTh = document.createElement('th');
-    typeTh.textContent = "Kayıt Tipi";
-    headerRow.appendChild(typeTh);
+    const headerRow = summaryTableHead.insertRow();
+    const dateTh = document.createElement('th');
+    dateTh.textContent = "Ay-Yıl";
+    headerRow.appendChild(dateTh);
 
-    // Add transactions to table body
-    for (const transaction of transactions) {
+    // Collect all account names
+    const accountNames = new Set();
+    for (const yearMonth in pivotData) {
+        for (const accountName in pivotData[yearMonth]) {
+            accountNames.add(accountName);
+        }
+    }
+
+    // Add account name columns
+    accountNames.forEach(accountName => {
+        const th = document.createElement('th');
+        th.textContent = accountName;
+        headerRow.appendChild(th);
+    });
+
+    // Add data rows to table body
+    for (const yearMonth in pivotData) {
         const row = summaryTableBody.insertRow();
-        const islemDateCell = row.insertCell(0);
-        const taksitDateCell = row.insertCell(1);
-        const amountCell = row.insertCell(2);
-        const accountCell = row.insertCell(3);
-        const typeCell = row.insertCell(4);
+        const dateCell = row.insertCell(0);
+        dateCell.textContent = yearMonth;
 
-        const islemDate = getDateFromTimestamp(transaction.islemTarihi);
-        const taksitDate = transaction.taksitTarihi ? getDateFromTimestamp(transaction.taksitTarihi) : null;
-
-        islemDateCell.textContent = `${islemDate.getFullYear()}-${String(islemDate.getMonth() + 1).padStart(2, '0')}`;
-        taksitDateCell.textContent = taksitDate ? `${taksitDate.getFullYear()}-${String(taksitDate.getMonth() + 1).padStart(2, '0')}` : 'N/A';
-        amountCell.textContent = formatNumber(transaction.tutar);
-        
-        // Hesap adını ve kayıt tipini accountsCache'den alın
-        const accountData = accountsCache[transaction.kaynakHesap];
-        accountCell.textContent = accountData ? accountData.accountName : 'Bilinmiyor';
-        typeCell.textContent = accountData ? accountData.accountType : 'Bilinmiyor';
+        accountNames.forEach(accountName => {
+            const cell = row.insertCell();
+            cell.textContent = formatNumber(pivotData[yearMonth][accountName] || 0);
+        });
     }
 }
 
 function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return num.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 function showLoadingOverlay() {
