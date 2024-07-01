@@ -1,6 +1,8 @@
 import { app, auth, db, doc, getDoc } from './firebaseConfig.js';
-import { collection, query, getDocs, where, deleteDoc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { collection, query, getDocs, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+
+let dataTable;  // DataTable referansı için değişken tanımla
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -8,7 +10,7 @@ onAuthStateChanged(auth, async (user) => {
         const transactions = await getTransactions(user.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
         hideLoading();
-        displayTransactions(transactionsWithDetails);
+        initializeDataTable(transactionsWithDetails);  // DataTable'ı başlat
     } else {
         window.location.href = 'login.html';
     }
@@ -69,56 +71,63 @@ async function addDetailsToTransactions(transactions) {
     return Promise.all(accountPromises);
 }
 
-function displayTransactions(transactions) {
-    const tableBody = document.getElementById('transactionsTableBody');
-    tableBody.innerHTML = '';  // Tablodaki önceki verileri temizle
+function initializeDataTable(transactions) {
+    const tableData = transactions.map(transaction => [
+        `<div class="action-buttons">
+            <button onclick="editTransaction('${transaction.id}')">Düzenle</button>
+            <button onclick="deleteTransaction('${transaction.id}')">Sil</button>
+         </div>`,
+        new Date(transaction.createDate.seconds * 1000).toLocaleDateString(),
+        transaction.kayitTipiName || transaction.kayitTipi,
+        transaction.kayitYonuName || transaction.kayitYonu,
+        transaction.kaynakHesapName || transaction.kaynakHesap,
+        transaction.kategoriName || transaction.kategori,
+        transaction.altKategoriName || transaction.altKategori,
+        transaction.hedefHesapName || transaction.hedefHesap,
+        new Date(transaction.islemTarihi).toLocaleDateString(),
+        transaction.taksitPlani || '',
+        new Date(transaction.taksitTarihi.seconds * 1000).toLocaleDateString(),
+        transaction.tutar,
+        transaction.detay || ''
+    ]);
 
-    transactions.forEach(transaction => {
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-            <td>
-                <div class="action-buttons">
-                    <button onclick="editTransaction('${transaction.id}')">Düzenle</button>
-                    <button onclick="deleteTransaction('${transaction.id}')">Sil</button>
-                </div>
-            </td>
-            <td>${new Date(transaction.createDate.seconds * 1000).toLocaleDateString()}</td>
-            <td>${transaction.kayitTipiName || transaction.kayitTipi}</td>
-            <td>${transaction.kayitYonuName || transaction.kayitYonu}</td>
-            <td>${transaction.kaynakHesapName || transaction.kaynakHesap}</td>
-            <td>${transaction.kategoriName || transaction.kategori}</td>
-            <td>${transaction.altKategoriName || transaction.altKategori}</td>
-            <td>${transaction.hedefHesapName || transaction.hedefHesap}</td>
-            <td>${new Date(transaction.islemTarihi).toLocaleDateString()}</td>
-            <td>${transaction.taksitPlani || ''}</td>
-            <td>${new Date(transaction.taksitTarihi.seconds * 1000).toLocaleDateString()}</td>
-            <td>${transaction.tutar}</td>
-            <td>${transaction.detay || ''}</td>
-        `;
-
-        tableBody.appendChild(row);
-    });
-
-    // DataTables başlatma
-    $(document).ready(function() {
-        $('#transactionsTable').DataTable({
-            "paging": true,
-            "searching": false, // Arama alanını kaldır
-            "ordering": true,
-            "info": true,
-            "language": {
-                "lengthMenu": "Gösterilen Kayıt Sayısı _MENU_",
-                "info": "_TOTAL_ kaydın _START_ ile _END_ arası gösteriliyor",
-                "infoEmpty": "Kayıt bulunamadı",
-                "infoFiltered": "(toplam _MAX_ kayıt filtrelendi)",
-                "paginate": {
-                    "previous": "Önceki",
-                    "next": "Sonraki"
+    if ($.fn.dataTable.isDataTable('#transactionsTable')) {
+        const dataTable = $('#transactionsTable').DataTable();
+        dataTable.clear().rows.add(tableData).draw();  // DataTable'i temizle ve yeni verileri ekle
+    } else {
+        dataTable = $('#transactionsTable').DataTable({
+            data: tableData,
+            columns: [
+                { title: "İşlemler" },
+                { title: "Oluşturma Tarihi" },
+                { title: "Kayıt Tipi" },
+                { title: "Kayıt Yönü" },
+                { title: "Kaynak Hesap" },
+                { title: "Kategori" },
+                { title: "Alt Kategori" },
+                { title: "Hedef Hesap" },
+                { title: "İşlem Tarihi" },
+                { title: "Taksit Planı" },
+                { title: "Taksit Tarihi" },
+                { title: "Tutar" },
+                { title: "Detay" }
+            ],
+            paging: true,
+            searching: false, // Arama alanını kaldır
+            ordering: true,
+            info: true,
+            language: {
+                lengthMenu: "Gösterilen Kayıt Sayısı _MENU_",
+                info: "_TOTAL_ kaydın _START_ ile _END_ arası gösteriliyor",
+                infoEmpty: "Kayıt bulunamadı",
+                infoFiltered: "(toplam _MAX_ kayıt filtrelendi)",
+                paginate: {
+                    previous: "Önceki",
+                    next: "Sonraki"
                 }
             },
-            "dom": 'lfrtip', // DataTables bileşenlerinin yerleşimi
-            "initComplete": function () {
+            dom: 'lfrtip', // DataTables bileşenlerinin yerleşimi
+            initComplete: function () {
                 // DataTables bileşenlerini manuel olarak yerleştir
                 const dataTableWrapper = document.querySelector('.dataTables_wrapper');
                 const dataTableLength = dataTableWrapper.querySelector('.dataTables_length');
@@ -131,7 +140,7 @@ function displayTransactions(transactions) {
                 container.appendChild(dataTablePaginate);
             }
         });
-    });
+    }
 }
 
 window.deleteTransaction = async (transactionId) => {
@@ -141,64 +150,23 @@ window.deleteTransaction = async (transactionId) => {
         const transactions = await getTransactions(auth.currentUser.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
         hideLoading();
-        $('#transactionsTable').DataTable().destroy(); // DataTable'ı yok et
-        displayTransactions(transactionsWithDetails); // Güncellenmiş verilerle tekrar oluştur
+        initializeDataTable(transactionsWithDetails);  // DataTable'i güncelle
     }
 };
 
 window.editTransaction = async (transactionId) => {
-    const transactionDoc = await getDoc(doc(db, 'transactions', transactionId));
-    const transactionData = transactionDoc.data();
-
-document.getElementById('editKayitTipi').value = transactionData.kayitTipi;
-document.getElementById('editKayitYonu').value = transactionData.kayitYonu;
-document.getElementById('editKaynakHesap').value = transactionData.kaynakHesap;
-document.getElementById('editKategori').value = transactionData.kategori;
-document.getElementById('editAltKategori').value = transactionData.altKategori;
-document.getElementById('editHedefHesap').value = transactionData.hedefHesap;
-document.getElementById('editTutar').value = transactionData.tutar;
-document.getElementById('editDetay').value = transactionData.detay;
-document.getElementById('editTaksitAdedi').value = transactionData.taksitAdedi;
-
-if (transactionData.islemTarihi && transactionData.islemTarihi.seconds) {
-    const date = new Date(transactionData.islemTarihi.seconds * 1000);
-    const dateString = date.toISOString().split('T')[0]; // Sadece tarih kısmını alır
-    document.getElementById('editIslemTarihi').value = dateString;
-} else {
-    document.getElementById('editIslemTarihi').value = '';
-}
-
-document.getElementById('editTransactionModal').style.display = 'block';
-document.getElementById('editTransactionForm').dataset.id = transactionId;
+    const newAmount = prompt("Yeni tutarı girin:");
+    if (newAmount !== null) {
+        showLoading();
+        await updateDoc(doc(db, 'transactions', transactionId), {
+            tutar: parseFloat(newAmount)
+        });
+        const transactions = await getTransactions(auth.currentUser.uid);
+        const transactionsWithDetails = await addDetailsToTransactions(transactions);
+        hideLoading();
+        initializeDataTable(transactionsWithDetails);  // DataTable'i güncelle
+    }
 };
-
-document.getElementById('editTransactionForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    showLoading();
-
-    const transactionId = e.target.dataset.id;
-    const updatedTransaction = {
-        kayitTipi: document.getElementById('editKayitTipi').value,
-        kayitYonu: document.getElementById('editKayitYonu').value,
-        kaynakHesap: document.getElementById('editKaynakHesap').value,
-        kategori: document.getElementById('editKategori').value,
-        altKategori: document.getElementById('editAltKategori').value,
-        hedefHesap: document.getElementById('editHedefHesap').value,
-        tutar: parseFloat(document.getElementById('editTutar').value),
-        islemTarihi: new Date(document.getElementById('editIslemTarihi').value),
-        taksitAdedi: parseInt(document.getElementById('editTaksitAdedi').value),
-        detay: document.getElementById('editDetay').value
-    };
-
-    await updateDoc(doc(db, 'transactions', transactionId), updatedTransaction);
-    document.getElementById('editTransactionModal').style.display = 'none';
-
-    const transactions = await getTransactions(auth.currentUser.uid);
-    const transactionsWithDetails = await addDetailsToTransactions(transactions);
-    hideLoading();
-    $('#transactionsTable').DataTable().destroy(); // DataTable'ı yok et
-    displayTransactions(transactionsWithDetails); // Güncellenmiş verilerle tekrar oluştur
-});
 
 function showLoading() {
     document.querySelector('.loading-overlay').style.display = 'flex';
@@ -217,39 +185,3 @@ window.changeFontSize = (increase) => {
         body.style.fontSize = (currentSize - 1) + 'px';
     }
 };
-
-// Kayıt Tipi ve Kayıt Yönü yükleme fonksiyonları
-async function loadKayitTipleri() {
-    const kayitTipiSelect = document.getElementById('editKayitTipi');
-    kayitTipiSelect.innerHTML = '<option value="">Seçiniz</option>';
-
-    const q = query(collection(db, 'kayitTipleri'), orderBy('line'));
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((doc) => {
-        const option = document.createElement('option');
-        option.value = doc.id;
-        option.textContent = doc.data().name;
-        kayitTipiSelect.appendChild(option);
-    });
-}
-
-async function loadKayitYonleri() {
-    const kayitYonuSelect = document.getElementById('editKayitYonu');
-    kayitYonuSelect.innerHTML = '<option value="">Seçiniz</option>';
-
-    const q = query(collection(db, 'kayitYonleri'), orderBy('line'));
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((doc) => {
-        const option = document.createElement('option');
-        option.value = doc.id;
-        option.textContent = doc.data().name;
-        kayitYonuSelect.appendChild(option);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadKayitTipleri();
-    loadKayitYonleri();
-});
