@@ -19,10 +19,13 @@ async function getTransactions(uid) {
     const transactions = [];
     for (const doc of transactionsSnapshot.docs) {
         const data = doc.data();
-        transactions.push(data);
 
-        // Eğer kredi kartı harcamasıysa ve taksit adedi 1'den fazlaysa, taksit verilerini çek
-        if (data.kayitTipi === 'krediKarti' && data.taksitAdedi > 1) {
+        // Hesap bilgisini çekmek için accounts tablosunu kontrol et
+        const accountDoc = await getDoc(doc(db, `accounts/${data.kaynakHesap}`));
+        const accountData = accountDoc.exists() ? accountDoc.data() : null;
+
+        // Eğer hesap kredi kartı hesabıysa ve taksit adedi 1'den fazlaysa, taksit verilerini çek
+        if (accountData && accountData.kayitTipi === 'krediKarti' && data.taksitAdedi > 1) {
             const installmentsSnapshot = await getDocs(collection(db, `transactions/${doc.id}/creditcardInstallments`));
             for (const installmentDoc of installmentsSnapshot.docs) {
                 const installmentData = installmentDoc.data();
@@ -32,6 +35,8 @@ async function getTransactions(uid) {
                     tutar: installmentData.tutar
                 });
             }
+        } else {
+            transactions.push(data);
         }
     }
     return transactions;
