@@ -148,6 +148,7 @@ async function editKayitYonu(id, currentName, currentLine) {
 
 // Sayfa yüklendiğinde işlevleri başlat
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded');
     loadKayitTipleri();
     loadKayitYonleri();
 });
