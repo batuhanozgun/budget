@@ -92,10 +92,6 @@ th, td {
     float: left;
 }
 
-.dataTables_filter {
-    float: right;
-}
-
 .dataTables_info {
     float: left;
     clear: left;
