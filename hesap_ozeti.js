@@ -1,6 +1,7 @@
 import { db } from './firebaseConfig.js';
 import { getDocs, collection, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth } from './auth.js';
+import { Timestamp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     showLoadingOverlay();
@@ -36,6 +37,13 @@ async function getTransactions(uid) {
     return transactions;
 }
 
+function getDateFromTimestamp(timestamp) {
+    if (timestamp instanceof Timestamp) {
+        return timestamp.toDate();
+    }
+    return new Date(timestamp);
+}
+
 async function displayAccountBalances(transactions) {
     const summaryTableHead = document.getElementById('accountBalancesTable').getElementsByTagName('thead')[0];
     const summaryTableBody = document.getElementById('accountBalancesTable').getElementsByTagName('tbody')[0];
@@ -43,11 +51,11 @@ async function displayAccountBalances(transactions) {
     const datesSet = new Set();
 
     for (const transaction of transactions) {
-        const { kaynakHesap, tutar, islemTarihi, taksitTarihi, kayitTipi, taksitAdedi } = transaction;
-        const date = new Date(taksitTarihi || islemTarihi);
+        const { kaynakHesap, tutar, islemTarihi, taksitTarihi } = transaction;
+        const date = getDateFromTimestamp(taksitTarihi || islemTarihi);
         const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
-        console.log(`Tarih: ${yearMonth}, Tutar: ${tutar}`);  // Tarihleri ve tutarları kontrol etmek için ekledik
+        console.log(`Tarih: ${yearMonth}`);  // Tarihleri kontrol etmek için ekledik
 
         if (!accountBalances[kaynakHesap]) {
             accountBalances[kaynakHesap] = {};
