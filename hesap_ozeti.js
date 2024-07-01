@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user) {
         const transactions = await getTransactions(user.uid);
         console.log(transactions);  // Verileri kontrol etmek için konsola yazdır
-        await displayAccountBalances(transactions);
+        await displayTransactions(transactions);
     }
     hideLoadingOverlay();
 });
@@ -52,51 +52,38 @@ function getDateFromTimestamp(timestamp) {
     return new Date(timestamp);
 }
 
-async function displayAccountBalances(transactions) {
+async function displayTransactions(transactions) {
     const summaryTableHead = document.getElementById('accountBalancesTable').getElementsByTagName('thead')[0];
     const summaryTableBody = document.getElementById('accountBalancesTable').getElementsByTagName('tbody')[0];
-    const accountBalances = {};
-    const datesSet = new Set();
 
-    for (const transaction of transactions) {
-        const { kaynakHesap, tutar } = transaction;
-        const date = getDateFromTransaction(transaction);
-        const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-
-        console.log(`Tarih: ${yearMonth}, Tutar: ${tutar}`);  // Tarihleri kontrol etmek için ekledik
-
-        if (!accountBalances[kaynakHesap]) {
-            accountBalances[kaynakHesap] = {};
-        }
-        if (!accountBalances[kaynakHesap][yearMonth]) {
-            accountBalances[kaynakHesap][yearMonth] = 0;
-        }
-        accountBalances[kaynakHesap][yearMonth] += parseFloat(tutar);
-        datesSet.add(yearMonth);
-    }
-
-    const sortedDates = Array.from(datesSet).sort((a, b) => new Date(a) - new Date(b));
-
-    // Add account names to table head
+    // Add headers to table head
     const headerRow = summaryTableHead.rows[0];
-    for (const accountId of Object.keys(accountBalances)) {
-        const accountDoc = await getDoc(doc(db, 'accounts', accountId));
-        const accountName = accountDoc.exists() ? accountDoc.data().accountName : 'Unknown Account';
-        const th = document.createElement('th');
-        th.textContent = accountName;
-        headerRow.appendChild(th);
-    }
+    const dateTh = document.createElement('th');
+    dateTh.textContent = "Tarih";
+    headerRow.appendChild(dateTh);
+    const amountTh = document.createElement('th');
+    amountTh.textContent = "Tutar";
+    headerRow.appendChild(amountTh);
+    const accountTh = document.createElement('th');
+    accountTh.textContent = "Hesap";
+    headerRow.appendChild(accountTh);
+    const typeTh = document.createElement('th');
+    typeTh.textContent = "Kayıt Tipi";
+    headerRow.appendChild(typeTh);
 
-    // Add balances to table body
-    for (const date of sortedDates) {
+    // Add transactions to table body
+    for (const transaction of transactions) {
         const row = summaryTableBody.insertRow();
         const dateCell = row.insertCell(0);
-        dateCell.textContent = date;
+        const amountCell = row.insertCell(1);
+        const accountCell = row.insertCell(2);
+        const typeCell = row.insertCell(3);
 
-        for (const accountId of Object.keys(accountBalances)) {
-            const balanceCell = row.insertCell();
-            balanceCell.textContent = formatNumber(accountBalances[accountId][date] || 0);
-        }
+        const date = getDateFromTransaction(transaction);
+        dateCell.textContent = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        amountCell.textContent = formatNumber(transaction.tutar);
+        accountCell.textContent = transaction.kaynakHesap;
+        typeCell.textContent = transaction.kayitTipi;
     }
 }
 
