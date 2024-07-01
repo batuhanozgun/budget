@@ -108,7 +108,7 @@ function displayTransactions(transactions) {
             "info": true,
             "language": {
                 "lengthMenu": "Gösterilen Kayıt Sayısı _MENU_",
-                "info": "_TOTAL_ kayıdın _START_ ile _END_ arası gösteriliyor",
+                "info": "_TOTAL_ kaydın _START_ ile _END_ arası gösteriliyor",
                 "infoEmpty": "Kayıt bulunamadı",
                 "infoFiltered": "(toplam _MAX_ kayıt filtrelendi)",
                 "paginate": {
