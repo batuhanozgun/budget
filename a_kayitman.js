@@ -152,3 +152,5 @@ document.addEventListener('DOMContentLoaded', () => {
     loadKayitTipleri();
     loadKayitYonleri();
 });
+
+export { loadKayitTipleri, loadKayitYonleri, addKayitTipi, addKayitYonu };
