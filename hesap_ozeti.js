@@ -26,26 +26,48 @@ async function getTransactions(uid) {
 }
 
 async function displayAccountBalances(transactions) {
+    const summaryTableHead = document.getElementById('accountBalancesTable').getElementsByTagName('thead')[0];
     const summaryTableBody = document.getElementById('accountBalancesTable').getElementsByTagName('tbody')[0];
     const accountBalances = {};
+    const datesSet = new Set();
 
     for (const transaction of transactions) {
-        const { kaynakHesap, tutar } = transaction;
+        const { kaynakHesap, tutar, islemTarihi, taksitTarihi } = transaction;
+        const date = new Date(taksitTarihi || islemTarihi);
+        const yearMonth = `${date.getFullYear()}-${date.getMonth() + 1}`;
+
         if (!accountBalances[kaynakHesap]) {
-            accountBalances[kaynakHesap] = 0;
+            accountBalances[kaynakHesap] = {};
         }
-        accountBalances[kaynakHesap] += parseFloat(tutar);
+        if (!accountBalances[kaynakHesap][yearMonth]) {
+            accountBalances[kaynakHesap][yearMonth] = 0;
+        }
+        accountBalances[kaynakHesap][yearMonth] += parseFloat(tutar);
+        datesSet.add(yearMonth);
     }
 
+    const sortedDates = Array.from(datesSet).sort((a, b) => new Date(a) - new Date(b));
+
+    // Add account names to table head
+    const headerRow = summaryTableHead.rows[0];
     for (const accountId of Object.keys(accountBalances)) {
         const accountDoc = await getDoc(doc(db, 'accounts', accountId));
         const accountName = accountDoc.exists() ? accountDoc.data().accountName : 'Unknown Account';
-        const row = summaryTableBody.insertRow();
-        const accountNameCell = row.insertCell(0);
-        const balanceCell = row.insertCell(1);
+        const th = document.createElement('th');
+        th.textContent = accountName;
+        headerRow.appendChild(th);
+    }
 
-        accountNameCell.textContent = accountName;
-        balanceCell.textContent = formatNumber(accountBalances[accountId]);
+    // Add balances to table body
+    for (const date of sortedDates) {
+        const row = summaryTableBody.insertRow();
+        const dateCell = row.insertCell(0);
+        dateCell.textContent = date;
+
+        for (const accountId of Object.keys(accountBalances)) {
+            const balanceCell = row.insertCell();
+            balanceCell.textContent = formatNumber(accountBalances[accountId][date] || 0);
+        }
     }
 }
 
