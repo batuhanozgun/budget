@@ -1,8 +1,7 @@
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { loadUsers } from './a_users.js';
 import { loadKayitTipleri, loadKayitYonleri, addKayitTipi, addKayitYonu } from './a_kayitman.js';
-
-const auth = getAuth();
+import { auth } from './firebaseConfig.js';
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
