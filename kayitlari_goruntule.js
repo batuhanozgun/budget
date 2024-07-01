@@ -108,7 +108,7 @@ function displayTransactions(transactions) {
             "info": true,
             "language": {
                 "lengthMenu": "Gösterilen Kayıt Sayısı _MENU_",
-                "info": "Z kayıdın x ile y arası gösteriliyor",
+                "info": "_TOTAL_ kayıdın _START_ ile _END_ arası gösteriliyor",
                 "infoEmpty": "Kayıt bulunamadı",
                 "infoFiltered": "(toplam _MAX_ kayıt filtrelendi)",
                 "paginate": {
@@ -116,7 +116,7 @@ function displayTransactions(transactions) {
                     "next": "Sonraki"
                 }
             },
-            "dom": '<"top"i>rt<"bottom"flp><"clear">'
+            "dom": '<"top"lf>rt<"bottom"ip><"clear">'
         });
     });
 }
