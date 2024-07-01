@@ -207,7 +207,7 @@ async function saveTransaction(uid) {
         }
 
         document.getElementById('transactionForm').reset();
-        showMessage('Kayıt başarıyla eklendi.');
+        showMessage('Kayıt eklendi.');
     } catch (error) {
         console.error('Hata:', error);
         showMessage('Kayıt eklenirken bir hata oluştu.');
