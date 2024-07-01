@@ -103,7 +103,7 @@ function displayTransactions(transactions) {
     $(document).ready(function() {
         $('#transactionsTable').DataTable({
             "paging": true,
-            "searching": true, // Arama alanını göster
+            "searching": false, // Arama alanını kaldır
             "ordering": true,
             "info": true,
             "language": {
@@ -116,26 +116,9 @@ function displayTransactions(transactions) {
                     "next": "Sonraki"
                 }
             },
-            "dom": '<"top"lf>rt<"bottom"ip><"clear">'
+            "dom": '<"top"l>rt<"bottom"ip><"clear">'
         });
     });
-}
-
-function filterTransactions() {
-    const searchText = document.getElementById('searchInput').value.toLowerCase();
-    const rows = document.getElementById('transactionsTableBody').getElementsByTagName('tr');
-
-    for (const row of rows) {
-        const cells = row.getElementsByTagName('td');
-        let match = false;
-        for (const cell of cells) {
-            if (cell.textContent.toLowerCase().includes(searchText)) {
-                match = true;
-                break;
-            }
-        }
-        row.style.display = match ? '' : 'none';
-    }
 }
 
 window.deleteTransaction = async (transactionId) => {
