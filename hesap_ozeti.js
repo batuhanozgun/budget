@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function getTransactions(uid) {
     const transactionsSnapshot = await getDocs(query(collection(db, 'transactions'), where("userId", "==", uid)));
     const transactions = [];
-    for (const doc of transactionsSnapshot.docs) {
-        const data = doc.data();
+    for (const docSnap of transactionsSnapshot.docs) {
+        const data = docSnap.data();
         
         // Hesap bilgisini çekmek için accounts tablosunu kontrol et
         const accountDoc = await getDoc(doc(db, `accounts/${data.kaynakHesap}`));
@@ -26,7 +26,7 @@ async function getTransactions(uid) {
 
         // Eğer hesap kredi kartı hesabıysa ve taksit adedi 1'den fazlaysa, taksit verilerini çek
         if (accountData && accountData.accountType === 'krediKarti' && data.taksitAdedi > 1) {
-            const installmentsSnapshot = await getDocs(collection(db, `transactions/${doc.id}/creditcardInstallments`));
+            const installmentsSnapshot = await getDocs(collection(db, `transactions/${docSnap.id}/creditcardInstallments`));
             for (const installmentDoc of installmentsSnapshot.docs) {
                 const installmentData = installmentDoc.data();
                 transactions.push({
