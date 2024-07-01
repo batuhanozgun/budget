@@ -177,46 +177,35 @@ async function saveTransaction(uid) {
     }
 
     try {
+        const mainTransactionRef = await addDoc(collection(db, 'transactions'), {
+            userId: uid,
+            kayitTipi: kayitTipi,
+            kayitYonu: kayitYonu,
+            kaynakHesap: kaynakHesap,
+            kategori: kategori,
+            altKategori: altKategori,
+            hedefHesap: hedefHesap,
+            tutar: tutar,
+            taksitAdedi: taksitAdedi,
+            islemTarihi: new Date(islemTarihi),
+            createDate: new Date(),
+            detay: detay
+        });
+
         if (document.getElementById('taksitVarMi').value === 'evet' && taksitAdedi > 1) {
             const taksitTutar = tutar / taksitAdedi;
             for (let i = 0; i < taksitAdedi; i++) {
                 const taksitTarihi = new Date(islemTarihi);
                 taksitTarihi.setMonth(taksitTarihi.getMonth() + i);
-                await addDoc(collection(db, 'transactions'), {
-                    userId: uid,
-                    kayitTipi: kayitTipi,
-                    kayitYonu: kayitYonu,
-                    kaynakHesap: kaynakHesap,
-                    kategori: kategori,
-                    altKategori: altKategori,
-                    hedefHesap: hedefHesap,
+                await addDoc(collection(db, `transactions/${mainTransactionRef.id}/creditcardInstallments`), {
                     tutar: taksitTutar,
-                    taksitAdedi: taksitAdedi,
                     taksitTarihi: taksitTarihi,
                     taksitPlani: `${i + 1}/${taksitAdedi}`,
-                    islemTarihi: islemTarihi,
-                    createDate: new Date(),
-                    detay: detay
+                    createDate: new Date()
                 });
             }
-        } else {
-            await addDoc(collection(db, 'transactions'), {
-                userId: uid,
-                kayitTipi: kayitTipi,
-                kayitYonu: kayitYonu,
-                kaynakHesap: kaynakHesap,
-                kategori: kategori,
-                altKategori: altKategori,
-                hedefHesap: hedefHesap,
-                tutar: tutar,
-                taksitAdedi: 1,
-                taksitTarihi: new Date(islemTarihi),
-                taksitPlani: `1/1`,
-                islemTarihi: islemTarihi,
-                createDate: new Date(),
-                detay: detay
-            });
         }
+
         document.getElementById('transactionForm').reset();
         showMessage('Kayıt başarıyla eklendi.');
     } catch (error) {
