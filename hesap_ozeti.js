@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const transactions = await getTransactions(user.uid);
         await displayAccountBalances(transactions);
         await displayCategoryBalances(transactions);
-        await displayTransactions(transactions);
     }
     hideLoadingOverlay();
 });
@@ -71,37 +70,6 @@ async function displayCategoryBalances(transactions) {
 
         categoryNameCell.textContent = categoryName;
         balanceCell.textContent = formatNumber(categoryBalances[categoryId]);
-    }
-}
-
-async function displayTransactions(transactions) {
-    const summaryTableBody = document.getElementById('summaryTable').getElementsByTagName('tbody')[0];
-
-    for (const transaction of transactions) {
-        const row = summaryTableBody.insertRow();
-
-        const accountNameCell = row.insertCell(0);
-        const transactionDateCell = row.insertCell(1);
-        const categoryCell = row.insertCell(2);
-        const subCategoryCell = row.insertCell(3);
-        const amountCell = row.insertCell(4);
-        const transactionTypeCell = row.insertCell(5);
-
-        const accountDoc = await getDoc(doc(db, 'accounts', transaction.kaynakHesap));
-        const accountName = accountDoc.exists() ? accountDoc.data().accountName : 'Unknown Account';
-
-        const categoryDoc = await getDoc(doc(db, 'categories', transaction.kategori));
-        const categoryName = categoryDoc.exists() ? categoryDoc.data().name : 'Unknown Category';
-
-        const subCategoryDoc = await getDoc(doc(db, 'categories', transaction.kategori, 'subcategories', transaction.altKategori));
-        const subCategoryName = subCategoryDoc.exists() ? subCategoryDoc.data().name : 'Unknown Subcategory';
-
-        accountNameCell.textContent = accountName;
-        transactionDateCell.textContent = new Date(transaction.islemTarihi).toLocaleDateString();
-        categoryCell.textContent = categoryName;
-        subCategoryCell.textContent = subCategoryName;
-        amountCell.textContent = formatNumber(transaction.tutar);
-        transactionTypeCell.textContent = transaction.kayitTipi;
     }
 }
 
