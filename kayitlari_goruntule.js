@@ -52,6 +52,18 @@ async function addDetailsToTransactions(transactions) {
                 transaction.altKategoriName = altKategoriDoc.data().name;
             }
         }
+        if (transaction.kayitTipi) {
+            const kayitTipiDoc = await getDoc(doc(db, 'kayitTipleri', transaction.kayitTipi));
+            if (kayitTipiDoc.exists()) {
+                transaction.kayitTipiName = kayitTipiDoc.data().name;
+            }
+        }
+        if (transaction.kayitYonu) {
+            const kayitYonuDoc = await getDoc(doc(db, 'kayitYonleri', transaction.kayitYonu));
+            if (kayitYonuDoc.exists()) {
+                transaction.kayitYonuName = kayitYonuDoc.data().name;
+            }
+        }
         return transaction;
     });
     return Promise.all(accountPromises);
@@ -71,8 +83,8 @@ function displayTransactions(transactions) {
                     <button onclick="deleteTransaction('${transaction.id}')">Sil</button>
                 </div>
             </td>
-            <td>${transaction.kayitTipi}</td>
-            <td>${transaction.kayitYonu}</td>
+            <td>${transaction.kayitTipiName || transaction.kayitTipi}</td>
+            <td>${transaction.kayitYonuName || transaction.kayitYonu}</td>
             <td>${transaction.kaynakHesapName || transaction.kaynakHesap}</td>
             <td>${transaction.kategoriName || transaction.kategori}</td>
             <td>${transaction.altKategoriName || transaction.altKategori}</td>
