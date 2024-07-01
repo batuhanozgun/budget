@@ -16,14 +16,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        loadUsers();
-    } else {
-        window.location.href = 'login.html';
-    }
-});
-
 async function loadUsers() {
     const userList = document.getElementById('userList');
     userList.innerHTML = '';
@@ -38,4 +30,6 @@ async function loadUsers() {
         userList.appendChild(li);
     });
 }
+
+// İşlevi dışa aktar
 export { loadUsers };
