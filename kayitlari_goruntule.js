@@ -10,7 +10,7 @@ onAuthStateChanged(auth, async (user) => {
         const transactions = await getTransactions(user.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
         hideLoading();
-        displayTransactions(transactionsWithDetails);
+        initializeDataTable(transactionsWithDetails);  // DataTable'ı başlat
     } else {
         window.location.href = 'login.html';
     }
@@ -71,7 +71,7 @@ async function addDetailsToTransactions(transactions) {
     return Promise.all(accountPromises);
 }
 
-function displayTransactions(transactions) {
+function initializeDataTable(transactions) {
     const tableBody = document.getElementById('transactionsTableBody');
     tableBody.innerHTML = '';  // Tablodaki önceki verileri temizle
 
@@ -102,8 +102,8 @@ function displayTransactions(transactions) {
         tableBody.appendChild(row);
     });
 
-    if (dataTable) {
-        dataTable.clear().destroy();  // DataTable'i temizle ve yok et
+    if ($.fn.dataTable.isDataTable('#transactionsTable')) {
+        $('#transactionsTable').DataTable().clear().destroy();  // DataTable'i temizle ve yok et
     }
 
     dataTable = $('#transactionsTable').DataTable({
@@ -144,7 +144,7 @@ window.deleteTransaction = async (transactionId) => {
         const transactions = await getTransactions(auth.currentUser.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
         hideLoading();
-        displayTransactions(transactionsWithDetails);
+        initializeDataTable(transactionsWithDetails);  // DataTable'i yeniden başlat
     }
 };
 
@@ -158,7 +158,7 @@ window.editTransaction = async (transactionId) => {
         const transactions = await getTransactions(auth.currentUser.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
         hideLoading();
-        displayTransactions(transactionsWithDetails);
+        initializeDataTable(transactionsWithDetails);  // DataTable'i yeniden başlat
     }
 };
 
