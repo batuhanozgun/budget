@@ -64,8 +64,11 @@ async function addKayitTipi() {
     const kayitTipi = kayitTipiInput.value;
     const line = parseInt(kayitTipiLineInput.value, 10);
 
+    console.log('addKayitTipi çağrıldı:', { kayitTipi, line });
+
     try {
         await addDoc(collection(db, 'kayitTipleri'), { name: kayitTipi, line: line });
+        console.log('Kayıt tipi başarıyla eklendi.');
         kayitTipiInput.value = '';
         kayitTipiLineInput.value = '';
         loadKayitTipleri();
@@ -81,8 +84,11 @@ async function addKayitYonu() {
     const kayitYonu = kayitYonuInput.value;
     const line = parseInt(kayitYonuLineInput.value, 10);
 
+    console.log('addKayitYonu çağrıldı:', { kayitYonu, line });
+
     try {
         await addDoc(collection(db, 'kayitYonleri'), { name: kayitYonu, line: line });
+        console.log('Kayıt yönü başarıyla eklendi.');
         kayitYonuInput.value = '';
         kayitYonuLineInput.value = '';
         loadKayitYonleri();
