@@ -7,22 +7,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     showLoadingOverlay();
     const user = await checkAuth();
     if (user) {
-        const transactions = await getTransactions(user.uid);
-        console.log(transactions);  // Verileri kontrol etmek için konsola yazdır
-        await displayTransactions(transactions);
+        const accountsCache = await loadAccountsCache();
+        const transactions = await getTransactions(user.uid, accountsCache);
+        await displayTransactions(transactions, accountsCache);
     }
     hideLoadingOverlay();
 });
 
-async function getTransactions(uid) {
+async function loadAccountsCache() {
+    const accountsSnapshot = await getDocs(collection(db, 'accounts'));
+    const accountsCache = {};
+    accountsSnapshot.forEach((doc) => {
+        accountsCache[doc.id] = doc.data();
+    });
+    return accountsCache;
+}
+
+async function getTransactions(uid, accountsCache) {
     const transactionsSnapshot = await getDocs(query(collection(db, 'transactions'), where("userId", "==", uid)));
     const transactions = [];
     for (const docSnap of transactionsSnapshot.docs) {
         const data = docSnap.data();
-        
-        // Hesap bilgisini çekmek için accounts tablosunu kontrol et
-        const accountDoc = await getDoc(doc(db, `accounts/${data.kaynakHesap}`));
-        const accountData = accountDoc.exists() ? accountDoc.data() : null;
+
+        const accountData = accountsCache[data.kaynakHesap];
 
         // Eğer hesap kredi kartı hesabıysa ve taksit adedi 1'den fazlaysa, taksit verilerini çek
         if (accountData && accountData.accountType === 'krediKarti' && data.taksitAdedi > 1) {
@@ -49,7 +56,7 @@ function getDateFromTimestamp(timestamp) {
     return new Date(timestamp);
 }
 
-async function displayTransactions(transactions) {
+async function displayTransactions(transactions, accountsCache) {
     const summaryTableHead = document.getElementById('accountBalancesTable').getElementsByTagName('thead')[0];
     const summaryTableBody = document.getElementById('accountBalancesTable').getElementsByTagName('tbody')[0];
 
@@ -65,7 +72,7 @@ async function displayTransactions(transactions) {
     amountTh.textContent = "Tutar";
     headerRow.appendChild(amountTh);
     const accountTh = document.createElement('th');
-    accountTh.textContent = "Hesap";
+    accountTh.textContent = "Hesap Adı";
     headerRow.appendChild(accountTh);
     const typeTh = document.createElement('th');
     typeTh.textContent = "Kayıt Tipi";
@@ -86,8 +93,11 @@ async function displayTransactions(transactions) {
         islemDateCell.textContent = `${islemDate.getFullYear()}-${String(islemDate.getMonth() + 1).padStart(2, '0')}`;
         taksitDateCell.textContent = taksitDate ? `${taksitDate.getFullYear()}-${String(taksitDate.getMonth() + 1).padStart(2, '0')}` : 'N/A';
         amountCell.textContent = formatNumber(transaction.tutar);
-        accountCell.textContent = transaction.kaynakHesap;
-        typeCell.textContent = transaction.kayitTipi;
+        
+        // Hesap adını ve kayıt tipini accountsCache'den alın
+        const accountData = accountsCache[transaction.kaynakHesap];
+        accountCell.textContent = accountData ? accountData.accountName : 'Bilinmiyor';
+        typeCell.textContent = accountData ? accountData.accountType : 'Bilinmiyor';
     }
 }
 
