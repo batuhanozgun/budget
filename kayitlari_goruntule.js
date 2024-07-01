@@ -9,8 +9,9 @@ onAuthStateChanged(auth, async (user) => {
         showLoading();
         const transactions = await getTransactions(user.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
+        const transactionsWithInstallments = await addInstallmentsToTransactions(transactionsWithDetails);
         hideLoading();
-        initializeDataTable(transactionsWithDetails);  // DataTable'ı başlat
+        initializeDataTable(transactionsWithInstallments);  // DataTable'ı başlat
     } else {
         window.location.href = 'login.html';
     }
@@ -71,25 +72,44 @@ async function addDetailsToTransactions(transactions) {
     return Promise.all(accountPromises);
 }
 
+async function addInstallmentsToTransactions(transactions) {
+    const installmentPromises = transactions.map(async transaction => {
+        if (transaction.taksitAdedi > 1) {
+            const installmentsSnapshot = await getDocs(collection(db, `transactions/${transaction.id}/creditcardInstallments`));
+            const installments = [];
+            installmentsSnapshot.forEach(doc => {
+                installments.push({ id: doc.id, ...doc.data() });
+            });
+            transaction.installments = installments;
+        } else {
+            transaction.installments = [transaction];
+        }
+        return transaction;
+    });
+    return Promise.all(installmentPromises);
+}
+
 function initializeDataTable(transactions) {
-    const tableData = transactions.map(transaction => [
-        `<div class="action-buttons">
-            <button onclick="editTransaction('${transaction.id}')">Düzenle</button>
-            <button onclick="deleteTransaction('${transaction.id}')">Sil</button>
-         </div>`,
-        new Date(transaction.createDate.seconds * 1000).toLocaleDateString(),
-        transaction.kayitTipiName || transaction.kayitTipi,
-        transaction.kayitYonuName || transaction.kayitYonu,
-        transaction.kaynakHesapName || transaction.kaynakHesap,
-        transaction.kategoriName || transaction.kategori,
-        transaction.altKategoriName || transaction.altKategori,
-        transaction.hedefHesapName || transaction.hedefHesap,
-        new Date(transaction.islemTarihi).toLocaleDateString(),
-        transaction.taksitPlani || '',
-        new Date(transaction.taksitTarihi.seconds * 1000).toLocaleDateString(),
-        transaction.tutar,
-        transaction.detay || ''
-    ]);
+    const tableData = transactions.flatMap(transaction => 
+        transaction.installments.map(installment => [
+            `<div class="action-buttons">
+                <button onclick="editTransaction('${installment.id}')">Düzenle</button>
+                <button onclick="deleteTransaction('${installment.id}')">Sil</button>
+            </div>`,
+            new Date(transaction.createDate.seconds * 1000).toLocaleDateString(),
+            transaction.kayitTipiName || transaction.kayitTipi,
+            transaction.kayitYonuName || transaction.kayitYonu,
+            transaction.kaynakHesapName || transaction.kaynakHesap,
+            transaction.kategoriName || transaction.kategori,
+            transaction.altKategoriName || transaction.altKategori,
+            transaction.hedefHesapName || transaction.hedefHesap,
+            new Date(transaction.islemTarihi).toLocaleDateString(),
+            installment.taksitPlani || '',
+            new Date(installment.taksitTarihi.seconds * 1000).toLocaleDateString(),
+            installment.tutar,
+            transaction.detay || ''
+        ])
+    );
 
     if ($.fn.dataTable.isDataTable('#transactionsTable')) {
         const dataTable = $('#transactionsTable').DataTable();
@@ -149,8 +169,9 @@ window.deleteTransaction = async (transactionId) => {
         await deleteDoc(doc(db, 'transactions', transactionId));
         const transactions = await getTransactions(auth.currentUser.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
+        const transactionsWithInstallments = await addInstallmentsToTransactions(transactionsWithDetails);
         hideLoading();
-        initializeDataTable(transactionsWithDetails);  // DataTable'i güncelle
+        initializeDataTable(transactionsWithInstallments);  // DataTable'i güncelle
     }
 };
 
@@ -163,8 +184,9 @@ window.editTransaction = async (transactionId) => {
         });
         const transactions = await getTransactions(auth.currentUser.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
+        const transactionsWithInstallments = await addInstallmentsToTransactions(transactionsWithDetails);
         hideLoading();
-        initializeDataTable(transactionsWithDetails);  // DataTable'i güncelle
+        initializeDataTable(transactionsWithInstallments);  // DataTable'i güncelle
     }
 };
 
