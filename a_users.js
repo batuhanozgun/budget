@@ -1,11 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
-import { firebaseConfig } from './firebaseConfig.js';
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { auth, db } from './firebaseConfig.js';
 
 async function loadUsers() {
     const userList = document.getElementById('userList');
@@ -22,5 +17,12 @@ async function loadUsers() {
     });
 }
 
-// İşlevi dışa aktar
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        loadUsers();
+    } else {
+        window.location.href = 'login.html';
+    }
+});
+
 export { loadUsers };
