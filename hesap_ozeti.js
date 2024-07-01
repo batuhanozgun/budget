@@ -76,7 +76,7 @@ async function displayTransactions(transactions) {
         const typeCell = row.insertCell(4);
 
         const islemDate = getDateFromTimestamp(transaction.islemTarihi);
-        const taksitDate = transaction.taksitTarihi ? getDateFromTimestamp(transaction.taksitTarihi) : '';
+        const taksitDate = transaction.taksitTarihi ? getDateFromTimestamp(transaction.taksitTarihi) : null;
 
         islemDateCell.textContent = `${islemDate.getFullYear()}-${String(islemDate.getMonth() + 1).padStart(2, '0')}`;
         taksitDateCell.textContent = taksitDate ? `${taksitDate.getFullYear()}-${String(taksitDate.getMonth() + 1).padStart(2, '0')}` : 'N/A';
