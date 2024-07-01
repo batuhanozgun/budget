@@ -105,7 +105,7 @@ function initializeDataTable(transactions) {
             transaction.hedefHesapName || transaction.hedefHesap,
             new Date(transaction.islemTarihi).toLocaleDateString(),
             installment.taksitPlani || '',
-            new Date(installment.taksitTarihi.seconds * 1000).toLocaleDateString(),
+            installment.taksitTarihi ? new Date(installment.taksitTarihi.seconds * 1000).toLocaleDateString() : '', // Güncellenmiş satır
             installment.tutar,
             transaction.detay || ''
         ])
