@@ -141,7 +141,8 @@ window.deleteTransaction = async (transactionId) => {
         const transactions = await getTransactions(auth.currentUser.uid);
         const transactionsWithDetails = await addDetailsToTransactions(transactions);
         hideLoading();
-        displayTransactions(transactionsWithDetails);
+        $('#transactionsTable').DataTable().destroy(); // DataTable'ı yok et
+        displayTransactions(transactionsWithDetails); // Güncellenmiş verilerle tekrar oluştur
     }
 };
 
