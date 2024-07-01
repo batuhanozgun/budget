@@ -1,9 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, orderBy, query } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
-import { firebaseConfig } from './firebaseConfig.js';
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, orderBy, query } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { db } from './firebaseConfig.js';
 
 async function loadKayitTipleri() {
     const kayitTipiList = document.getElementById('kayitTipiList');
@@ -55,16 +51,12 @@ async function addKayitTipi() {
     const kayitTipi = kayitTipiInput.value;
     const line = parseInt(kayitTipiLineInput.value, 10);
 
-    console.log('addKayitTipi çağrıldı:', { kayitTipi, line });
-
     try {
         await addDoc(collection(db, 'kayitTipleri'), { name: kayitTipi, line: line });
-        console.log('Kayıt tipi başarıyla eklendi.');
         kayitTipiInput.value = '';
         kayitTipiLineInput.value = '';
         loadKayitTipleri();
     } catch (error) {
-        console.error('Hata:', error);
         alert('Kayıt tipi eklenirken bir hata oluştu.');
     }
 }
@@ -75,16 +67,12 @@ async function addKayitYonu() {
     const kayitYonu = kayitYonuInput.value;
     const line = parseInt(kayitYonuLineInput.value, 10);
 
-    console.log('addKayitYonu çağrıldı:', { kayitYonu, line });
-
     try {
         await addDoc(collection(db, 'kayitYonleri'), { name: kayitYonu, line: line });
-        console.log('Kayıt yönü başarıyla eklendi.');
         kayitYonuInput.value = '';
         kayitYonuLineInput.value = '';
         loadKayitYonleri();
     } catch (error) {
-        console.error('Hata:', error);
         alert('Kayıt yönü eklenirken bir hata oluştu.');
     }
 }
@@ -94,7 +82,6 @@ async function deleteKayitTipi(id) {
         await deleteDoc(doc(db, 'kayitTipleri', id));
         loadKayitTipleri();
     } catch (error) {
-        console.error('Hata:', error);
         alert('Kayıt tipi silinirken bir hata oluştu.');
     }
 }
@@ -104,7 +91,6 @@ async function deleteKayitYonu(id) {
         await deleteDoc(doc(db, 'kayitYonleri', id));
         loadKayitYonleri();
     } catch (error) {
-        console.error('Hata:', error);
         alert('Kayıt yönü silinirken bir hata oluştu.');
     }
 }
@@ -117,7 +103,6 @@ async function editKayitTipi(id, currentName, currentLine) {
             await updateDoc(doc(db, 'kayitTipleri', id), { name: newName, line: parseInt(newLine, 10) });
             loadKayitTipleri();
         } catch (error) {
-            console.error('Hata:', error);
             alert('Kayıt tipi düzenlenirken bir hata oluştu.');
         }
     }
@@ -131,7 +116,6 @@ async function editKayitYonu(id, currentName, currentLine) {
             await updateDoc(doc(db, 'kayitYonleri', id), { name: newName, line: parseInt(newLine, 10) });
             loadKayitYonleri();
         } catch (error) {
-            console.error('Hata:', error);
             alert('Kayıt yönü düzenlenirken bir hata oluştu.');
         }
     }
