@@ -150,18 +150,26 @@ window.editTransaction = async (transactionId) => {
     const transactionDoc = await getDoc(doc(db, 'transactions', transactionId));
     const transactionData = transactionDoc.data();
 
-    document.getElementById('editKayitTipi').value = transactionData.kayitTipi;
-    document.getElementById('editKayitYonu').value = transactionData.kayitYonu;
-    document.getElementById('editKaynakHesap').value = transactionData.kaynakHesap;
-    document.getElementById('editKategori').value = transactionData.kategori;
-    document.getElementById('editAltKategori').value = transactionData.altKategori;
-    document.getElementById('editHedefHesap').value = transactionData.hedefHesap;
-    document.getElementById('editTutar').value = transactionData.tutar;
-    document.getElementById('editIslemTarihi').value = new Date(transactionData.islemTarihi.seconds * 1000).toISOString().split('T')[0];
-    document.getElementById('editTaksitAdedi').value = transactionData.taksitAdedi;
-    document.getElementById('editDetay').value = transactionData.detay;
-    document.getElementById('editTransactionModal').style.display = 'block';
-    document.getElementById('editTransactionForm').dataset.id = transactionId;
+document.getElementById('editKayitTipi').value = transactionData.kayitTipi;
+document.getElementById('editKayitYonu').value = transactionData.kayitYonu;
+document.getElementById('editKaynakHesap').value = transactionData.kaynakHesap;
+document.getElementById('editKategori').value = transactionData.kategori;
+document.getElementById('editAltKategori').value = transactionData.altKategori;
+document.getElementById('editHedefHesap').value = transactionData.hedefHesap;
+document.getElementById('editTutar').value = transactionData.tutar;
+document.getElementById('editDetay').value = transactionData.detay;
+document.getElementById('editTaksitAdedi').value = transactionData.taksitAdedi;
+
+if (transactionData.islemTarihi && transactionData.islemTarihi.seconds) {
+    const date = new Date(transactionData.islemTarihi.seconds * 1000);
+    const dateString = date.toISOString().split('T')[0]; // Sadece tarih kısmını alır
+    document.getElementById('editIslemTarihi').value = dateString;
+} else {
+    document.getElementById('editIslemTarihi').value = '';
+}
+
+document.getElementById('editTransactionModal').style.display = 'block';
+document.getElementById('editTransactionForm').dataset.id = transactionId;
 };
 
 document.getElementById('editTransactionForm').addEventListener('submit', async (e) => {
