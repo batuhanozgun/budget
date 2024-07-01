@@ -38,3 +38,4 @@ async function loadUsers() {
         userList.appendChild(li);
     });
 }
+export { loadUsers };
