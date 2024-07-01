@@ -1,5 +1,5 @@
 import { db } from './firebaseConfig.js';
-import { getDocs, collection, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getDocs, collection, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { checkAuth } from './auth.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -14,14 +14,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function getTransactions(uid) {
-    const transactionsSnapshot = await getDocs(collection(db, 'transactions'));
+    const transactionsSnapshot = await getDocs(query(collection(db, 'transactions'), where("userId", "==", uid)));
     const transactions = [];
-    transactionsSnapshot.forEach(doc => {
+    for (const doc of transactionsSnapshot.docs) {
         const data = doc.data();
-        if (data.userId === uid) {
-            transactions.push(data);
+        transactions.push(data);
+
+        // Eğer kredi kartı harcamasıysa ve taksit adedi 1'den fazlaysa, taksit verilerini çek
+        if (data.kayitTipi === 'creditcard' && data.taksitAdedi > 1) {
+            const installmentsSnapshot = await getDocs(collection(db, `transactions/${doc.id}/creditcardInstallments`));
+            for (const installmentDoc of installmentsSnapshot.docs) {
+                const installmentData = installmentDoc.data();
+                transactions.push({
+                    ...data,
+                    taksitTarihi: installmentData.taksitTarihi,
+                    tutar: installmentData.tutar
+                });
+            }
         }
-    });
+    }
     return transactions;
 }
 
@@ -32,11 +43,11 @@ async function displayAccountBalances(transactions) {
     const datesSet = new Set();
 
     for (const transaction of transactions) {
-        const { kaynakHesap, tutar, islemTarihi, taksitTarihi } = transaction;
+        const { kaynakHesap, tutar, islemTarihi, taksitTarihi, kayitTipi, taksitAdedi } = transaction;
         const date = new Date(taksitTarihi || islemTarihi);
         const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
-        console.log(`Tarih: ${yearMonth}`);  // Tarihleri kontrol etmek için ekledik
+        console.log(`Tarih: ${yearMonth}, Tutar: ${tutar}`);  // Tarihleri ve tutarları kontrol etmek için ekledik
 
         if (!accountBalances[kaynakHesap]) {
             accountBalances[kaynakHesap] = {};
