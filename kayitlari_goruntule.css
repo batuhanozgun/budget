@@ -101,6 +101,30 @@ th, td {
     margin-top: 5px;
 }
 
+/* Pagination düğmeleri */
+.dataTables_paginate .paginate_button {
+    margin: 0 5px; /* Sağ ve sol boşluk ekleyelim */
+    padding: 5px 10px; /* İç boşluk ekleyelim */
+    border: 1px solid #CCC; /* Kenarlık ekleyelim */
+    border-radius: 5px; /* Kenarları yuvarlayalım */
+    cursor: pointer; /* İmleci tıklanabilir hale getirelim */
+}
+
+.dataTables_paginate .paginate_button:hover {
+    background-color: #EEE; /* Üzerine gelince arka plan rengi değiştirelim */
+}
+
+/* Disabled pagination düğmeleri */
+.dataTables_paginate .paginate_button.disabled {
+    color: #AAA; /* Rengi gri yapalım */
+    cursor: default; /* İmleci varsayılan hale getirelim */
+    border: 1px solid #AAA; /* Kenarlığı gri yapalım */
+}
+
+.dataTables_paginate .paginate_button.disabled:hover {
+    background-color: transparent; /* Üzerine gelince arka plan rengini kaldır */
+}
+
 /* Loading overlay stilini ekleyelim */
 .loading-overlay {
     display: none; /* Başlangıçta gizli */
